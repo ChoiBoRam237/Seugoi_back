@@ -8,9 +8,8 @@
 - Spring Boot (v21)
 
 ### Tools
-- Cursor
-- Figma
 - IntelliJ
+- MySQL
 
 ### 참고자료
 - kakao login : https://ddonghyeo.tistory.com/16
