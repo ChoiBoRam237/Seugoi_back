@@ -15,15 +15,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    private String kakaoId;
+    @Column(nullable = false)
+    private String kakaoId; // 카카오 아이디
 
-    @NotNull
-    private String email;
+    @Column(nullable = false)
+    private String email; // 이메일
 
-    private String nickname;
+    @Column
+    private String nickname; // 사용자 이름
 
-    private String profileImageUrl;
+    @Column
+    private String profileImageUrl; // 프로필 이미지 url
 
     @Builder
     public User(

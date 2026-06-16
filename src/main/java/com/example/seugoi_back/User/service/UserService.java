@@ -15,7 +15,7 @@ public class UserService {
     public User loginOrRegister(KakaoUserInfoResponseDto userInfo) {
 
         return userRepository
-            .findByKakaoId(String.valueOf(userInfo.getId()))
+            .findById(userInfo.getId())
             .orElseGet(() -> {
                 User user = User.builder()
                     .kakaoId(String.valueOf(userInfo.getId()))
