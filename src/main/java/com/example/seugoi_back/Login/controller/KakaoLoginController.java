@@ -1,6 +1,7 @@
 package com.example.seugoi_back.Login.controller;
 
 import com.example.seugoi_back.Common.response.CommonApiResponse;
+import com.example.seugoi_back.Login.dto.KakaoTokenResponseDto;
 import com.example.seugoi_back.Login.dto.KakaoUserInfoResponseDto;
 import com.example.seugoi_back.Login.dto.UserResponseDto;
 import com.example.seugoi_back.Login.service.KakaoService;
@@ -13,11 +14,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.osgi.annotation.bundle.Header;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -31,11 +30,11 @@ public class KakaoLoginController {
     private final KakaoService kakaoService;
     private final UserService userService;
 
-    @Operation(summary = "카카오 사용자 정보 불러오기", description = "카카오 로그인 후 code로 사용자 정보를 가져옵니다.")
+    @Operation(summary = "카카오 사용자 정보 조회 API", description = "카카오 로그인 후 code로 사용자 정보를 가져옵니다.")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "카카오 사용자 정보를 가져왔습니다",
+            description = "요청 성공",
             content = @Content(
                 schema = @Schema(
                     implementation = UserResponseDto.class
@@ -45,13 +44,14 @@ public class KakaoLoginController {
     })
     @GetMapping("/callback")
     public ResponseEntity<?> callback(@RequestParam("code") String code) throws IOException {
-        String accessToken = kakaoService.getAccessTokenFromKakao(code);
-        KakaoUserInfoResponseDto userInfo = kakaoService.getUserInfo(accessToken);
+        KakaoTokenResponseDto tokenData = kakaoService.getAccessTokenFromKakao(code);
+        KakaoUserInfoResponseDto userInfo = kakaoService.getUserInfo(tokenData.getAccessToken());
         User user = userService.loginOrRegister(userInfo);
 
         UserResponseDto responseDto =
             UserResponseDto.builder()
-                .accessToken(accessToken)
+                .accessToken(tokenData.getAccessToken())
+                .refreshToken(tokenData.getRefreshToken())
                 .userId(user.getId())
                 .nickName(user.getNickname())
                 .email(user.getEmail())
@@ -63,6 +63,31 @@ public class KakaoLoginController {
                 .success(true)
                 .message("카카오 로그인 성공")
                 .data(responseDto)
+                .build()
+        );
+    }
+
+    @Operation(summary = "액세스 토큰 갱신 API", description = "refresh token으로 access token을 갱신합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "요청 성공",
+            content = @Content(
+                schema = @Schema(
+                    implementation = KakaoTokenResponseDto.class
+                )
+            )
+        )
+    })
+    @GetMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestHeader("Authorization") String refreshToken) throws IOException {
+        KakaoTokenResponseDto tokenData = kakaoService.getRefreshToke(refreshToken);
+
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("액세스 토큰 갱신 성공")
+                .data(tokenData)
                 .build()
         );
     }

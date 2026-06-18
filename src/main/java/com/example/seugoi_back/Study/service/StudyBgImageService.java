@@ -1,5 +1,6 @@
 package com.example.seugoi_back.Study.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,9 +10,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class StudyBgImageService {
-    private final String UPLOAD_DIR = "uploads/study/";
+    private final String UPLOAD_DIR = "D:\\2026년\\Projects\\seugoi_back\\uploads\\study";
 
     public String saveImage(MultipartFile file) {
         if (file == null || file.isEmpty()) {
@@ -33,7 +35,7 @@ public class StudyBgImageService {
 
             file.transferTo(filePath.toFile());
 
-            return "/uploads/study/" + fileName;
+            return fileName;
 
         } catch (IOException e) {
             throw new RuntimeException("이미지 저장 실패", e);

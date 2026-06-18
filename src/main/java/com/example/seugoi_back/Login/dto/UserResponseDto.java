@@ -11,6 +11,9 @@ public class UserResponseDto {
     @Schema(name = "accessToken", example = "accessToken")
     private String accessToken;
 
+    @Schema(name = "refreshToken", example = "refreshToken")
+    private String refreshToken;
+
     @Schema(name = "userId", example = "1")
     private Long userId;
 

@@ -9,9 +9,11 @@ import com.example.seugoi_back.User.entity.User;
 import com.example.seugoi_back.User.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StudyService {
@@ -23,6 +25,7 @@ public class StudyService {
 
     ObjectMapper mapper = new ObjectMapper();
 
+    // 스터디 생성
     @Transactional
     public Study generateStudy(StudyRequestDto dto) {
         User user = userRepository.findById(dto.getUserId()).orElseThrow();
@@ -37,6 +40,8 @@ public class StudyService {
                 .categories(categoriesJson)
                 .peopleCount(dto.getPeopleCount())
                 .endPeriod(dto.getEndPeriod())
+                .dDay(dto.getDDay())
+                .studyTitle(dto.getStudyTitle())
                 .summary(dto.getSummary())
                 .introduction(introductionJson)
                 .description(dto.getDescription())

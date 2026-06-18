@@ -31,8 +31,14 @@ public class Study {
     @Column(nullable = false)
     private String peopleCount; // 인원수 (제한 없음: -)
 
+    @Column(length = 10)
+    private String endPeriod; // 스터디 종료 기간
+
     @Column
-    private Date endPeriod; // 스터디 종료 기간
+    private Integer dDay; // 스터디 디데이
+
+    @Column(length = 100)
+    private String studyTitle; // 스터디 제목
 
     @Column(columnDefinition = "TEXT")
     private String summary; // 스터디 간단 요약
@@ -52,7 +58,9 @@ public class Study {
             String studyName,
             String categories,
             String peopleCount,
-            Date endPeriod,
+            String endPeriod,
+            Integer dDay,
+            String studyTitle,
             String summary,
             String introduction,
             String description,
@@ -63,6 +71,8 @@ public class Study {
         this.categories = categories;
         this.peopleCount = peopleCount;
         this.endPeriod = endPeriod;
+        this.dDay = dDay;
+        this.studyTitle = studyTitle;
         this.summary = summary;
         this.introduction = introduction;
         this.description = description;

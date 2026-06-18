@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class StudyController {
     private final StudyService studyService;
 
-    @Operation(summary = "스터디 생성", description = "스터디를 생성합니다")
+    @Operation(summary = "스터디 생성 API", description = "스터디를 생성합니다")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",

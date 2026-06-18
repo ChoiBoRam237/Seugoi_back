@@ -26,7 +26,6 @@ public class StudyRequestDto {
     @Schema(description = "스터디 이름", example = "React 공부방")
     String studyName;
 
-    @NotNull(message = "카테고리는 필수입니다.")
     @Schema(description = "카테고리(배열)", example = "[\"카\", \"테\", \"고\", \"리\"]")
     List<String> categories;
 
@@ -34,9 +33,14 @@ public class StudyRequestDto {
     @Schema(description = "인원수", example = "10")
     String peopleCount;
 
-    @NotNull(message = "종료 기간은 필수입니다.")
     @Schema(description = "스터드 종료기간", example = "2026.01.01")
-    Date endPeriod;
+    String endPeriod;
+
+    @Schema(description = "스터디 종료 기간 디데이", example = "40")
+    Integer dDay;
+
+    @Schema(description = "스터디 제목", example = "React를 공부하고 싶다고요?")
+    String studyTitle;
 
     @Schema(description = "간단 요약 내용", example = "이 스터디는 React 공부방입니다.")
     String summary;

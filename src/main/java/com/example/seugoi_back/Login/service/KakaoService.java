@@ -39,8 +39,7 @@ public class KakaoService {
         KAUTH_USER_URL_HOST = "https://kapi.kakao.com";
     }
 
-    public String getAccessTokenFromKakao(String code) {
-
+    public KakaoTokenResponseDto getAccessTokenFromKakao(String code) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId);
@@ -64,7 +63,33 @@ public class KakaoService {
         log.info(" [Kakao Service] Access Token ------> {}", kakaoTokenResponseDto.getAccessToken());
         log.info(" [Kakao Service] Refresh Token ------> {}", kakaoTokenResponseDto.getRefreshToken());
 
-        return kakaoTokenResponseDto.getAccessToken();
+        return kakaoTokenResponseDto;
+    }
+
+    public KakaoTokenResponseDto getRefreshToke(String refreshToken) {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "refresh_token");
+        params.add("client_id", clientId);
+        params.add("refresh_token", refreshToken);
+        params.add("redirect_uri", redirectUri);
+
+        if (clientSecret != null && !clientSecret.isBlank()) {
+            params.add("client_secret", clientSecret);
+        }
+
+        KakaoTokenResponseDto kakaoTokenResponseDto = WebClient.create(KAUTH_TOKEN_URL_HOST)
+                .post()
+                .uri("/oauth/token")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(params)
+                .retrieve()
+                .bodyToMono(KakaoTokenResponseDto.class)
+                .block();
+
+        log.info(" [Kakao Service] Access Token ------> {}", kakaoTokenResponseDto.getAccessToken());
+        log.info(" [Kakao Service] Refresh Token ------> {}", kakaoTokenResponseDto.getRefreshToken());
+
+        return kakaoTokenResponseDto;
     }
 
     public KakaoUserInfoResponseDto getUserInfo(String accessToken) {
