@@ -1,10 +1,12 @@
 package com.example.seugoi_back.User.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Getter
 @NoArgsConstructor

@@ -18,9 +18,9 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StudyRequestDto {
 
-    @NotNull(message = "유저 아이디는 필수입니다.")
-    @Schema(description = "유저 아이디", example = "1")
-    Long userId;
+    @NotNull(message = "유저 코드는 필수입니다.")
+    @Schema(description = "유저 코드", example = "1")
+    Long userCode;
 
     @NotNull(message = "스터디 이름은 필수입니다.")
     @Schema(description = "스터디 이름", example = "React 공부방")
@@ -35,9 +35,6 @@ public class StudyRequestDto {
 
     @Schema(description = "스터드 종료기간", example = "2026.01.01")
     String endPeriod;
-
-    @Schema(description = "스터디 종료 기간 디데이", example = "40")
-    Integer dDay;
 
     @Schema(description = "스터디 제목", example = "React를 공부하고 싶다고요?")
     String studyTitle;

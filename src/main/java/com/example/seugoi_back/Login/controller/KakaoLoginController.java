@@ -12,16 +12,14 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.osgi.annotation.bundle.Header;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Map;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v3/kakao")
@@ -34,7 +32,7 @@ public class KakaoLoginController {
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "요청 성공",
+            description = "카카오 로그인 성공",
             content = @Content(
                 schema = @Schema(
                     implementation = UserResponseDto.class
@@ -67,11 +65,12 @@ public class KakaoLoginController {
         );
     }
 
+    @SecurityRequirement(name = "BearerAuth")
     @Operation(summary = "액세스 토큰 갱신 API", description = "refresh token으로 access token을 갱신합니다.")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "요청 성공",
+            description = "액세스 토큰 갱신 성공",
             content = @Content(
                 schema = @Schema(
                     implementation = KakaoTokenResponseDto.class

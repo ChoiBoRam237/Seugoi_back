@@ -8,8 +8,8 @@ import lombok.Getter;
 @Builder
 public class StudyCreateResponseDto {
 
-    @Schema(name = "userId", example = "1")
-    private Long userId;
+    @Schema(name = "userCode", example = "1")
+    private Long userCode;
 
     @Schema(name = "id", example = "1")
     private Long id;
