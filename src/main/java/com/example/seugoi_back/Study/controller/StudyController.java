@@ -74,8 +74,12 @@ public class StudyController {
         )
     })
     @GetMapping("")
-    public ResponseEntity<?> getStudyAll() {
-        List<StudyResponseDto> responseDto = studyService.findStudyAll();
+    public ResponseEntity<?> getStudyAll(
+            @RequestParam Long userCode,
+            @RequestParam(defaultValue = "ALL") String filterValue,
+            @RequestParam(defaultValue = "LATEST") String sortValue
+    ) {
+        List<StudyResponseDto> responseDto = studyService.findStudyAll(userCode, filterValue, sortValue);
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()

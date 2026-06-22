@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -71,8 +72,36 @@ public class StudyService {
 
     // 모든 스터디 조회 Service
     @Transactional
-    public List<StudyResponseDto> findStudyAll() {
-        List<Study> studyList = studyRepository.findAll();
+    public List<StudyResponseDto> findStudyAll(Long userCode, String filterValue, String sortValue) {
+        List<Study> studyList;
+
+        // 필터
+        switch (filterValue.toUpperCase()) {
+            case "MY_STUDY": studyList = studyRepository.findByUser_Code(userCode);
+            break;
+
+            case "JOINED": studyList = studyJoinRepository.findByUser_Code(userCode)
+                                            .stream()
+                                            .map(StudyJoin::getStudy)
+                                            .toList();
+            break;
+
+            case "ALL":
+            default: studyList = studyRepository.findAll();
+            break;
+        }
+
+        // 정렬
+        switch (sortValue.toUpperCase()) {
+            case "NAME": studyList.stream()
+                            .sorted(Comparator.comparing(Study::getStudyName)).toList();
+            break;
+
+            case "LATEST":
+            default: studyList.stream()
+                        .sorted(Comparator.comparing(Study::getCreatedAt)).toList();
+            break;
+        }
 
         List<StudyResponseDto> responseDto = studyList.stream()
             .map(item -> StudyResponseDto.builder()

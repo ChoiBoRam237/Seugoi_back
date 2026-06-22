@@ -1,5 +1,6 @@
 package com.example.seugoi_back.Study.entity;
 
+import com.example.seugoi_back.Common.entity.BaseTime;
 import com.example.seugoi_back.User.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class StudyJoin {
+public class StudyJoin extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
