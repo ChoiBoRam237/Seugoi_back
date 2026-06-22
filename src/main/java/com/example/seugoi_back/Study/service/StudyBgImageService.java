@@ -50,8 +50,8 @@ public class StudyBgImageService {
 
     // 스터디 id에 맞는 이미지 조회 Service
     @Transactional
-    public StudyBgImage findBgImageById(Long studyId) {
-        StudyBgImage studyBgImage = studyBgImageRepository.findByStudyId(studyId)
+    public StudyBgImage findBgImageByCode(Long studyCode) {
+        StudyBgImage studyBgImage = studyBgImageRepository.findByStudyCode(studyCode)
                 .orElseThrow(() -> new RuntimeException("이미지를 찾을 수 없습니다."));
 
         return studyBgImage;

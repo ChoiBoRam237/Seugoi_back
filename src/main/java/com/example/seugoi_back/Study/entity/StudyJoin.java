@@ -9,30 +9,26 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class StudyBgImage {
+public class StudyJoin {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long code;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_code")
-    private Study study; // 스터디
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_code")
     private User user;
 
-    private String studyBgImgUrl; // 스터디 배경 이미지 url
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "study_code")
+    private Study study;
 
     @Builder
-    public StudyBgImage(
-            Study study,
+    public StudyJoin(
             User user,
-            String studyBgImgUrl
+            Study study
     ) {
-        this.study = study;
         this.user = user;
-        this.studyBgImgUrl = studyBgImgUrl;
+        this.study = study;
     }
 }

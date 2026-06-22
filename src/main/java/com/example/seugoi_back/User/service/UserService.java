@@ -13,7 +13,6 @@ public class UserService {
     private final UserRepository userRepository;
 
     public User loginOrRegister(KakaoUserInfoResponseDto userInfo) {
-
         return userRepository
             .findById(userInfo.getId())
             .orElseGet(() -> {

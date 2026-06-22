@@ -14,8 +14,11 @@ public class UserResponseDto {
     @Schema(name = "refreshToken", example = "refreshToken")
     private String refreshToken;
 
-    @Schema(name = "userId", example = "1")
-    private Long userId;
+    @Schema(name = "expiresIn", example = "0")
+    private Integer expiresIn;
+
+    @Schema(name = "userCode", example = "1")
+    private Long userCode;
 
     @Schema(name = "nickName", example = "카카오")
     private String nickName;

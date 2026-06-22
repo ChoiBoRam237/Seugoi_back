@@ -6,6 +6,7 @@ import com.example.seugoi_back.Login.dto.KakaoUserInfoResponseDto;
 import com.example.seugoi_back.Login.dto.UserResponseDto;
 import com.example.seugoi_back.Login.service.KakaoService;
 import com.example.seugoi_back.User.entity.User;
+import com.example.seugoi_back.User.repository.UserRepository;
 import com.example.seugoi_back.User.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +25,13 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v3/kakao")
+@Tag(name = "Kakao", description = "Kakao 관련 API")
 public class KakaoLoginController {
 
     private final KakaoService kakaoService;
     private final UserService userService;
+
+    private final UserRepository userRepository;
 
     @Operation(summary = "카카오 사용자 정보 조회 API", description = "카카오 로그인 후 code로 사용자 정보를 가져옵니다.")
     @ApiResponses({
@@ -44,13 +49,21 @@ public class KakaoLoginController {
     public ResponseEntity<?> callback(@RequestParam("code") String code) throws IOException {
         KakaoTokenResponseDto tokenData = kakaoService.getAccessTokenFromKakao(code);
         KakaoUserInfoResponseDto userInfo = kakaoService.getUserInfo(tokenData.getAccessToken());
-        User user = userService.loginOrRegister(userInfo);
+        User user;
+
+        // 유저 정보가 DB에 저장되어 있으면 새로 저장하지 않고 바로 유저 정보 전달
+        if (userRepository.findByKakaoId(userInfo.getId()).isPresent()) {
+            user = userRepository.findByKakaoId(userInfo.getId()).orElseThrow();
+        } else {
+            user = userService.loginOrRegister(userInfo);
+        }
 
         UserResponseDto responseDto =
             UserResponseDto.builder()
                 .accessToken(tokenData.getAccessToken())
                 .refreshToken(tokenData.getRefreshToken())
-                .userId(user.getId())
+                .expiresIn(tokenData.getExpiresIn())
+                .userCode(user.getCode())
                 .nickName(user.getNickname())
                 .email(user.getEmail())
                 .profileImageUrl(user.getProfileImageUrl())

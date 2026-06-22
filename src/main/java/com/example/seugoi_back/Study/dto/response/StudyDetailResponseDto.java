@@ -11,8 +11,8 @@ import java.util.List;
 @Builder
 public class StudyDetailResponseDto {
 
-    @Schema(name = "studyId", example = "1")
-    private Long studyId;
+    @Schema(name = "studyCode", example = "1")
+    private Long studyCode;
 
     @Schema(name = "studyName", example = "스프링")
     private String studyName;
@@ -46,4 +46,7 @@ public class StudyDetailResponseDto {
 
     @Schema(name = "bgImageUrl", example = "aaa.png")
     private String bgImageUrl; // 스터디 배경 이미지
+
+    @Schema(name = "isJoined", example = "true")
+    private Boolean isJoined; // 스터디 가입 여부
 }

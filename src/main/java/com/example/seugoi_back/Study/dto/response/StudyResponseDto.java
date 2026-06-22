@@ -11,8 +11,8 @@ public class StudyResponseDto {
     @Schema(name = "adminCode", example = "1")
     private Long adminCode; // 관리자 코드
 
-    @Schema(name = "studyId", example = "1")
-    private Long studyId;
+    @Schema(name = "studyCode", example = "1")
+    private Long studyCode;
 
     @Schema(name = "studyName", example = "스프링")
     private String studyName;

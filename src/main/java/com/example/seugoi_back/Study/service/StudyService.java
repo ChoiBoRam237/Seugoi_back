@@ -5,7 +5,9 @@ import com.example.seugoi_back.Study.dto.response.StudyDetailResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.Study.entity.StudyBgImage;
+import com.example.seugoi_back.Study.entity.StudyJoin;
 import com.example.seugoi_back.Study.repository.StudyBgImageRepository;
+import com.example.seugoi_back.Study.repository.StudyJoinRepository;
 import com.example.seugoi_back.Study.repository.StudyRepository;
 import com.example.seugoi_back.User.entity.User;
 import com.example.seugoi_back.User.repository.UserRepository;
@@ -13,6 +15,7 @@ import com.example.seugoi_back.Util.DateUtil;
 import com.example.seugoi_back.Util.ListUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
@@ -25,6 +28,7 @@ public class StudyService {
     private final UserRepository userRepository;
     private final StudyRepository studyRepository;
     private final StudyBgImageRepository studyBgImageRepository;
+    private final StudyJoinRepository studyJoinRepository;
 
     private final StudyBgImageService studyBgImageService;
 
@@ -72,12 +76,12 @@ public class StudyService {
 
         List<StudyResponseDto> responseDto = studyList.stream()
             .map(item -> StudyResponseDto.builder()
-                .adminCode(item.getUser().getId())
-                .studyId(item.getId())
+                .adminCode(item.getUser().getCode())
+                .studyCode(item.getCode())
                 .studyName(item.getStudyName())
                 .dDay(DateUtil.calculateDDay(item.getEndPeriod()))
                 .progress(0)
-                .bgImageUrl(studyBgImageService.findBgImageById(item.getId()).getStudyBgImgUrl())
+                .bgImageUrl(studyBgImageService.findBgImageByCode(item.getCode()).getStudyBgImgUrl())
                 .build())
             .toList();
 
@@ -86,11 +90,20 @@ public class StudyService {
 
     // 특정 스터디 조회 Service
     @Transactional
-    public Map<String, Object> findStudyById(Long studyId) {
-        Study study = studyRepository.findById(studyId)
+    public Map<String, Object> findStudyByCode(Long userCode, Long studyCode) {
+        Study study = studyRepository.findById(studyCode)
             .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
 
-        StudyBgImage bgImage = studyBgImageService.findBgImageById(studyId);
+        // 배경 이미지
+        StudyBgImage bgImage = studyBgImageService.findBgImageByCode(studyCode);
+
+        // 현재 가입한 인원수
+        List<StudyJoin> studyJoin = studyJoinRepository.findByStudy_Code(studyCode);
+
+        // 내가 이 스터디에 가입했는지 안했는지
+        boolean isJoined = studyJoinRepository
+                .findByUser_CodeAndStudy_Code(userCode, studyCode)
+                .isPresent();
 
         User adminResponseDto = User.builder()
             .nickname(study.getUser().getNickname())
@@ -99,11 +112,11 @@ public class StudyService {
 
         StudyDetailResponseDto studyResponseDto =
             StudyDetailResponseDto.builder()
-                .studyId(study.getId())
+                .studyCode(study.getCode())
                 .studyName(study.getStudyName())
                 .categories(ListUtil.parseStringList(study.getCategories()))
                 .peopleCount(study.getPeopleCount())
-                // TODO : 현재 가입한 인원 수 추가하기
+                .joinCount(studyJoin.size())
                 .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
                 .studyTitle(study.getStudyTitle())
                 .summary(study.getSummary())
@@ -111,6 +124,7 @@ public class StudyService {
                 .description(study.getDescription())
                 .recommend(ListUtil.parseStringList(study.getRecommend()))
                 .bgImageUrl(bgImage.getStudyBgImgUrl())
+                .isJoined(isJoined)
                 .build();
 
         return Map.of(
