@@ -11,14 +11,11 @@ import java.util.List;
 
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StudyRequestDto {
-
-    @NotNull(message = "유저 코드는 필수입니다.")
-    @Schema(description = "유저 코드", example = "1")
-    Long userCode;
 
     @NotNull(message = "스터디 이름은 필수입니다.")
     @Schema(description = "스터디 이름", example = "React 공부방")

@@ -6,7 +6,9 @@ import com.example.seugoi_back.Study.dto.response.StudyCreateResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.Study.service.StudyService;
+import com.example.seugoi_back.User.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,10 +27,9 @@ import java.util.Map;
 @SecurityRequirement(name = "BearerAuth")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v3/study")
+@RequestMapping("/v3/api/study")
 @Tag(name = "Study", description = "스터디 관련 API")
 public class StudyController {
-
     private final StudyService studyService;
 
     @Operation(summary = "스터디 생성 API", description = "스터디를 생성합니다")
@@ -43,8 +45,11 @@ public class StudyController {
         )
     })
     @PostMapping(value = "/generate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> postGenerateStudy(@RequestBody StudyRequestDto dto) {
-        Study study = studyService.generateStudy(dto);
+    public ResponseEntity<?> postGenerateStudy(
+            @Parameter(hidden = true) @AuthenticationPrincipal User user,
+            @ModelAttribute StudyRequestDto dto
+    ) {
+        Study study = studyService.generateStudy(user.getCode(), dto);
 
         StudyCreateResponseDto responseDto =
             StudyCreateResponseDto.builder()
@@ -75,11 +80,11 @@ public class StudyController {
     })
     @GetMapping("")
     public ResponseEntity<?> getStudyAll(
-            @RequestParam Long userCode,
+            @Parameter(hidden = true) @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "ALL") String filterValue,
             @RequestParam(defaultValue = "LATEST") String sortValue
     ) {
-        List<StudyResponseDto> responseDto = studyService.findStudyAll(userCode, filterValue, sortValue);
+        List<StudyResponseDto> responseDto = studyService.findStudyAll(user.getCode(), filterValue, sortValue);
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()
@@ -102,9 +107,12 @@ public class StudyController {
             )
         )
     })
-    @GetMapping("/{userCode}/{studyCode}")
-    public ResponseEntity<?> getStudyById(@PathVariable String userCode, @PathVariable String studyCode) {
-        Map<String, Object> responseDto = studyService.findStudyByCode(Long.valueOf(userCode), Long.valueOf(studyCode));
+    @GetMapping("/{studyCode}")
+    public ResponseEntity<?> getStudyById(
+            @Parameter(hidden = true) @AuthenticationPrincipal User user,
+            @PathVariable String studyCode
+    ) {
+        Map<String, Object> responseDto = studyService.findStudyByCode(user.getCode(), Long.valueOf(studyCode));
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()
@@ -122,8 +130,4 @@ public class StudyController {
     // 최근 봤던 스터디 조회 API
 
     // 찜한 스터디 조회 API
-
-    // 내가 만든 스터디 조회 API
-
-    // 내가 가입한 스터디 조회 API
 }

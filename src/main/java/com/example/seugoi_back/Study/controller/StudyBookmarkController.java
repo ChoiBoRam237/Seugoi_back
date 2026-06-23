@@ -3,8 +3,7 @@ package com.example.seugoi_back.Study.controller;
 import com.example.seugoi_back.Common.response.CommonApiResponse;
 import com.example.seugoi_back.Study.dto.request.CommonStudyRequestDto;
 import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
-import com.example.seugoi_back.Study.entity.StudyJoin;
-import com.example.seugoi_back.Study.service.StudyJoinService;
+import com.example.seugoi_back.Study.service.StudyBookmarkService;
 import com.example.seugoi_back.User.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,19 +18,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @SecurityRequirement(name = "BearerAuth")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v3/api/study/join")
-@Tag(name = "Study Join", description = "스터디 가입 관련 API")
-public class StudyJoinController {
-    private final StudyJoinService studyJoinService;
+@RequestMapping("/v3/api/study/bookmark")
+@Tag(name = "Study Bookmark", description = "스터디 북마크 관련 API")
+public class StudyBookmarkController {
+    private final StudyBookmarkService studyBookmarkService;
 
-    @Operation(summary = "스터디 가입 API", description = "스터디를 가입합니다.")
+    @Operation(summary = "스터디 북마크 토글 API", description = "스터디를 북마크합니다. (이미 선택한 스터디를 선택할 경우 북마크 해제합니다.)")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "스터디 가입 성공",
+            description = "스터디 북마크 토글 성공",
             content = @Content(
                 schema = @Schema(
                     implementation = CommonStudyResponseDto.class
@@ -39,25 +40,18 @@ public class StudyJoinController {
             )
         )
     })
-    @PostMapping(value = "")
-    public ResponseEntity<?> postJoinStudy(
+    @PostMapping("")
+    public ResponseEntity<?> postBookmarkStudy(
             @Parameter(hidden = true) @AuthenticationPrincipal User user,
             @RequestParam Long studyCode
     ) {
-        StudyJoin studyJoin = studyJoinService.joinStudy(user.getCode(), studyCode);
-
-        CommonStudyResponseDto responseDto =
-            CommonStudyResponseDto.builder()
-                .code(studyJoin.getCode())
-                .userCode(studyJoin.getUser().getCode())
-                .studyCode(studyJoin.getStudy().getCode())
-                .build();
+        Map<String, Object> studyBookmark = studyBookmarkService.bookmarkStudy(user.getCode(), studyCode);
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()
                 .success(true)
-                .message("스터디 가입 성공")
-                .data(responseDto)
+                .message("스터디 북마크 토글 성공")
+                .data(studyBookmark)
                 .build()
         );
     }

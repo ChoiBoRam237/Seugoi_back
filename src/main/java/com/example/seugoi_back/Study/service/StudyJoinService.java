@@ -1,6 +1,6 @@
 package com.example.seugoi_back.Study.service;
 
-import com.example.seugoi_back.Study.dto.request.StudyJoinRequestDto;
+import com.example.seugoi_back.Study.dto.request.CommonStudyRequestDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.Study.entity.StudyJoin;
 import com.example.seugoi_back.Study.repository.StudyJoinRepository;
@@ -18,15 +18,14 @@ public class StudyJoinService {
     private final StudyRepository studyRepository;
     private  final StudyJoinRepository studyJoinRepository;
 
-    // 스터디 가입 Service
-    @Transactional
-    public StudyJoin joinStudy(StudyJoinRequestDto dto) {
-        User user = userRepository.findById(dto.getUserCode()).orElseThrow();
-        Study study = studyRepository.findById(dto.getStudyCode()).orElseThrow();
+    @Transactional // 스터디 가입 Service
+    public StudyJoin joinStudy(Long userCode, Long studyCode) {
+        User user = userRepository.findById(userCode).orElseThrow();
+        Study study = studyRepository.findById(studyCode).orElseThrow();
 
         if (studyJoinRepository
-                .findByUser_CodeAndStudy_Code(dto.getUserCode(), dto.getStudyCode())
-                .isPresent()
+            .findByUser_CodeAndStudy_Code(userCode, studyCode)
+            .isPresent()
         ) {
             throw new IllegalArgumentException("이미 가입한 사용자입니다.");
         }
