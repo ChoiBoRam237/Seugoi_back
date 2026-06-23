@@ -18,7 +18,6 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 public class KakaoService {
-
     private String clientId;
     private String clientSecret;
     private String redirectUri;

@@ -31,10 +31,10 @@ public class User extends BaseTime {
 
     @Builder
     public User(
-            String kakaoId,
-            String email,
-            String nickname,
-            String profileImageUrl
+        String kakaoId,
+        String email,
+        String nickname,
+        String profileImageUrl
     ) {
         this.kakaoId = kakaoId;
         this.email = email;

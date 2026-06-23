@@ -1,6 +1,10 @@
 package com.example.seugoi_back.Login.controller;
 
 import com.example.seugoi_back.Common.response.CommonApiResponse;
+import com.example.seugoi_back.Jwt.JwtTokenProvider;
+import com.example.seugoi_back.Jwt.entity.RefreshToken;
+import com.example.seugoi_back.Jwt.repository.RefreshTokenRepository;
+import com.example.seugoi_back.Jwt.service.JwtService;
 import com.example.seugoi_back.Login.dto.KakaoTokenResponseDto;
 import com.example.seugoi_back.Login.dto.KakaoUserInfoResponseDto;
 import com.example.seugoi_back.Login.dto.UserResponseDto;
@@ -20,16 +24,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v3/kakao")
+@RequestMapping("/v3/api/kakao")
 @Tag(name = "Kakao", description = "Kakao 관련 API")
 public class KakaoLoginController {
-
     private final KakaoService kakaoService;
     private final UserService userService;
+    private final JwtService jwtService;
 
     private final UserRepository userRepository;
 
@@ -58,11 +63,12 @@ public class KakaoLoginController {
             user = userService.loginOrRegister(userInfo);
         }
 
+        Map<String, Object> token = jwtService.createToken(user.getCode(), user.getEmail());
+
         UserResponseDto responseDto =
             UserResponseDto.builder()
-                .accessToken(tokenData.getAccessToken())
-                .refreshToken(tokenData.getRefreshToken())
-                .expiresIn(tokenData.getExpiresIn())
+                .accessToken(token.get("accessToken").toString())
+                .refreshToken(token.get("refreshToken").toString())
                 .userCode(user.getCode())
                 .nickName(user.getNickname())
                 .email(user.getEmail())
@@ -74,32 +80,6 @@ public class KakaoLoginController {
                 .success(true)
                 .message("카카오 로그인 성공")
                 .data(responseDto)
-                .build()
-        );
-    }
-
-    @SecurityRequirement(name = "BearerAuth")
-    @Operation(summary = "액세스 토큰 갱신 API", description = "refresh token으로 access token을 갱신합니다.")
-    @ApiResponses({
-        @ApiResponse(
-            responseCode = "200",
-            description = "액세스 토큰 갱신 성공",
-            content = @Content(
-                schema = @Schema(
-                    implementation = KakaoTokenResponseDto.class
-                )
-            )
-        )
-    })
-    @GetMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestHeader("Authorization") String refreshToken) throws IOException {
-        KakaoTokenResponseDto tokenData = kakaoService.getRefreshToke(refreshToken);
-
-        return ResponseEntity.ok(
-            CommonApiResponse.builder()
-                .success(true)
-                .message("액세스 토큰 갱신 성공")
-                .data(tokenData)
                 .build()
         );
     }

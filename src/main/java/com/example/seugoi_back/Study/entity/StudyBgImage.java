@@ -24,6 +24,7 @@ public class StudyBgImage extends BaseTime {
     @JoinColumn(name = "user_code")
     private User user;
 
+    @Column(nullable = false)
     private String studyBgImgUrl; // 스터디 배경 이미지 url
 
     @Builder
