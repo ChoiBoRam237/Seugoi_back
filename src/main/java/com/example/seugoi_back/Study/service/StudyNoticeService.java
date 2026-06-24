@@ -1,0 +1,35 @@
+package com.example.seugoi_back.Study.service;
+
+import com.example.seugoi_back.Study.dto.request.StudyNoticeRequestDto;
+import com.example.seugoi_back.Study.entity.Study;
+import com.example.seugoi_back.Study.entity.StudyNotice;
+import com.example.seugoi_back.Study.repository.StudyNoticeRepository;
+import com.example.seugoi_back.Study.repository.StudyRepository;
+import com.example.seugoi_back.User.entity.User;
+import com.example.seugoi_back.User.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class StudyNoticeService {
+    private final UserRepository userRepository;
+    private final StudyRepository studyRepository;
+    private final StudyNoticeRepository studyNoticeRepository;
+
+    @Transactional // 스터디 공지 생성 Service
+    public StudyNotice generateStudyNotice(Long userCode, Long studyCode, StudyNoticeRequestDto dto) {
+        User user = userRepository.findById(userCode).orElseThrow();
+        Study study = studyRepository.findById(studyCode).orElseThrow();
+
+        StudyNotice studyNotice = StudyNotice.builder()
+            .user(user)
+            .study(study)
+            .title(dto.getTitle())
+            .content(dto.getContent())
+            .build();
+
+        return studyNoticeRepository.save(studyNotice);
+    }
+}
