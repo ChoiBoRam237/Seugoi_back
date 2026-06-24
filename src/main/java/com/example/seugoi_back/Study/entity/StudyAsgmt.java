@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class StudyJoin extends BaseTime {
+public class StudyAsgmt extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,12 +24,32 @@ public class StudyJoin extends BaseTime {
     @JoinColumn(name = "study_code")
     private Study study;
 
+    @Column(length = 30)
+    private String title; // 과제 제목
+
+    @Column(length = 200)
+    private String content; // 과제 내용
+
+    @Column
+    private String linkName; // 링크 이름
+
+    @Column
+    private String linkUrl; // 링크 url
+
     @Builder
-    public StudyJoin(
+    public StudyAsgmt(
         User user,
-        Study study
+        Study study,
+        String title,
+        String content,
+        String linkName,
+        String linkUrl
     ) {
         this.user = user;
         this.study = study;
+        this.title = title;
+        this.content = content;
+        this.linkName = linkName;
+        this.linkUrl = linkUrl;
     }
 }

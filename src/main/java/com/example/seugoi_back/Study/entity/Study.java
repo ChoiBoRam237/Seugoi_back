@@ -49,16 +49,16 @@ public class Study extends BaseTime {
 
     @Builder
     public Study(
-            User user,
-            String studyName,
-            String categories,
-            String peopleCount,
-            String endPeriod,
-            String studyTitle,
-            String summary,
-            String introduction,
-            String description,
-            String recommend
+        User user,
+        String studyName,
+        String categories,
+        String peopleCount,
+        String endPeriod,
+        String studyTitle,
+        String summary,
+        String introduction,
+        String description,
+        String recommend
     ) {
         this.user = user;
         this.studyName = studyName;

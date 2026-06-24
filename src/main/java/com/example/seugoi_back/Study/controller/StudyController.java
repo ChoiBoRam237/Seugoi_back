@@ -46,15 +46,15 @@ public class StudyController {
     })
     @PostMapping(value = "/generate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> postGenerateStudy(
-            @Parameter(hidden = true) @AuthenticationPrincipal User user,
-            @ModelAttribute StudyRequestDto dto
+        @Parameter(hidden = true) @AuthenticationPrincipal User user,
+        @ModelAttribute StudyRequestDto dto
     ) {
         Study study = studyService.generateStudy(user.getCode(), dto);
 
         StudyCreateResponseDto responseDto =
             StudyCreateResponseDto.builder()
                 .userCode(study.getUser().getCode())
-                .id(study.getCode())
+                .code(study.getCode())
                 .build();
 
         return ResponseEntity.ok(

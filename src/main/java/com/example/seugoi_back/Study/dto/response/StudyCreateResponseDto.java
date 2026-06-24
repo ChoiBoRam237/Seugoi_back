@@ -11,6 +11,6 @@ public class StudyCreateResponseDto {
     @Schema(name = "userCode", example = "1")
     private Long userCode;
 
-    @Schema(name = "id", example = "1")
-    private Long id;
+    @Schema(name = "code", example = "1")
+    private Long code;
 }

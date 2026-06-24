@@ -1,6 +1,5 @@
 package com.example.seugoi_back.Study.entity;
 
-import com.example.seugoi_back.Common.entity.BaseTime;
 import com.example.seugoi_back.User.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -10,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class StudyJoin extends BaseTime {
+public class StudyAsgmtImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,12 +23,23 @@ public class StudyJoin extends BaseTime {
     @JoinColumn(name = "study_code")
     private Study study;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "study_asgmt_code")
+    private StudyAsgmt studyAsgmt;
+
+    @Column(nullable = false)
+    private String imageUrlList;
+
     @Builder
-    public StudyJoin(
+    public StudyAsgmtImage(
         User user,
-        Study study
+        Study study,
+        StudyAsgmt studyAsgmt,
+        String imageUrlList
     ) {
         this.user = user;
         this.study = study;
+        this.studyAsgmt = studyAsgmt;
+        this.imageUrlList = imageUrlList;
     }
 }

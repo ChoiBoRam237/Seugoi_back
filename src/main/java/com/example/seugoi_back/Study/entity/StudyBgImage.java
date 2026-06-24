@@ -1,6 +1,7 @@
 package com.example.seugoi_back.Study.entity;
 
 import com.example.seugoi_back.Common.entity.BaseTime;
+import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.User.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -17,21 +18,21 @@ public class StudyBgImage extends BaseTime {
     private Long code;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_code")
-    private Study study; // 스터디
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_code")
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "study_code")
+    private Study study; // 스터디
 
     @Column(nullable = false)
     private String studyBgImgUrl; // 스터디 배경 이미지 url
 
     @Builder
     public StudyBgImage(
-            Study study,
-            User user,
-            String studyBgImgUrl
+        User user,
+        Study study,
+        String studyBgImgUrl
     ) {
         this.study = study;
         this.user = user;

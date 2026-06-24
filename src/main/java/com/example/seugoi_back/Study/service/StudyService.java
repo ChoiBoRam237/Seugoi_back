@@ -16,7 +16,6 @@ import com.example.seugoi_back.Util.DateUtil;
 import com.example.seugoi_back.Util.ListUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
@@ -27,7 +26,6 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class StudyService {
     private final UserRepository userRepository;
     private final StudyRepository studyRepository;
@@ -47,6 +45,7 @@ public class StudyService {
         String introductionJson = mapper.writeValueAsString(dto.getIntroduction());
         String recommendJson = mapper.writeValueAsString(dto.getRecommend());
 
+        // 스터디 정보 저장
         Study study = Study.builder()
             .user(user)
             .studyName(dto.getStudyName())
@@ -61,8 +60,8 @@ public class StudyService {
             .build();
         Study savedStudy = studyRepository.save(study);
 
-        String studyBgImageUrl = studyBgImageService.saveImage(dto.getBgImageUrl());
-
+        // 스터디 배경 이미지 저장
+        String studyBgImageUrl = studyBgImageService.saveBgImage(dto.getBgImageUrl());
         StudyBgImage studyBgImage = StudyBgImage.builder()
             .study(savedStudy)
             .user(user)
@@ -77,9 +76,6 @@ public class StudyService {
     public List<StudyResponseDto> findStudyAll(Long userCode, String filterValue, String sortValue) {
         List<Study> studyList;
 
-        log.info("------------ filterValue ==============> {}", filterValue);
-        log.info("------------ sortValue ==============> {}", sortValue);
-
         // 필터
         switch (filterValue.toUpperCase()) {
             case "MY_STUDY":
@@ -91,7 +87,6 @@ public class StudyService {
                     .stream()
                     .map(StudyJoin::getStudy)
                     .toList();
-                log.info("------------- joined ===============> {}", studyJoinRepository.findByUser_Code(userCode));
             break;
 
             case "ALL":

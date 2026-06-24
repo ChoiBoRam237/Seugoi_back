@@ -20,7 +20,7 @@ public class StudyBgImageService {
     private final String UPLOAD_DIR = "D:\\2026년\\Projects\\seugoi_back\\uploads\\study";
     private final String UPLOAD_FILE_DIR = "/uploads/study/";
 
-    public String saveImage(MultipartFile file) { // 이미지 저장 Service
+    public String saveBgImage(MultipartFile file) { // 이미지 저장 Service
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("이미지를 업로드해주세요.");
         }
@@ -49,7 +49,7 @@ public class StudyBgImageService {
 
     @Transactional // 스터디 id에 맞는 이미지 조회 Service
     public StudyBgImage findBgImageByCode(Long studyCode) {
-        StudyBgImage studyBgImage = studyBgImageRepository.findByStudyCode(studyCode)
+        StudyBgImage studyBgImage = studyBgImageRepository.findByStudy_Code(studyCode)
                 .orElseThrow(() -> new RuntimeException("이미지를 찾을 수 없습니다."));
 
         return studyBgImage;
