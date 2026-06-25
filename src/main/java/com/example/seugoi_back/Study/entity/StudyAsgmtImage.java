@@ -2,13 +2,16 @@ package com.example.seugoi_back.Study.entity;
 
 import com.example.seugoi_back.User.entity.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class StudyAsgmtImage {
 
     @Id
@@ -29,17 +32,4 @@ public class StudyAsgmtImage {
 
     @Column(nullable = false)
     private String imageUrlList;
-
-    @Builder
-    public StudyAsgmtImage(
-        User user,
-        Study study,
-        StudyAsgmt studyAsgmt,
-        String imageUrlList
-    ) {
-        this.user = user;
-        this.study = study;
-        this.studyAsgmt = studyAsgmt;
-        this.imageUrlList = imageUrlList;
-    }
 }

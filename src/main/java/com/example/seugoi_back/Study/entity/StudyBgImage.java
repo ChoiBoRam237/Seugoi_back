@@ -4,13 +4,16 @@ import com.example.seugoi_back.Common.entity.BaseTime;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.User.entity.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class StudyBgImage extends BaseTime {
 
     @Id
@@ -27,15 +30,4 @@ public class StudyBgImage extends BaseTime {
 
     @Column(nullable = false)
     private String studyBgImgUrl; // 스터디 배경 이미지 url
-
-    @Builder
-    public StudyBgImage(
-        User user,
-        Study study,
-        String studyBgImgUrl
-    ) {
-        this.study = study;
-        this.user = user;
-        this.studyBgImgUrl = studyBgImgUrl;
-    }
 }

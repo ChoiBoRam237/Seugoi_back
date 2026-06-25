@@ -3,6 +3,7 @@ package com.example.seugoi_back.User.entity;
 import com.example.seugoi_back.Common.entity.BaseTime;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,9 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class User extends BaseTime {
 
     @Id
@@ -28,17 +31,4 @@ public class User extends BaseTime {
 
     @Column
     private String profileImageUrl; // 프로필 이미지 url
-
-    @Builder
-    public User(
-        String kakaoId,
-        String email,
-        String nickname,
-        String profileImageUrl
-    ) {
-        this.kakaoId = kakaoId;
-        this.email = email;
-        this.nickname = nickname;
-        this.profileImageUrl = profileImageUrl;
-    }
 }

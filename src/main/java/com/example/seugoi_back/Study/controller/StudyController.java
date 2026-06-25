@@ -6,6 +6,7 @@ import com.example.seugoi_back.Study.dto.response.StudyCreateResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.Study.service.StudyService;
+import com.example.seugoi_back.Study.service.StudyViewService;
 import com.example.seugoi_back.User.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,6 +32,7 @@ import java.util.Map;
 @Tag(name = "Study", description = "스터디 관련 API")
 public class StudyController {
     private final StudyService studyService;
+    private final StudyViewService studyViewService;
 
     @Operation(summary = "스터디 생성 API", description = "스터디를 생성합니다")
     @ApiResponses({
@@ -146,6 +148,31 @@ public class StudyController {
             CommonApiResponse.builder()
                 .success(true)
                 .message("검색한 스터디 조회 성공")
+                .data(studyList)
+                .build()
+        );
+    }
+
+    @Operation(summary = "최근 조회한 스터디 목록 조회 API", description = "최근에 조회한 4개의 스터디를 조회합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "최근 조회한 스터디 목록 조회 성공",
+            content = @Content(
+                schema = @Schema(
+                    implementation = Study.class
+                )
+            )
+        )
+    })
+    @GetMapping("/view")
+    public ResponseEntity<?> getStudyLatest(@Parameter(hidden = true) @AuthenticationPrincipal User user) {
+        List<StudyResponseDto> studyList = studyViewService.findStudyLatest(user.getCode());
+
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("최근 조회한 스터디 목록 조회 성공")
                 .data(studyList)
                 .build()
         );

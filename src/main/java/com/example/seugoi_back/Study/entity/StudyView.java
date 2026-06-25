@@ -1,19 +1,21 @@
 package com.example.seugoi_back.Study.entity;
 
-import com.example.seugoi_back.Common.entity.BaseTime;
 import com.example.seugoi_back.User.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudyJoin extends BaseTime {
+public class StudyView {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +28,7 @@ public class StudyJoin extends BaseTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_code")
     private Study study;
+
+    @Column
+    private LocalDateTime viewedAt;
 }

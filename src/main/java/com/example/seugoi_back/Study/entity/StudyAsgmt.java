@@ -3,13 +3,16 @@ package com.example.seugoi_back.Study.entity;
 import com.example.seugoi_back.Common.entity.BaseTime;
 import com.example.seugoi_back.User.entity.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class StudyAsgmt extends BaseTime {
 
     @Id
@@ -35,21 +38,4 @@ public class StudyAsgmt extends BaseTime {
 
     @Column
     private String linkUrl; // 링크 url
-
-    @Builder
-    public StudyAsgmt(
-        User user,
-        Study study,
-        String title,
-        String content,
-        String linkName,
-        String linkUrl
-    ) {
-        this.user = user;
-        this.study = study;
-        this.title = title;
-        this.content = content;
-        this.linkName = linkName;
-        this.linkUrl = linkUrl;
-    }
 }

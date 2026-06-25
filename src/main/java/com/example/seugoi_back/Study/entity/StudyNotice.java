@@ -3,13 +3,16 @@ package com.example.seugoi_back.Study.entity;
 import com.example.seugoi_back.Common.entity.BaseTime;
 import com.example.seugoi_back.User.entity.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class StudyNotice extends BaseTime {
 
     @Id
@@ -29,17 +32,4 @@ public class StudyNotice extends BaseTime {
 
     @Column(length = 200)
     private String content; // 공지 내용
-
-    @Builder
-    public StudyNotice(
-        User user,
-        Study study,
-        String title,
-        String content
-    ) {
-        this.user = user;
-        this.study = study;
-        this.title = title;
-        this.content = content;
-    }
 }

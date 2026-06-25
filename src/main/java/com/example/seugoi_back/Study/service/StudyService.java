@@ -6,10 +6,7 @@ import com.example.seugoi_back.Study.dto.response.StudyResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.Study.entity.StudyBgImage;
 import com.example.seugoi_back.Study.entity.StudyJoin;
-import com.example.seugoi_back.Study.repository.StudyBgImageRepository;
-import com.example.seugoi_back.Study.repository.StudyBookmarkRepository;
-import com.example.seugoi_back.Study.repository.StudyJoinRepository;
-import com.example.seugoi_back.Study.repository.StudyRepository;
+import com.example.seugoi_back.Study.repository.*;
 import com.example.seugoi_back.User.entity.User;
 import com.example.seugoi_back.User.repository.UserRepository;
 import com.example.seugoi_back.Util.DateUtil;
@@ -32,8 +29,8 @@ public class StudyService {
     private final StudyBgImageRepository studyBgImageRepository;
     private final StudyJoinRepository studyJoinRepository;
     private final StudyBookmarkRepository studyBookmarkRepository;
-
     private final StudyBgImageService studyBgImageService;
+    private final StudyViewService studyViewService;
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -169,6 +166,9 @@ public class StudyService {
                 .isJoined(isJoined)
                 .isBookmark(isBookmark)
                 .build();
+
+        // 조회수 증가
+        studyViewService.studyView(userCode, studyCode);
 
         return Map.of(
             "admin", adminResponseDto,

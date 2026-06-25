@@ -3,13 +3,13 @@ package com.example.seugoi_back.Study.entity;
 import com.example.seugoi_back.Common.entity.BaseTime;
 import com.example.seugoi_back.User.entity.User;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Study extends BaseTime {
 
     @Id
@@ -47,28 +47,11 @@ public class Study extends BaseTime {
     @Column(length = 255)
     private String recommend; // 추천할 유형 (배열)
 
-    @Builder
-    public Study(
-        User user,
-        String studyName,
-        String categories,
-        String peopleCount,
-        String endPeriod,
-        String studyTitle,
-        String summary,
-        String introduction,
-        String description,
-        String recommend
-    ) {
-        this.user = user;
-        this.studyName = studyName;
-        this.categories = categories;
-        this.peopleCount = peopleCount;
-        this.endPeriod = endPeriod;
-        this.studyTitle = studyTitle;
-        this.summary = summary;
-        this.introduction = introduction;
-        this.description = description;
-        this.recommend = recommend;
+    @Builder.Default
+    @Column(nullable = false)
+    private Long viewCount = 0L;
+
+    public void increaseViewCount() {
+        this.viewCount++;
     }
 }
