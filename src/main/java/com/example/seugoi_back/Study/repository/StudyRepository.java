@@ -10,4 +10,5 @@ import java.util.List;
 public interface StudyRepository extends JpaRepository<Study, Long> {
     List<Study> findByUser_Code(Long userCode);
 
+    List<Study> findByStudyNameContainingIgnoreCaseOrCategoriesContainingIgnoreCase(String studyName, String categories);
 }

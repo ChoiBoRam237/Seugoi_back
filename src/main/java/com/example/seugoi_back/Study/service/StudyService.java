@@ -176,4 +176,24 @@ public class StudyService {
             "isAdmin", Objects.equals(userCode, study.getUser().getCode())
         );
     }
+
+    @Transactional // 스터디 검색 Service
+    public List<StudyResponseDto> findStudyByKeyword(Long userCode, String keyword) {
+        List<Study> studyList = studyRepository.findByStudyNameContainingIgnoreCaseOrCategoriesContainingIgnoreCase(keyword, keyword);
+
+        List<StudyResponseDto> responseDto = studyList.stream()
+            .map(item -> StudyResponseDto.builder()
+                .code(item.getCode())
+                .studyName(item.getStudyName())
+                .categories(ListUtil.parseStringList(item.getCategories()))
+                .dDay(DateUtil.calculateDDay(item.getEndPeriod()))
+                .progress(0)
+                .bgImageUrl(studyBgImageService.findBgImageByCode(item.getCode()).getStudyBgImgUrl())
+                .isAdmin(Objects.equals(userCode, item.getUser().getCode()))
+                .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, item.getCode()).isPresent())
+                .build())
+            .toList();
+
+        return responseDto;
+    }
 }

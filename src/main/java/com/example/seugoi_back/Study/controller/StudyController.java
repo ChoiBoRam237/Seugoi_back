@@ -123,11 +123,31 @@ public class StudyController {
         );
     }
 
-    // 검색된 스터디 조회 API
+    @Operation(summary = "스터디 검색 API", description = "스터디를 검색합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "검색한 스터디 조회 성공",
+            content = @Content(
+                schema = @Schema(
+                    implementation = Study.class
+                )
+            )
+        )
+    })
+    @GetMapping("/search")
+    public ResponseEntity<?> getStudySearch(
+        @Parameter(hidden = true) @AuthenticationPrincipal User user,
+        @RequestParam String keyword
+    ) {
+        List<StudyResponseDto> studyList = studyService.findStudyByKeyword(user.getCode(), keyword);
 
-    // 현재 진행중인 스터디 조회 API
-
-    // 최근 봤던 스터디 조회 API
-
-    // 찜한 스터디 조회 API
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("검색한 스터디 조회 성공")
+                .data(studyList)
+                .build()
+        );
+    }
 }
