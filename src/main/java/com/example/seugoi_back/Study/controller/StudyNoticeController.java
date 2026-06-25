@@ -19,10 +19,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @SecurityRequirement(name = "BearerAuth")
 @RestController
@@ -47,8 +44,8 @@ public class StudyNoticeController {
     @PostMapping("/generate")
     public ResponseEntity<?> postGenerateStudyNotice(
         @Parameter(hidden = true) @AuthenticationPrincipal User user,
-        @Parameter Long studyCode,
-        @Valid StudyNoticeRequestDto dto
+        @RequestParam Long studyCode,
+        @Valid @RequestBody StudyNoticeRequestDto dto
     ) {
         StudyNotice studyNotice = studyNoticeService.generateStudyNotice(user.getCode(), studyCode, dto);
 

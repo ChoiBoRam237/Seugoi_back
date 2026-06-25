@@ -44,8 +44,8 @@ public class StudyAsgmtController {
     @PostMapping(value = "/generate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> postGenerateStudyAsgmt(
         @Parameter(hidden = true) @AuthenticationPrincipal User user,
-        @Parameter Long studyCode,
-        @Valid StudyAsgmtRequestDto dto
+        @RequestParam Long studyCode,
+        @Valid @ModelAttribute StudyAsgmtRequestDto dto
     ) {
         StudyAsgmt studyAsgmt = studyAsgmtService.generateStudyAsgmt(user.getCode(), studyCode, dto);
 

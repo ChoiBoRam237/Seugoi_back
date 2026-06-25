@@ -1,6 +1,5 @@
 package com.example.seugoi_back.Study.service;
 
-import com.example.seugoi_back.Study.dto.request.CommonStudyRequestDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.Study.entity.StudyBookmark;
 import com.example.seugoi_back.Study.repository.StudyBookmarkRepository;
@@ -44,11 +43,12 @@ public class StudyBookmarkService {
             .study(study)
             .build();
 
-        studyBookmarkRepository.save(studyBookmark);
+        StudyBookmark savedBookmark = studyBookmarkRepository.save(studyBookmark);
+
         return Map.of(
-            "code", studyBookmark.getCode(),
-            "userCode", user.getCode(),
-            "studyCode", study.getCode(),
+            "code", savedBookmark.getCode(),
+            "userCode", savedBookmark.getUser().getCode(),
+            "studyCode", savedBookmark.getStudy().getCode(),
             "bookmarked", true
         );
     }

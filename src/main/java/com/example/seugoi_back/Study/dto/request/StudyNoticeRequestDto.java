@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Value;
+import lombok.*;
 
-@Value
 @Builder
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StudyNoticeRequestDto {
 
