@@ -4,7 +4,6 @@ import com.example.seugoi_back.Common.response.CommonApiResponse;
 import com.example.seugoi_back.Study.dto.request.StudyNoticeRequestDto;
 import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
 import com.example.seugoi_back.Study.entity.StudyNotice;
-import com.example.seugoi_back.Study.service.StudyAsgmtService;
 import com.example.seugoi_back.Study.service.StudyNoticeService;
 import com.example.seugoi_back.User.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @SecurityRequirement(name = "BearerAuth")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v3/api/study/notice")
+@RequestMapping("/v3/api/study-notice")
 @Tag(name = "Study Notice", description = "스터디 공지 관련 API")
 public class StudyNoticeController {
     private final StudyNoticeService studyNoticeService;

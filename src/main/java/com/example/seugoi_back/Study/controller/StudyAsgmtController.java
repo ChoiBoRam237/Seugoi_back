@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @SecurityRequirement(name = "BearerAuth")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v3/api/study/asgmt")
+@RequestMapping("/v3/api/study-asgmt")
 @Tag(name = "Study Assignment", description = "스터디 과제 관련 API")
 public class StudyAsgmtController {
     private final StudyAsgmtService studyAsgmtService;

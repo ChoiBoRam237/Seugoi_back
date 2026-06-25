@@ -1,7 +1,6 @@
 package com.example.seugoi_back.User.controller;
 
 import com.example.seugoi_back.Common.response.CommonApiResponse;
-import com.example.seugoi_back.Login.dto.UserResponseDto;
 import com.example.seugoi_back.User.entity.User;
 import com.example.seugoi_back.User.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;

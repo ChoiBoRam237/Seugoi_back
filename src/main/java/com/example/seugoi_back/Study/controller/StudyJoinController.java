@@ -1,7 +1,6 @@
 package com.example.seugoi_back.Study.controller;
 
 import com.example.seugoi_back.Common.response.CommonApiResponse;
-import com.example.seugoi_back.Study.dto.request.CommonStudyRequestDto;
 import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
 import com.example.seugoi_back.Study.entity.StudyJoin;
 import com.example.seugoi_back.Study.service.StudyJoinService;
