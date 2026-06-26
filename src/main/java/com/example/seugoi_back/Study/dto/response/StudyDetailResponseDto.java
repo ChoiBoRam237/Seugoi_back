@@ -24,7 +24,7 @@ public class StudyDetailResponseDto {
     private String peopleCount; // 모집 인원 (제한 없음: -)
 
     @Schema(name = "joinCount", example = "30")
-    private Integer joinCount; // 현재 가입한 인원수
+    private Long joinCount; // 현재 가입한 인원수
 
     @Schema(name = "dDay", example = "30")
     private Long dDay; // 디데이

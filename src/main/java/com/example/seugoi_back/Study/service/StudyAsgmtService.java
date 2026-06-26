@@ -48,11 +48,11 @@ public class StudyAsgmtService {
             // 스터디 과제 이미지 저장
             List<String> asgmtImageUrl = studyAsgmtImageService.savedAsgmtImage(dto.getImageList());
             StudyAsgmtImage studyAsgmtImage = StudyAsgmtImage.builder()
-                    .user(user)
-                    .study(study)
-                    .studyAsgmt(studyAsgmt)
-                    .imageUrlList(mapper.writeValueAsString(asgmtImageUrl))
-                    .build();
+                .user(user)
+                .study(study)
+                .studyAsgmt(studyAsgmt)
+                .imageUrlList(mapper.writeValueAsString(asgmtImageUrl))
+                .build();
             studyAsgmtImageRepository.save(studyAsgmtImage);
         }
 

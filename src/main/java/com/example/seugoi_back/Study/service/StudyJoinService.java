@@ -35,6 +35,9 @@ public class StudyJoinService {
             .study(study)
             .build();
 
+        // 가입한 인원수 증가
+        study.increaseJoinCount();
+
         return studyJoinRepository.save(studyJoin);
     }
 }

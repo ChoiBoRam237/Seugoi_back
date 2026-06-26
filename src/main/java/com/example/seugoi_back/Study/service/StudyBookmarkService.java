@@ -13,10 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +34,8 @@ public class StudyBookmarkService {
         // 이미 북마크가 되어 있을 경우 북마크 해제
         if (bookmark.isPresent()) {
             studyBookmarkRepository.delete(bookmark.get());
+            // 북마크 수 감소
+            study.decreaseBookmarkCount();
             return Map.of(
                 "userCode", user.getCode(),
                 "studyCode", study.getCode(),
@@ -51,6 +50,9 @@ public class StudyBookmarkService {
 
         StudyBookmark savedBookmark = studyBookmarkRepository.save(studyBookmark);
 
+        // 북마크 수 증가
+        study.increaseBookmarkCount();
+
         return Map.of(
             "code", savedBookmark.getCode(),
             "userCode", savedBookmark.getUser().getCode(),
@@ -60,21 +62,58 @@ public class StudyBookmarkService {
     }
 
     @Transactional // 내가 북마크한 스터디 조회 Service
-    public List<StudyResponseDto> findStudyByBookmark(Long userCode) {
+    public List<StudyResponseDto> findStudyByBookmark(Long userCode, String sortValue) {
         List<StudyBookmark> studyBookmarkList = studyBookmarkRepository.findByUser_Code(userCode);
+        Comparator<StudyBookmark> comparator;
+
+        // 정렬
+        switch (sortValue.toUpperCase()) {
+            case "NAME":
+                comparator = Comparator.comparing(bookmark -> bookmark.getStudy().getStudyName());
+                break;
+
+            case "POPULAR":
+                comparator = Comparator
+                    .comparingLong(
+                        (StudyBookmark bookmark) -> bookmark.getStudy().getJoinCount()
+                    )
+                    .reversed()
+                    .thenComparing(
+                        Comparator.comparingLong(
+                            (StudyBookmark bookmark) -> bookmark.getStudy().getBookmarkCount()
+                        ).reversed()
+                    )
+                    .thenComparing(
+                        Comparator.comparingLong(
+                            (StudyBookmark bookmark) -> bookmark.getStudy().getViewCount()
+                        ).reversed()
+                    );
+                break;
+
+            case "LATEST":
+            default:
+                comparator = Comparator.comparing(
+                    (StudyBookmark bookmark) -> bookmark.getStudy().getCreatedAt()
+                ).reversed();
+                break;
+        }
+
+        studyBookmarkList = studyBookmarkList.stream()
+            .sorted(comparator)
+            .toList();
 
         return studyBookmarkList.stream()
-                .map(StudyBookmark::getStudy)
-                .map(study -> StudyResponseDto.builder()
-                    .code(study.getCode())
-                    .studyName(study.getStudyName())
-                    .categories(ListUtil.parseStringList(study.getCategories()))
-                    .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
-                    .progress(0)
-                    .bgImageUrl(studyBgImageService.findBgImageByCode(study.getCode()).getStudyBgImgUrl())
-                    .isAdmin(Objects.equals(userCode, study.getUser().getCode()))
-                    .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, study.getCode()).isPresent())
-                    .build())
-                .toList();
+            .map(StudyBookmark::getStudy)
+            .map(study -> StudyResponseDto.builder()
+                .code(study.getCode())
+                .studyName(study.getStudyName())
+                .categories(ListUtil.parseStringList(study.getCategories()))
+                .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
+                .progress(0)
+                .bgImageUrl(studyBgImageService.findBgImageByCode(study.getCode()).getStudyBgImgUrl())
+                .isAdmin(Objects.equals(userCode, study.getUser().getCode()))
+                .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, study.getCode()).isPresent())
+                .build())
+            .toList();
     }
 }

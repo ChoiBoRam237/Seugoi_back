@@ -60,7 +60,7 @@ public class StudySearchKeywordController {
             description = "검색어 전체 삭제 성공"
         )
     })
-    @DeleteMapping("")
+    @DeleteMapping("/all")
     public ResponseEntity<?> deleteAllSearchKeyword(@Parameter(hidden = true) @AuthenticationPrincipal User user) {
         studySearchKeywordService.deleteAllKeyword(user.getCode());
 

@@ -69,9 +69,12 @@ public class StudyBookmarkController {
             )
         )
     })
-    @GetMapping("/{userCode}")
-    public ResponseEntity<?> getMyStudy(@PathVariable Long userCode) {
-        List<StudyResponseDto> responseDto = studyBookmarkService.findStudyByBookmark(userCode);
+    @GetMapping("")
+    public ResponseEntity<?> getMyStudy(
+        @Parameter(hidden = true) @AuthenticationPrincipal User user,
+        @RequestParam(defaultValue = "LATEST") String sortValue
+    ) {
+        List<StudyResponseDto> responseDto = studyBookmarkService.findStudyByBookmark(user.getCode(), sortValue);
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()

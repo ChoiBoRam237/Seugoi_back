@@ -49,8 +49,31 @@ public class Study extends BaseTime {
 
     @Builder.Default
     @Column(nullable = false)
-    private Long viewCount = 0L;
+    private Long joinCount = 0L; // 가입한 수
 
+    @Builder.Default
+    @Column(nullable = false)
+    private Long bookmarkCount = 0L; // 북마크 수
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Long viewCount = 0L; // 조회수
+
+    public void increaseBookmarkCount() {
+        this.bookmarkCount++;
+    }
+
+    public void decreaseBookmarkCount() {
+        this.bookmarkCount--;
+    }
+
+    public void increaseJoinCount() {
+        this.bookmarkCount++;
+    }
+
+    public void decreaseJoinCount() {
+        this.bookmarkCount--;
+    }
     public void increaseViewCount() {
         this.viewCount++;
     }

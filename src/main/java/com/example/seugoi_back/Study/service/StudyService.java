@@ -5,6 +5,7 @@ import com.example.seugoi_back.Study.dto.response.StudyDetailResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.Study.entity.StudyBgImage;
+import com.example.seugoi_back.Study.entity.StudyBookmark;
 import com.example.seugoi_back.Study.entity.StudyJoin;
 import com.example.seugoi_back.Study.repository.*;
 import com.example.seugoi_back.User.entity.User;
@@ -100,6 +101,21 @@ public class StudyService {
                     .sorted(Comparator.comparing(Study::getStudyName)).toList();
             break;
 
+            case "POPULAR":
+                studyList = studyList.stream()
+                    .sorted(
+                        Comparator.comparingLong(Study::getJoinCount)
+                            .reversed()
+                            .thenComparing(
+                                Comparator.comparingLong(Study::getBookmarkCount).reversed()
+                            )
+                            .thenComparing(
+                                Comparator.comparingLong(Study::getViewCount).reversed()
+                            )
+                    )
+                    .toList();
+                break;
+
             case "LATEST":
             default:
                 studyList.stream()
@@ -131,9 +147,6 @@ public class StudyService {
         // 배경 이미지
         StudyBgImage bgImage = studyBgImageService.findBgImageByCode(studyCode);
 
-        // 현재 가입한 인원수
-        List<StudyJoin> studyJoin = studyJoinRepository.findByStudy_Code(studyCode);
-
         // 내가 이 스터디에 가입했는지 안했는지
         boolean isJoined = studyJoinRepository
             .findByUser_CodeAndStudy_Code(userCode, studyCode)
@@ -156,7 +169,7 @@ public class StudyService {
                 .studyName(study.getStudyName())
                 .categories(ListUtil.parseStringList(study.getCategories()))
                 .peopleCount(study.getPeopleCount())
-                .joinCount(studyJoin.size())
+                .joinCount(study.getJoinCount())
                 .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
                 .studyTitle(study.getStudyTitle())
                 .summary(study.getSummary())
