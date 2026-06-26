@@ -33,17 +33,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             String token = bearerToken.substring(7);
 
-            if (jwtTokenProvider.validateToken(token)) {
-                Long userCode = jwtTokenProvider.getUserCode(token);
-
-                User user = userRepository.findById(userCode).orElse(null);
-
-                if (user != null) {
-                    UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                }
+            // 토큰 만료 시 401 반환
+            if (!jwtTokenProvider.validateToken(token)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
+                return;
             }
+
+            Long userCode = jwtTokenProvider.getUserCode(token);
+
+            User user = userRepository.findById(userCode).orElse(null);
+
+            if (user == null) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
+            UsernamePasswordAuthenticationToken auth =
+                    new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
+
+            SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
         filterChain.doFilter(request, response);

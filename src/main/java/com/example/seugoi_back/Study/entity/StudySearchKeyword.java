@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudyView {
+public class StudySearchKeyword {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,14 +24,13 @@ public class StudyView {
     @JoinColumn(name = "user_code")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_code")
-    private Study study;
+    @Column(length = 255, nullable = false)
+    private String keyword; // 검색어
 
     @Column
-    private LocalDateTime viewedAt;
+    private LocalDateTime searchedAt;
 
-    public void updateViewedAt() {
-        this.viewedAt = LocalDateTime.now();
+    public void updateSearchedAt() {
+        this.searchedAt = LocalDateTime.now();
     }
 }

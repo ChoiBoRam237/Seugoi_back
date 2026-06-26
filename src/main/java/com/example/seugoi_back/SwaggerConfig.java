@@ -17,19 +17,19 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Seugoi API")
-                        .description("Seugoi Backend API 문서")
-                        .version("v1.0.0"))
+                    .title("Seugoi API")
+                    .description("Seugoi Backend API 문서")
+                    .version("v1.0.0"))
                 .addSecurityItem(new SecurityRequirement().addList(BEARER_AUTH))
                 .components(new Components()
-                        .addSecuritySchemes(
-                                BEARER_AUTH,
-                                new SecurityScheme()
-                                        .name("Authorization")
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")
-                        )
+                    .addSecuritySchemes(
+                        BEARER_AUTH,
+                        new SecurityScheme()
+                            .name("Authorization")
+                            .type(SecurityScheme.Type.HTTP)
+                            .scheme("bearer")
+                            .bearerFormat("JWT")
+                    )
                 );
     }
 }

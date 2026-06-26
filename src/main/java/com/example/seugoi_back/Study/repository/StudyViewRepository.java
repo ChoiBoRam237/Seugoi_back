@@ -7,10 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StudyViewRepository extends JpaRepository<StudyView, Long> {
-    boolean existsByUserAndStudy(User user, Study study);
-    List<StudyView> findByUser_Code(Long userCode);
+    Optional<StudyView> findByUserAndStudy(User user, Study study);
     List<StudyView> findTop4ByUser_CodeOrderByViewedAtDesc(Long userCode);
 }

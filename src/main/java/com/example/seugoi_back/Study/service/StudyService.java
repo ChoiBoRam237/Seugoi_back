@@ -31,6 +31,7 @@ public class StudyService {
     private final StudyBookmarkRepository studyBookmarkRepository;
     private final StudyBgImageService studyBgImageService;
     private final StudyViewService studyViewService;
+    private final StudySearchKeywordService studySearchKeywordService;
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -193,6 +194,9 @@ public class StudyService {
                 .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, item.getCode()).isPresent())
                 .build())
             .toList();
+
+        // 검색어 저장
+        studySearchKeywordService.saveSearchKeyword(userCode, keyword);
 
         return responseDto;
     }

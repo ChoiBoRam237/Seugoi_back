@@ -34,9 +34,9 @@ public class StudyViewService {
 
         User user = userService.findUserByCode(userCode);
 
-        boolean viewed = studyViewRepository.existsByUserAndStudy(user, study);
+        StudyView studyView = studyViewRepository.findByUserAndStudy(user, study).orElse(null);
 
-        if (!viewed) {
+        if (studyView == null) {
             StudyView responseDto = StudyView.builder()
                 .user(user)
                 .study(study)
@@ -46,6 +46,8 @@ public class StudyViewService {
             studyViewRepository.save(responseDto);
 
             study.increaseViewCount();
+        } else {
+            studyView.updateViewedAt();
         }
     }
 
