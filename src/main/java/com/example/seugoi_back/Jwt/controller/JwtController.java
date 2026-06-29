@@ -24,7 +24,7 @@ public class JwtController {
     @Operation(summary = "액세스 토큰 갱신 API", description = "refresh token으로 access token을 갱신합니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
+            responseCode = "true",
             description = "액세스 토큰 갱신 성공",
             content = @Content(
                 examples = @ExampleObject(

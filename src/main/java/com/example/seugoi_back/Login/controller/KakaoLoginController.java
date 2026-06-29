@@ -41,7 +41,7 @@ public class KakaoLoginController {
     @Operation(summary = "카카오 사용자 정보 조회 API", description = "카카오 로그인 후 code로 사용자 정보를 가져옵니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
+            responseCode = "true",
             description = "카카오 로그인 성공",
             content = @Content(
                 schema = @Schema(

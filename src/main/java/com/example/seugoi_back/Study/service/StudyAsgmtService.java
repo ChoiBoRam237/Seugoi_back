@@ -58,4 +58,13 @@ public class StudyAsgmtService {
 
         return savedAsgmt;
     }
+
+    // TODO : 스터디 과제 수정 service
+
+    @Transactional // 스터디 과제 삭제 Service
+    public void deleteStudyAsgmt(Long studyAsgmtCode) {
+        studyAsgmtRepository.deleteById(studyAsgmtCode);
+        // 이미지 삭제
+        studyAsgmtImageService.deleteImageAllByCode(studyAsgmtCode);
+    }
 }

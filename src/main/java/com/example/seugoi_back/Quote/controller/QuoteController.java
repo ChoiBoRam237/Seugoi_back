@@ -28,7 +28,7 @@ public class QuoteController {
     @Operation(summary = "오늘의 명언 조회 API", description = "하루에 한개씩 랜덤으로 조회합니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
+            responseCode = "true",
             description = "오늘의 명언 조회 성공",
             content = @Content(
                 schema = @Schema(

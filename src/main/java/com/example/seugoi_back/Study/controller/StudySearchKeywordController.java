@@ -30,7 +30,7 @@ public class StudySearchKeywordController {
     @Operation(summary = "최근 검색어 조회 API", description = "최근 검색했던 검색어를 조회합니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
+            responseCode = "true",
             description = "최근 검색어 조회 성공",
             content = @Content(
                 schema = @Schema(
@@ -56,7 +56,7 @@ public class StudySearchKeywordController {
     @Operation(summary = "검색어 전체 삭제 API", description = "검색어를 전체 삭제합니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
+            responseCode = "true",
             description = "검색어 전체 삭제 성공"
         )
     })
@@ -75,7 +75,7 @@ public class StudySearchKeywordController {
     @Operation(summary = "검색어 삭제 API", description = "검색어를 삭제합니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
+            responseCode = "true",
             description = "검색어 삭제 성공"
         )
     })

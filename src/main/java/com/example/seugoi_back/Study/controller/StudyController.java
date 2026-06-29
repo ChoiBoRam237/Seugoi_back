@@ -37,7 +37,7 @@ public class StudyController {
     @Operation(summary = "스터디 생성 API", description = "스터디를 생성합니다")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
+            responseCode = "true",
             description = "스터디 생성 성공",
             content = @Content(
                 schema = @Schema(
@@ -77,7 +77,7 @@ public class StudyController {
     )
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
+            responseCode = "true",
             description = "모든 스터디 조회 성공",
             content = @Content(
                 schema = @Schema(
@@ -106,7 +106,7 @@ public class StudyController {
     @Operation(summary = "특정 스터디 상세 조회 API", description = "특정 스터디를 조회합니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
+            responseCode = "true",
             description = "특정 스터디 상세 조회 성공",
             content = @Content(
                 schema = @Schema(
@@ -134,7 +134,7 @@ public class StudyController {
     @Operation(summary = "스터디 검색 API", description = "스터디를 검색합니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
+            responseCode = "true",
             description = "검색한 스터디 조회 성공",
             content = @Content(
                 schema = @Schema(
@@ -162,7 +162,7 @@ public class StudyController {
     @Operation(summary = "최근 조회한 스터디 목록 조회 API", description = "최근에 조회한 4개의 스터디를 조회합니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
+            responseCode = "true",
             description = "최근 조회한 스터디 목록 조회 성공",
             content = @Content(
                 schema = @Schema(
@@ -187,7 +187,7 @@ public class StudyController {
     @Operation(summary = "요즘 뜨고있는 스터디 목록 조회 API", description = "요즘 뜨고있는 스터디 목록을 조회합니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
+            responseCode = "true",
             description = "요즘 뜨고있는 스터디 목록 조회 성공",
             content = @Content(
                 schema = @Schema(

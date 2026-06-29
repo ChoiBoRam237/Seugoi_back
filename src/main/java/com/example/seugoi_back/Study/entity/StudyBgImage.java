@@ -24,7 +24,7 @@ public class StudyBgImage extends BaseTime {
     @JoinColumn(name = "user_code")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_code")
     private Study study; // 스터디
 

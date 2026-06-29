@@ -28,7 +28,7 @@ public class UserController {
     @Operation(summary = "특정 유저 정보 조회 API", description = "유저 정보를 조회합니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
+            responseCode = "true",
             description = "특정 유저 정보 조회 성공",
             content = @Content(
                 schema = @Schema(

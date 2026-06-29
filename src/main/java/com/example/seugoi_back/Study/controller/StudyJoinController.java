@@ -29,7 +29,7 @@ public class StudyJoinController {
     @Operation(summary = "스터디 가입 API", description = "스터디를 가입합니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
+            responseCode = "true",
             description = "스터디 가입 성공",
             content = @Content(
                 schema = @Schema(
