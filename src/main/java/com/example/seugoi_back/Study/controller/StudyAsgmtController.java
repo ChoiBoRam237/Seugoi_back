@@ -32,7 +32,7 @@ public class StudyAsgmtController {
     @Operation(summary = "스터디 과제 생성 API", description = "스터디 과제를 생성합니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "true",
+            responseCode = "200",
             description = "스터디 과제 생성 성공",
             content = @Content(
                 schema = @Schema(
@@ -61,27 +61,6 @@ public class StudyAsgmtController {
                 .success(true)
                 .message("스터디 과제 생성 성공")
                 .data(responseDto)
-                .build()
-        );
-    }
-
-    // TODO : 스터디 과제 수정 api
-
-    @Operation(summary = "스터디 과제 삭제 API", description = "스터디 과제를 삭제합니다.")
-    @ApiResponses({
-        @ApiResponse(
-            responseCode = "true",
-            description = "스터디 과제 삭제 성공"
-        )
-    })
-    @DeleteMapping("")
-    public ResponseEntity<?> deleteStudyAsgmt(@RequestParam Long studyCode) {
-        studyAsgmtService.deleteStudyAsgmt(studyCode);
-
-        return ResponseEntity.ok(
-            CommonApiResponse.builder()
-                .success(true)
-                .message("스터디 과제 삭제 성공")
                 .build()
         );
     }

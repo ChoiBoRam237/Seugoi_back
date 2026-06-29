@@ -32,9 +32,4 @@ public class StudyNoticeService {
 
         return studyNoticeRepository.save(studyNotice);
     }
-
-    @Transactional // 스터디 공지 삭제 Service
-    public void deleteStudyNotice(Long studyNoticeCode) {
-        studyNoticeRepository.deleteById(studyNoticeCode);
-    }
 }

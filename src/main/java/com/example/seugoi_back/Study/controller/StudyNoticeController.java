@@ -31,7 +31,7 @@ public class StudyNoticeController {
     @Operation(summary = "스터디 공지 생성 API", description = "스터디 공지를 생성합니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "true",
+            responseCode = "200",
             description = "스터디 공지 생성 성공",
             content = @Content(
                 schema = @Schema(
@@ -60,25 +60,6 @@ public class StudyNoticeController {
                 .success(true)
                 .message("스터디 공지 생성 성공")
                 .data(responseDto)
-                .build()
-        );
-    }
-
-    @Operation(summary = "스터디 공지 삭제 API", description = "스터디 공지를 삭제합니다.")
-    @ApiResponses({
-        @ApiResponse(
-            responseCode = "true",
-            description = "스터디 공지 삭제 성공"
-        )
-    })
-    @DeleteMapping("")
-    public ResponseEntity<?> deleteStudyNotice(@RequestParam Long studyNoticeCode) {
-        studyNoticeService.deleteStudyNotice(studyNoticeCode);
-
-        return ResponseEntity.ok(
-            CommonApiResponse.builder()
-                .success(true)
-                .message("스터디 공지 삭제 성공")
                 .build()
         );
     }
