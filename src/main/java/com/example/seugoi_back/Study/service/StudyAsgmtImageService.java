@@ -69,4 +69,9 @@ public class StudyAsgmtImageService {
 
         return studyAsgmtImage;
     }
+
+    @Transactional // 스터디 과제 code에 맞는 이미지 모두 삭제 Service
+    public void deleteImageAllByCode(Long studyAsgmtCode) {
+        studyAsgmtImageRepository.deleteAllByStudyAsgmt_Code(studyAsgmtCode);
+    }
 }
