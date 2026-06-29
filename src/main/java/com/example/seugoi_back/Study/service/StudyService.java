@@ -17,10 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -112,6 +109,7 @@ public class StudyService {
                             .thenComparing(
                                 Comparator.comparingLong(Study::getViewCount).reversed()
                             )
+                            .thenComparing(Study::getStudyName)
                     )
                     .toList();
                 break;
@@ -210,6 +208,52 @@ public class StudyService {
 
         // 검색어 저장
         studySearchKeywordService.saveSearchKeyword(userCode, keyword);
+
+        return responseDto;
+    }
+
+    @Transactional // 요즘 뜨고있는 스터디 조회 Service
+    public List<StudyResponseDto> findStudyTrend(Long userCode) {
+        List<Study> studyList = studyRepository.findAll();
+
+        // 모든 스터디의 가입자, 북마크, 조회수가 0이면 빈 배열 반환
+        boolean hasTrendStudy = studyList.stream()
+            .anyMatch(study ->
+                study.getJoinCount() > 0 ||
+                study.getBookmarkCount() > 0 ||
+                study.getViewCount() > 0
+            );
+
+        if (!hasTrendStudy) {
+            return Collections.emptyList();
+        }
+
+        List<StudyResponseDto> responseDto = studyList.stream()
+            .sorted(
+                Comparator.comparingLong(Study::getJoinCount)
+                .reversed()
+                .thenComparing(
+                    Comparator.comparingLong(Study::getBookmarkCount)
+                        .reversed()
+                )
+                .thenComparing(
+                    Comparator.comparingLong(Study::getViewCount)
+                        .reversed()
+                )
+                .thenComparing(Study::getStudyName)
+            )
+            .limit(8)
+            .map(study -> StudyResponseDto.builder()
+                .code(study.getCode())
+                .studyName(study.getStudyName())
+                .categories(ListUtil.parseStringList(study.getCategories()))
+                .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
+                .progress(0)
+                .bgImageUrl(studyBgImageService.findBgImageByCode(study.getCode()).getStudyBgImgUrl())
+                .isAdmin(Objects.equals(userCode, study.getUser().getCode()))
+                .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, study.getCode()).isPresent())
+                .build())
+            .toList();
 
         return responseDto;
     }

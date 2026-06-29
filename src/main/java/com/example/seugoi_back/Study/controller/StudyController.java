@@ -4,10 +4,7 @@ import com.example.seugoi_back.Common.response.CommonApiResponse;
 import com.example.seugoi_back.Study.dto.request.StudyRequestDto;
 import com.example.seugoi_back.Study.dto.response.StudyCreateResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyResponseDto;
-import com.example.seugoi_back.Study.dto.response.StudySearchKeywordResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
-import com.example.seugoi_back.Study.entity.StudySearchKeyword;
-import com.example.seugoi_back.Study.service.StudySearchKeywordService;
 import com.example.seugoi_back.Study.service.StudyService;
 import com.example.seugoi_back.Study.service.StudyViewService;
 import com.example.seugoi_back.User.entity.User;
@@ -71,7 +68,13 @@ public class StudyController {
         );
     }
 
-    @Operation(summary = "모든 스터디 조회 API", description = "생성된 모든 스터디를 조회합니다.")
+    @Operation(
+        summary = "모든 스터디 조회 API",
+        description = "생성된 모든 스터디를 조회합니다.\n" +
+                      "최신순 : 최근 등록한 순으로 조회합니다.\n" +
+                      "인기순 : 가입한 인원 > 북마크 수 > 조회수\n" +
+                      "이름순 : 스터디 이름 기준 오름차순으로 조회합니다."
+    )
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
@@ -176,6 +179,31 @@ public class StudyController {
             CommonApiResponse.builder()
                 .success(true)
                 .message("최근 조회한 스터디 목록 조회 성공")
+                .data(studyList)
+                .build()
+        );
+    }
+
+    @Operation(summary = "요즘 뜨고있는 스터디 목록 조회 API", description = "요즘 뜨고있는 스터디 목록을 조회합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "요즘 뜨고있는 스터디 목록 조회 성공",
+            content = @Content(
+                schema = @Schema(
+                    implementation = StudyResponseDto.class
+                )
+            )
+        )
+    })
+    @GetMapping("/trend")
+    public ResponseEntity<?> getStudyTrend(@Parameter(hidden = true) @AuthenticationPrincipal User user) {
+        List<StudyResponseDto> studyList = studyService.findStudyTrend(user.getCode());
+
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("요즘 뜨고있는 스터디 목록 조회 성공")
                 .data(studyList)
                 .build()
         );
