@@ -37,7 +37,7 @@ public class JwtController {
             )
         )
     })
-    @PostMapping("/refresh")
+    @GetMapping("/refresh")
     public ResponseEntity<?> refresh(@RequestHeader("Authorization") String authorization) {
         String refreshToken = authorization.replace("Bearer ", "");
         String newAccessToken = jwtService.refreshAccessToken(refreshToken);

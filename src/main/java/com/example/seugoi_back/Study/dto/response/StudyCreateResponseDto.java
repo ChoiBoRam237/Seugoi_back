@@ -8,9 +8,9 @@ import lombok.Getter;
 @Builder
 public class StudyCreateResponseDto {
 
-    @Schema(name = "userCode", example = "1")
-    private Long userCode;
-
     @Schema(name = "code", example = "1")
     private Long code;
+
+    @Schema(name = "userCode", example = "1")
+    private Long userCode;
 }

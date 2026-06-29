@@ -3,6 +3,7 @@ package com.example.seugoi_back.Study.controller;
 import com.example.seugoi_back.Common.response.CommonApiResponse;
 import com.example.seugoi_back.Study.dto.request.StudyAsgmtRequestDto;
 import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
+import com.example.seugoi_back.Study.dto.response.StudyListResponseDto;
 import com.example.seugoi_back.Study.entity.StudyAsgmt;
 import com.example.seugoi_back.Study.service.StudyAsgmtService;
 import com.example.seugoi_back.User.entity.User;
@@ -65,6 +66,34 @@ public class StudyAsgmtController {
         );
     }
 
+    @Operation(summary = "특정 과제 조회 API", description = "특정 과제를 조회합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "true",
+            description = "특정 과제 조회 성공",
+            content = @Content(
+                schema = @Schema(
+                    implementation = StudyListResponseDto.class
+                )
+            )
+        )
+    })
+    @GetMapping("/{studyAsgmtCode}")
+    public ResponseEntity<?> getAsgmtByCode(
+        @Parameter(hidden = true) @AuthenticationPrincipal User user,
+        @PathVariable Long studyAsgmtCode
+    ) {
+        StudyListResponseDto responseDto = studyAsgmtService.findAsgmtByCode(user.getCode(), studyAsgmtCode);
+
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("특정 과제 조회 성공")
+                .data(responseDto)
+                .build()
+        );
+    }
+
     // TODO : 스터디 과제 수정 api
 
     @Operation(summary = "스터디 특정 과제 삭제 API", description = "스터디 특정 과제를 삭제합니다.")
@@ -75,8 +104,8 @@ public class StudyAsgmtController {
         )
     })
     @DeleteMapping("")
-    public ResponseEntity<?> deleteAsgmt(@RequestParam Long studyCode) {
-        studyAsgmtService.deleteAsgmt(studyCode);
+    public ResponseEntity<?> deleteAsgmt(@RequestParam Long studyAsgmtCode) {
+        studyAsgmtService.deleteAsgmt(studyAsgmtCode);
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()

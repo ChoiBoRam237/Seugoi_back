@@ -40,8 +40,8 @@ public class StudyJoinController {
     })
     @PostMapping(value = "")
     public ResponseEntity<?> postJoinStudy(
-            @Parameter(hidden = true) @AuthenticationPrincipal User user,
-            @RequestParam Long studyCode
+        @Parameter(hidden = true) @AuthenticationPrincipal User user,
+        @RequestParam Long studyCode
     ) {
         StudyJoin studyJoin = studyJoinService.joinStudy(user.getCode(), studyCode);
 

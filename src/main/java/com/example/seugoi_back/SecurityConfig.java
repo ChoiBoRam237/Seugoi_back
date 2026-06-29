@@ -46,10 +46,10 @@ public class SecurityConfig {
                 UsernamePasswordAuthenticationFilter.class
             )
             .exceptionHandling(exception -> exception
-                    .authenticationEntryPoint((request, response, authException) -> {
-                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                        response.setContentType("application/json;charset=UTF-8");
-                    })
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json;charset=UTF-8");
+                })
             )
             .build();
     }

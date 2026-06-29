@@ -9,7 +9,7 @@ import java.util.List;
 public class ListUtil {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    // 배열 안 null 값 제거 util
+    // string -> list 변환 util
     public static List<String> parseStringList(String value) {
         try {
             if (value == null || value.isBlank()) {

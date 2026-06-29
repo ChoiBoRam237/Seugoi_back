@@ -63,11 +63,8 @@ public class StudyAsgmtImageService {
     }
 
     @Transactional // 스터디 과제 code에 맞는 이미지 조회 Service
-    public StudyAsgmtImage findAsgmtImageByCode(Long studyAsgmtCode) {
-        StudyAsgmtImage studyAsgmtImage = studyAsgmtImageRepository.findByStudyAsgmt_Code(studyAsgmtCode)
-                .orElseThrow(() -> new RuntimeException("이미지를 찾을 수 없습니다."));
-
-        return studyAsgmtImage;
+    public List<StudyAsgmtImage> findAsgmtImageByCode(Long studyAsgmtCode) {
+        return studyAsgmtImageRepository.findByStudyAsgmt_Code(studyAsgmtCode);
     }
 
     @Transactional // 스터디 과제 code에 맞는 이미지 모두 삭제 Service

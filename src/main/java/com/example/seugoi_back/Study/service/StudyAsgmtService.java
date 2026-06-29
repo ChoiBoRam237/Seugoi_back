@@ -1,6 +1,7 @@
 package com.example.seugoi_back.Study.service;
 
 import com.example.seugoi_back.Study.dto.request.StudyAsgmtRequestDto;
+import com.example.seugoi_back.Study.dto.response.StudyListResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.Study.entity.StudyAsgmtImage;
 import com.example.seugoi_back.Study.entity.StudyAsgmt;
@@ -9,12 +10,14 @@ import com.example.seugoi_back.Study.repository.StudyAsgmtRepository;
 import com.example.seugoi_back.Study.repository.StudyRepository;
 import com.example.seugoi_back.User.entity.User;
 import com.example.seugoi_back.User.repository.UserRepository;
+import com.example.seugoi_back.Util.ListUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -57,6 +60,54 @@ public class StudyAsgmtService {
         }
 
         return savedAsgmt;
+    }
+
+    @Transactional // 스터디 code에 맞는 모든 과제 조회 Service
+    public List<StudyListResponseDto> findAsgmtAll(Long userCode, Long studyCode) {
+        List<StudyAsgmt> asgmtList = studyAsgmtRepository.findAsgmtByStudy_Code(studyCode);
+
+        List<StudyListResponseDto> responseDto = asgmtList.stream()
+            .map(item -> StudyListResponseDto.builder()
+                .code(item.getCode())
+                .title(item.getTitle())
+                .content(item.getContent())
+                .linkName(item.getLinkName())
+                .linkUrl(item.getLinkUrl())
+                .imageList(studyAsgmtImageService.findAsgmtImageByCode(item.getCode())
+                            .stream()
+                            .flatMap(image -> ListUtil.parseStringList(image.getImageUrlList()).stream())
+                            .toList()
+                )
+                .isAdmin(Objects.equals(item.getUser().getCode(), userCode))
+                .createdAt(item.getCreatedAt())
+                .build())
+            .toList();
+
+        return responseDto;
+    }
+
+    @Transactional // 특정 과제 조회 Service
+    public StudyListResponseDto findAsgmtByCode(Long userCode, Long studyAsgmtCode) {
+        StudyAsgmt asgmt = studyAsgmtRepository.findById(studyAsgmtCode).orElseThrow();
+        List<StudyAsgmtImage> asgmtImage = studyAsgmtImageService.findAsgmtImageByCode(studyAsgmtCode);
+
+        StudyListResponseDto responseDto =
+            StudyListResponseDto.builder()
+                .code(asgmt.getCode())
+                .title(asgmt.getTitle())
+                .content(asgmt.getContent())
+                .linkName(asgmt.getLinkName())
+                .linkUrl(asgmt.getLinkUrl())
+                .imageList(
+                    asgmtImage.stream()
+                    .flatMap(image -> ListUtil.parseStringList(image.getImageUrlList()).stream())
+                    .toList()
+                )
+                .isAdmin(Objects.equals(asgmt.getUser().getCode(), userCode))
+                .createdAt(asgmt.getCreatedAt())
+                .build();
+
+        return responseDto;
     }
 
     // TODO : 스터디 과제 수정 service

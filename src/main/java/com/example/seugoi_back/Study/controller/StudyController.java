@@ -2,9 +2,12 @@ package com.example.seugoi_back.Study.controller;
 
 import com.example.seugoi_back.Common.response.CommonApiResponse;
 import com.example.seugoi_back.Study.dto.request.StudyRequestDto;
+import com.example.seugoi_back.Study.dto.response.StudyListResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyCreateResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
+import com.example.seugoi_back.Study.service.StudyAsgmtService;
+import com.example.seugoi_back.Study.service.StudyNoticeService;
 import com.example.seugoi_back.Study.service.StudyService;
 import com.example.seugoi_back.Study.service.StudyViewService;
 import com.example.seugoi_back.User.entity.User;
@@ -22,8 +25,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @SecurityRequirement(name = "BearerAuth")
 @RestController
@@ -33,6 +38,8 @@ import java.util.Map;
 public class StudyController {
     private final StudyService studyService;
     private final StudyViewService studyViewService;
+    private final StudyAsgmtService studyAsgmtService;
+    private final StudyNoticeService studyNoticeService;
 
     @Operation(summary = "스터디 생성 API", description = "스터디를 생성합니다")
     @ApiResponses({
@@ -70,10 +77,12 @@ public class StudyController {
 
     @Operation(
         summary = "모든 스터디 조회 API",
-        description = "생성된 모든 스터디를 조회합니다.\n" +
-                      "최신순 : 최근 등록한 순으로 조회합니다.\n" +
-                      "인기순 : 가입한 인원 > 북마크 수 > 조회수\n" +
-                      "이름순 : 스터디 이름 기준 오름차순으로 조회합니다."
+        description = """
+                        생성된 모든 스터디를 조회합니다.<br><br>
+                        최신순 : 최근 등록한 순으로 조회합니다.<br>
+                        인기순 : 가입한 인원 > 북마크 수 > 조회수<br>
+                        이름순 : 스터디 이름 기준 오름차순으로 조회합니다.
+                      """
     )
     @ApiResponses({
         @ApiResponse(
@@ -205,6 +214,35 @@ public class StudyController {
                 .success(true)
                 .message("요즘 뜨고있는 스터디 목록 조회 성공")
                 .data(studyList)
+                .build()
+        );
+    }
+
+    @Operation(summary = "스터디 과제/공지 목록 조회 API", description = "스터디 과제/공지 목록을 최신순으로 조회합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "true",
+            description = "스터디 과제/공지 목록 조회 성공"
+        )
+    })
+    @GetMapping("/list")
+    public ResponseEntity<?> getStudyList(
+        @Parameter(hidden = true) @AuthenticationPrincipal User user,
+        @RequestParam Long studyCode
+    ) {
+        List<StudyListResponseDto> asgmtList = studyAsgmtService.findAsgmtAll(user.getCode(), studyCode);
+        List<StudyListResponseDto> noticeList = studyNoticeService.findNoticeAll(user.getCode(), studyCode);
+
+        List<StudyListResponseDto> responseDto =
+            Stream.concat(asgmtList.stream(), noticeList.stream())
+                .sorted(Comparator.comparing(StudyListResponseDto::getCreatedAt).reversed())
+                .toList();
+
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("스터디 과제/공지 목록 조회 성공")
+                .data(responseDto)
                 .build()
         );
     }
