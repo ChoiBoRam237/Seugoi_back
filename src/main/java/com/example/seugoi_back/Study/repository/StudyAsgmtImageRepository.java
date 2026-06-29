@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface StudyAsgmtImageRepository extends JpaRepository<StudyAsgmtImage, Long> {
     Optional<StudyAsgmtImage> findByStudyAsgmt_Code(Long studyAsgmtCode);
+    void deleteByStudyAsgmt_Code(Long studyAsgmtCode);
+    void deleteByStudy_Code(Long studyCode);
 }

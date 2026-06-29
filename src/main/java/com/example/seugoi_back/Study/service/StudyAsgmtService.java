@@ -28,7 +28,7 @@ public class StudyAsgmtService {
     ObjectMapper mapper = new ObjectMapper();
 
     @Transactional // 스터디 과제 생성 Service
-    public StudyAsgmt generateStudyAsgmt(Long userCode, Long studyCode, StudyAsgmtRequestDto dto) {
+    public StudyAsgmt generateAsgmt(Long userCode, Long studyCode, StudyAsgmtRequestDto dto) {
         User user = userRepository.findById(userCode).orElseThrow();
         Study study = studyRepository.findById(studyCode).orElseThrow();
 
@@ -61,10 +61,15 @@ public class StudyAsgmtService {
 
     // TODO : 스터디 과제 수정 service
 
-    @Transactional // 스터디 과제 삭제 Service
-    public void deleteStudyAsgmt(Long studyAsgmtCode) {
-        studyAsgmtRepository.deleteById(studyAsgmtCode);
-        // 이미지 삭제
-        studyAsgmtImageService.deleteImageAllByCode(studyAsgmtCode);
+    @Transactional // 과제 삭제 Service
+    public void deleteAsgmt(Long studyAsgmtCode) {
+        studyAsgmtImageService.deleteImageByStudyAsgmtCode(studyAsgmtCode); // 이미지 삭제
+        studyAsgmtRepository.deleteById(studyAsgmtCode); // 과제 삭제
+    }
+
+    @Transactional // 스터디 code에 해당하는 모든 과제 삭제 Service
+    public void deleteAsgmtByStudyCode(Long studyCode) {
+        studyAsgmtImageService.deleteImageByStudyCode(studyCode); // 이미지 삭제
+        studyAsgmtRepository.deleteByStudy_Code(studyCode); // 과제 삭제
     }
 }

@@ -28,6 +28,8 @@ public class StudyService {
     private final StudyJoinRepository studyJoinRepository;
     private final StudyBookmarkRepository studyBookmarkRepository;
     private final StudyBgImageService studyBgImageService;
+    private final StudyAsgmtService studyAsgmtService;
+    private final StudyNoticeService studyNoticeService;
     private final StudyViewService studyViewService;
     private final StudySearchKeywordService studySearchKeywordService;
 
@@ -256,5 +258,12 @@ public class StudyService {
             .toList();
 
         return responseDto;
+    }
+
+    @Transactional // 스터디 삭제 Service
+    public void deleteStudy(Long studyCode) {
+        studyAsgmtService.deleteAsgmtByStudyCode(studyCode); // 과제 삭제
+        studyNoticeService.deleteNoticeByStudyCode(studyCode); // 공지 삭제
+        studyRepository.deleteById(studyCode); // 스터디 삭제
     }
 }

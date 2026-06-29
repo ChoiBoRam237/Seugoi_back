@@ -32,7 +32,7 @@ public class StudyAsgmtController {
     @Operation(summary = "스터디 과제 생성 API", description = "스터디 과제를 생성합니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
+            responseCode = "true",
             description = "스터디 과제 생성 성공",
             content = @Content(
                 schema = @Schema(
@@ -42,12 +42,12 @@ public class StudyAsgmtController {
         )
     })
     @PostMapping(value = "/generate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> postGenerateStudyAsgmt(
+    public ResponseEntity<?> postGenerateAsgmt(
         @Parameter(hidden = true) @AuthenticationPrincipal User user,
         @RequestParam Long studyCode,
         @Valid @ModelAttribute StudyAsgmtRequestDto dto
     ) {
-        StudyAsgmt studyAsgmt = studyAsgmtService.generateStudyAsgmt(user.getCode(), studyCode, dto);
+        StudyAsgmt studyAsgmt = studyAsgmtService.generateAsgmt(user.getCode(), studyCode, dto);
 
         CommonStudyResponseDto responseDto =
             CommonStudyResponseDto.builder()
@@ -61,6 +61,27 @@ public class StudyAsgmtController {
                 .success(true)
                 .message("스터디 과제 생성 성공")
                 .data(responseDto)
+                .build()
+        );
+    }
+
+    // TODO : 스터디 과제 수정 api
+
+    @Operation(summary = "스터디 특정 과제 삭제 API", description = "스터디 특정 과제를 삭제합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "true",
+            description = "스터디 특정 과제 삭제 성공"
+        )
+    })
+    @DeleteMapping("")
+    public ResponseEntity<?> deleteAsgmt(@RequestParam Long studyCode) {
+        studyAsgmtService.deleteAsgmt(studyCode);
+
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("스터디 특정 과제 삭제 성공")
                 .build()
         );
     }

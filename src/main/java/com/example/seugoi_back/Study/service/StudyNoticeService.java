@@ -18,8 +18,8 @@ public class StudyNoticeService {
     private final StudyRepository studyRepository;
     private final StudyNoticeRepository studyNoticeRepository;
 
-    @Transactional // 스터디 공지 생성 Service
-    public StudyNotice generateStudyNotice(Long userCode, Long studyCode, StudyNoticeRequestDto dto) {
+    @Transactional // 공지 생성 Service
+    public StudyNotice generateNotice(Long userCode, Long studyCode, StudyNoticeRequestDto dto) {
         User user = userRepository.findById(userCode).orElseThrow();
         Study study = studyRepository.findById(studyCode).orElseThrow();
 
@@ -31,5 +31,15 @@ public class StudyNoticeService {
             .build();
 
         return studyNoticeRepository.save(studyNotice);
+    }
+
+    @Transactional // 공지 삭제 Service
+    public void deleteNotice(Long studyNoticeCode) {
+        studyNoticeRepository.deleteById(studyNoticeCode);
+    }
+
+    @Transactional // 스터디 code에 맞는 공지 삭제
+    public void deleteNoticeByStudyCode(Long studyCode) {
+        studyNoticeRepository.deleteByStudy_Code(studyCode);
     }
 }

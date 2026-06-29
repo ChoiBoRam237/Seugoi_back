@@ -208,4 +208,23 @@ public class StudyController {
                 .build()
         );
     }
+
+    @Operation(summary = "특정 스터디 삭제 API", description = "특정 스터디를 삭제합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "true",
+            description = "특정 스터디 삭제 성공"
+        )
+    })
+    @DeleteMapping("")
+    public ResponseEntity<?> deleteStudy(@RequestParam Long studyCode) {
+        studyService.deleteStudy(studyCode);
+
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("특정 스터디 삭제 성공")
+                .build()
+        );
+    }
 }

@@ -31,7 +31,7 @@ public class StudyNoticeController {
     @Operation(summary = "스터디 공지 생성 API", description = "스터디 공지를 생성합니다.")
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200",
+            responseCode = "true",
             description = "스터디 공지 생성 성공",
             content = @Content(
                 schema = @Schema(
@@ -41,12 +41,12 @@ public class StudyNoticeController {
         )
     })
     @PostMapping("/generate")
-    public ResponseEntity<?> postGenerateStudyNotice(
+    public ResponseEntity<?> postGenerateNotice(
         @Parameter(hidden = true) @AuthenticationPrincipal User user,
         @RequestParam Long studyCode,
         @Valid @RequestBody StudyNoticeRequestDto dto
     ) {
-        StudyNotice studyNotice = studyNoticeService.generateStudyNotice(user.getCode(), studyCode, dto);
+        StudyNotice studyNotice = studyNoticeService.generateNotice(user.getCode(), studyCode, dto);
 
         CommonStudyResponseDto responseDto =
             CommonStudyResponseDto.builder()
@@ -60,6 +60,25 @@ public class StudyNoticeController {
                 .success(true)
                 .message("스터디 공지 생성 성공")
                 .data(responseDto)
+                .build()
+        );
+    }
+
+    @Operation(summary = "스터디 특정 공지 삭제 API", description = "스터디 특정 공지를 삭제합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "true",
+            description = "스터디 특정 공지 삭제 성공"
+        )
+    })
+    @DeleteMapping("")
+    public ResponseEntity<?> deleteNotice(@RequestParam Long studyNoticeCode) {
+        studyNoticeService.deleteNotice(studyNoticeCode);
+
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("스터디 특정 공지 삭제 성공")
                 .build()
         );
     }

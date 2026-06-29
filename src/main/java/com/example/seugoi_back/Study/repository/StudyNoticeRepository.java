@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StudyNoticeRepository extends JpaRepository<StudyNotice, Long> {
+    void deleteByStudy_Code(Long studyCode);
 }
