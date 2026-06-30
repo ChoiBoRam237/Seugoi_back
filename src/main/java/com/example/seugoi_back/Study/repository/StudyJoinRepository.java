@@ -10,7 +10,6 @@ import java.util.Optional;
 @Repository
 public interface StudyJoinRepository extends JpaRepository<StudyJoin, Long> {
     Optional<StudyJoin> findByUser_Code(Long userCode);
-    List<StudyJoin> findByStudy_Code(Long studyCode);
 
     Optional<StudyJoin> findByUser_CodeAndStudy_Code(Long userCode, Long studyCode);
 }

@@ -39,7 +39,7 @@ public class UserController {
     })
     @GetMapping("/{userCode}")
     public ResponseEntity<?> getUser(@PathVariable Long userCode) {
-        User user = userService.findUserByCode(userCode);
+        User user = userService.findByUserCode(userCode);
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()

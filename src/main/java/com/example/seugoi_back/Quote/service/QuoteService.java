@@ -36,7 +36,7 @@ public class QuoteService {
         Quote randomQuote = quotes.get(ThreadLocalRandom.current().nextInt(quotes.size()));
 
         QuoteDaily userDailyQuote = QuoteDaily.builder()
-            .user(userService.findUserByCode(userCode))
+            .user(userService.findByUserCode(userCode))
             .quote(randomQuote)
             .date(today)
             .build();

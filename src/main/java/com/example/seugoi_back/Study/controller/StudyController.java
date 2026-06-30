@@ -2,12 +2,12 @@ package com.example.seugoi_back.Study.controller;
 
 import com.example.seugoi_back.Common.response.CommonApiResponse;
 import com.example.seugoi_back.Study.dto.request.StudyRequestDto;
-import com.example.seugoi_back.Study.dto.response.StudyListResponseDto;
-import com.example.seugoi_back.Study.dto.response.StudyCreateResponseDto;
+import com.example.seugoi_back.Study.dto.response.StudyBoardResponseDto;
+import com.example.seugoi_back.Study.dto.response.CommonCreateResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
-import com.example.seugoi_back.Study.service.StudyAsgmtService;
-import com.example.seugoi_back.Study.service.StudyNoticeService;
+import com.example.seugoi_back.Study.service.assignment.AsgmtService;
+import com.example.seugoi_back.Study.service.notice.NoticeService;
 import com.example.seugoi_back.Study.service.StudyService;
 import com.example.seugoi_back.Study.service.StudyViewService;
 import com.example.seugoi_back.User.entity.User;
@@ -38,8 +38,8 @@ import java.util.stream.Stream;
 public class StudyController {
     private final StudyService studyService;
     private final StudyViewService studyViewService;
-    private final StudyAsgmtService studyAsgmtService;
-    private final StudyNoticeService studyNoticeService;
+    private final AsgmtService asgmtService;
+    private final NoticeService noticeService;
 
     @Operation(summary = "스터디 생성 API", description = "스터디를 생성합니다")
     @ApiResponses({
@@ -48,7 +48,7 @@ public class StudyController {
             description = "스터디 생성 성공",
             content = @Content(
                 schema = @Schema(
-                    implementation = StudyCreateResponseDto.class
+                    implementation = CommonCreateResponseDto.class
                 )
             )
         )
@@ -60,8 +60,8 @@ public class StudyController {
     ) {
         Study study = studyService.generateStudy(user.getCode(), dto);
 
-        StudyCreateResponseDto responseDto =
-            StudyCreateResponseDto.builder()
+        CommonCreateResponseDto responseDto =
+            CommonCreateResponseDto.builder()
                 .userCode(study.getUser().getCode())
                 .code(study.getCode())
                 .build();
@@ -125,11 +125,11 @@ public class StudyController {
         )
     })
     @GetMapping("/{studyCode}")
-    public ResponseEntity<?> getStudyById(
+    public ResponseEntity<?> getByStudyCode(
             @Parameter(hidden = true) @AuthenticationPrincipal User user,
             @PathVariable String studyCode
     ) {
-        Map<String, Object> responseDto = studyService.findStudyByCode(user.getCode(), Long.valueOf(studyCode));
+        Map<String, Object> responseDto = studyService.findByStudyCode(user.getCode(), Long.valueOf(studyCode));
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()
@@ -157,7 +157,7 @@ public class StudyController {
         @Parameter(hidden = true) @AuthenticationPrincipal User user,
         @RequestParam String keyword
     ) {
-        List<StudyResponseDto> studyList = studyService.findStudyByKeyword(user.getCode(), keyword);
+        List<StudyResponseDto> studyList = studyService.findByKeyword(user.getCode(), keyword);
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()
@@ -225,17 +225,17 @@ public class StudyController {
             description = "스터디 과제/공지 목록 조회 성공"
         )
     })
-    @GetMapping("/list")
-    public ResponseEntity<?> getStudyList(
+    @GetMapping("/board")
+    public ResponseEntity<?> getStudyBoard(
         @Parameter(hidden = true) @AuthenticationPrincipal User user,
         @RequestParam Long studyCode
     ) {
-        List<StudyListResponseDto> asgmtList = studyAsgmtService.findAsgmtAll(user.getCode(), studyCode);
-        List<StudyListResponseDto> noticeList = studyNoticeService.findNoticeAll(user.getCode(), studyCode);
+        List<StudyBoardResponseDto> asgmtList = asgmtService.findAsgmtAll(user.getCode(), studyCode);
+        List<StudyBoardResponseDto> noticeList = noticeService.findByStudyCode(user.getCode(), studyCode);
 
-        List<StudyListResponseDto> responseDto =
+        List<StudyBoardResponseDto> responseDto =
             Stream.concat(asgmtList.stream(), noticeList.stream())
-                .sorted(Comparator.comparing(StudyListResponseDto::getCreatedAt).reversed())
+                .sorted(Comparator.comparing(StudyBoardResponseDto::getCreatedAt).reversed())
                 .toList();
 
         return ResponseEntity.ok(
@@ -255,8 +255,8 @@ public class StudyController {
         )
     })
     @DeleteMapping("")
-    public ResponseEntity<?> deleteStudy(@RequestParam Long studyCode) {
-        studyService.deleteStudy(studyCode);
+    public ResponseEntity<?> deleteByStudyCode(@RequestParam Long studyCode) {
+        studyService.deleteByStudyCode(studyCode);
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()

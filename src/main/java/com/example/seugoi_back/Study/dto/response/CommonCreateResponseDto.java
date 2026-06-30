@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class StudyCreateResponseDto {
+public class CommonCreateResponseDto {
 
     @Schema(name = "code", example = "1")
     private Long code;

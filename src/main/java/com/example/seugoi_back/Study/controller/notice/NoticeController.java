@@ -1,10 +1,10 @@
-package com.example.seugoi_back.Study.controller;
+package com.example.seugoi_back.Study.controller.notice;
 
 import com.example.seugoi_back.Common.response.CommonApiResponse;
-import com.example.seugoi_back.Study.dto.request.StudyNoticeRequestDto;
+import com.example.seugoi_back.Study.dto.request.notice.NoticeRequestDto;
 import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
-import com.example.seugoi_back.Study.entity.StudyNotice;
-import com.example.seugoi_back.Study.service.StudyNoticeService;
+import com.example.seugoi_back.Study.entity.notice.Notice;
+import com.example.seugoi_back.Study.service.notice.NoticeService;
 import com.example.seugoi_back.User.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/v3/api/study-notice")
 @Tag(name = "Study Notice", description = "스터디 공지 관련 API")
-public class StudyNoticeController {
-    private final StudyNoticeService studyNoticeService;
+public class NoticeController {
+    private final NoticeService noticeService;
 
     @Operation(summary = "스터디 공지 생성 API", description = "스터디 공지를 생성합니다.")
     @ApiResponses({
@@ -44,15 +44,15 @@ public class StudyNoticeController {
     public ResponseEntity<?> postGenerateNotice(
         @Parameter(hidden = true) @AuthenticationPrincipal User user,
         @RequestParam Long studyCode,
-        @Valid @RequestBody StudyNoticeRequestDto dto
+        @Valid @RequestBody NoticeRequestDto dto
     ) {
-        StudyNotice studyNotice = studyNoticeService.generateNotice(user.getCode(), studyCode, dto);
+        Notice notice = noticeService.generateNotice(user.getCode(), studyCode, dto);
 
         CommonStudyResponseDto responseDto =
             CommonStudyResponseDto.builder()
-                .code(studyNotice.getCode())
-                .userCode(studyNotice.getUser().getCode())
-                .studyCode(studyNotice.getStudy().getCode())
+                .code(notice.getCode())
+                .userCode(notice.getUser().getCode())
+                .studyCode(notice.getStudy().getCode())
                 .build();
 
         return ResponseEntity.ok(
@@ -72,8 +72,8 @@ public class StudyNoticeController {
         )
     })
     @DeleteMapping("")
-    public ResponseEntity<?> deleteNotice(@RequestParam Long studyNoticeCode) {
-        studyNoticeService.deleteNotice(studyNoticeCode);
+    public ResponseEntity<?> deleteByNoticeCode(@RequestParam Long noticeCode) {
+        noticeService.deleteByNoticeCode(noticeCode);
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()

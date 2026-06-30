@@ -1,0 +1,15 @@
+package com.example.seugoi_back.Study.repository.assignment;
+
+import com.example.seugoi_back.Study.entity.assignment.AsgmtCmt;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface AsgmtCmtRepository extends JpaRepository<AsgmtCmt, Long> {
+    List<AsgmtCmt> findByStudy_Code(Long studyCode);
+    List<AsgmtCmt> findByAsgmt_Code(Long asgmtCode);
+    void deleteByStudy_Code(Long studyCode);
+    void deleteByAsgmt_Code(Long asgmtCode);
+}

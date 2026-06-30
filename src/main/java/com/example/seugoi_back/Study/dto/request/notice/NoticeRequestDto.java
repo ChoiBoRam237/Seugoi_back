@@ -1,4 +1,4 @@
-package com.example.seugoi_back.Study.dto.request;
+package com.example.seugoi_back.Study.dto.request.notice;
 
 import com.example.seugoi_back.Util.TextUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -13,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class StudyNoticeRequestDto {
+public class NoticeRequestDto {
 
     @Schema(description = "공지 제목", example = "공지 제목")
     String title;

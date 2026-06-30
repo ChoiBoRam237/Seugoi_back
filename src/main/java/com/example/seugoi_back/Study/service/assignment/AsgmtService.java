@@ -1,12 +1,12 @@
-package com.example.seugoi_back.Study.service;
+package com.example.seugoi_back.Study.service.assignment;
 
-import com.example.seugoi_back.Study.dto.request.StudyAsgmtRequestDto;
-import com.example.seugoi_back.Study.dto.response.StudyListResponseDto;
+import com.example.seugoi_back.Study.dto.request.assignment.AsgmtRequestDto;
+import com.example.seugoi_back.Study.dto.response.StudyBoardResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
-import com.example.seugoi_back.Study.entity.StudyAsgmtImage;
-import com.example.seugoi_back.Study.entity.StudyAsgmt;
-import com.example.seugoi_back.Study.repository.StudyAsgmtImageRepository;
-import com.example.seugoi_back.Study.repository.StudyAsgmtRepository;
+import com.example.seugoi_back.Study.entity.assignment.AsgmtImg;
+import com.example.seugoi_back.Study.entity.assignment.Asgmt;
+import com.example.seugoi_back.Study.repository.assignment.AsgmtImgRepository;
+import com.example.seugoi_back.Study.repository.assignment.AsgmtRepository;
 import com.example.seugoi_back.Study.repository.StudyRepository;
 import com.example.seugoi_back.User.entity.User;
 import com.example.seugoi_back.User.repository.UserRepository;
@@ -21,22 +21,23 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class StudyAsgmtService {
+public class AsgmtService {
     private final UserRepository userRepository;
     private final StudyRepository studyRepository;
-    private final StudyAsgmtRepository studyAsgmtRepository;
-    private final StudyAsgmtImageRepository studyAsgmtImageRepository;
-    private final StudyAsgmtImageService studyAsgmtImageService;
+    private final AsgmtRepository asgmtRepository;
+    private final AsgmtImgRepository asgmtImgRepository;
+    private final AsgmtImgService asgmtImgService;
+    private final AsgmtCmtService asgmtCmtService;
 
     ObjectMapper mapper = new ObjectMapper();
 
     @Transactional // 스터디 과제 생성 Service
-    public StudyAsgmt generateAsgmt(Long userCode, Long studyCode, StudyAsgmtRequestDto dto) {
+    public Asgmt generateAsgmt(Long userCode, Long studyCode, AsgmtRequestDto dto) {
         User user = userRepository.findById(userCode).orElseThrow();
         Study study = studyRepository.findById(studyCode).orElseThrow();
 
         // 스터디 과제 정보 저장
-        StudyAsgmt studyAsgmt = StudyAsgmt.builder()
+        Asgmt asgmt = Asgmt.builder()
             .user(user)
             .study(study)
             .title(dto.getTitle())
@@ -44,36 +45,36 @@ public class StudyAsgmtService {
             .linkName(dto.getLinkName())
             .linkUrl(dto.getLinkUrl())
             .build();
-        StudyAsgmt savedAsgmt = studyAsgmtRepository.save(studyAsgmt);
+        Asgmt savedAsgmt = asgmtRepository.save(asgmt);
 
         // 이미지가 있을 때만 실행
         if (dto.getImageList() != null && !dto.getImageList().isEmpty()) {
             // 스터디 과제 이미지 저장
-            List<String> asgmtImageUrl = studyAsgmtImageService.savedAsgmtImage(dto.getImageList());
-            StudyAsgmtImage studyAsgmtImage = StudyAsgmtImage.builder()
+            List<String> asgmtImageUrl = asgmtImgService.savedAsgmtImg(dto.getImageList());
+            AsgmtImg asgmtImg = AsgmtImg.builder()
                 .user(user)
-                .study(study)
-                .studyAsgmt(studyAsgmt)
+                .asgmt(asgmt)
                 .imageUrlList(mapper.writeValueAsString(asgmtImageUrl))
                 .build();
-            studyAsgmtImageRepository.save(studyAsgmtImage);
+            asgmtImgRepository.save(asgmtImg);
         }
 
         return savedAsgmt;
     }
 
     @Transactional // 스터디 code에 맞는 모든 과제 조회 Service
-    public List<StudyListResponseDto> findAsgmtAll(Long userCode, Long studyCode) {
-        List<StudyAsgmt> asgmtList = studyAsgmtRepository.findAsgmtByStudy_Code(studyCode);
+    public List<StudyBoardResponseDto> findAsgmtAll(Long userCode, Long studyCode) {
+        List<Asgmt> asgmtList = asgmtRepository.findByStudy_Code(studyCode);
 
-        List<StudyListResponseDto> responseDto = asgmtList.stream()
-            .map(item -> StudyListResponseDto.builder()
+        List<StudyBoardResponseDto> responseDto = asgmtList.stream()
+            .map(item -> StudyBoardResponseDto.builder()
                 .code(item.getCode())
+                .target("asgmt")
                 .title(item.getTitle())
                 .content(item.getContent())
                 .linkName(item.getLinkName())
                 .linkUrl(item.getLinkUrl())
-                .imageList(studyAsgmtImageService.findAsgmtImageByCode(item.getCode())
+                .imageList(asgmtImgService.findByAsgmtCode(item.getCode())
                             .stream()
                             .flatMap(image -> ListUtil.parseStringList(image.getImageUrlList()).stream())
                             .toList()
@@ -87,12 +88,12 @@ public class StudyAsgmtService {
     }
 
     @Transactional // 특정 과제 조회 Service
-    public StudyListResponseDto findAsgmtByCode(Long userCode, Long studyAsgmtCode) {
-        StudyAsgmt asgmt = studyAsgmtRepository.findById(studyAsgmtCode).orElseThrow();
-        List<StudyAsgmtImage> asgmtImage = studyAsgmtImageService.findAsgmtImageByCode(studyAsgmtCode);
+    public StudyBoardResponseDto findByAsgmtCode(Long userCode, Long asgmtCode) {
+        Asgmt asgmt = asgmtRepository.findById(asgmtCode).orElseThrow();
+        List<AsgmtImg> asgmtImage = asgmtImgService.findByAsgmtCode(asgmtCode);
 
-        StudyListResponseDto responseDto =
-            StudyListResponseDto.builder()
+        StudyBoardResponseDto responseDto =
+            StudyBoardResponseDto.builder()
                 .code(asgmt.getCode())
                 .title(asgmt.getTitle())
                 .content(asgmt.getContent())
@@ -113,14 +114,21 @@ public class StudyAsgmtService {
     // TODO : 스터디 과제 수정 service
 
     @Transactional // 과제 삭제 Service
-    public void deleteAsgmt(Long studyAsgmtCode) {
-        studyAsgmtImageService.deleteImageByStudyAsgmtCode(studyAsgmtCode); // 이미지 삭제
-        studyAsgmtRepository.deleteById(studyAsgmtCode); // 과제 삭제
+    public void deleteByAsgmtCode(Long asgmtCode) {
+        asgmtCmtService.deleteByAsgmtCode(asgmtCode); // 과제 댓글 삭제
+        asgmtImgService.deleteByAsgmtCode(asgmtCode); // 이미지 삭제
+        asgmtRepository.deleteById(asgmtCode); // 과제 삭제
     }
 
     @Transactional // 스터디 code에 해당하는 모든 과제 삭제 Service
-    public void deleteAsgmtByStudyCode(Long studyCode) {
-        studyAsgmtImageService.deleteImageByStudyCode(studyCode); // 이미지 삭제
-        studyAsgmtRepository.deleteByStudy_Code(studyCode); // 과제 삭제
+    public void deleteByStudyCode(Long studyCode) {
+        // 댓글 삭제
+        asgmtCmtService.deleteByStudyCode(studyCode);
+        // 1. 스터디 code에 맞는 과제 목록 조회 후
+        // 2. 과제 code에 맞는 이미지 삭제
+        List<Asgmt> asgmtList = asgmtRepository.findByStudy_Code(studyCode);
+        asgmtList.forEach(item -> asgmtImgService.deleteByAsgmtCode(item.getCode()));
+        // 과제 삭제
+        asgmtRepository.deleteByStudy_Code(studyCode);
     }
 }

@@ -21,7 +21,7 @@ public class StudyBookmarkService {
     private final UserRepository userRepository;
     private final StudyRepository studyRepository;
     private final StudyBookmarkRepository studyBookmarkRepository;
-    private final StudyBgImageService studyBgImageService;
+    private final StudyBgImgService studyBgImgService;
 
     @Transactional // 스터디 북마크 Service
     public Map<String, Object> bookmarkStudy(Long userCode, Long studyCode) {
@@ -110,7 +110,7 @@ public class StudyBookmarkService {
                 .categories(ListUtil.parseStringList(study.getCategories()))
                 .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
                 .progress(0)
-                .bgImageUrl(studyBgImageService.findBgImageByCode(study.getCode()).getStudyBgImgUrl())
+                .bgImageUrl(studyBgImgService.findByStudyCode(study.getCode()).getStudyBgImgUrl())
                 .isAdmin(Objects.equals(userCode, study.getUser().getCode()))
                 .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, study.getCode()).isPresent())
                 .build())

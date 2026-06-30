@@ -25,14 +25,14 @@ public class StudyViewService {
     private final StudyViewRepository studyViewRepository;
     private final StudyBookmarkRepository studyBookmarkRepository;
     private final UserService userService;
-    private final StudyBgImageService studyBgImageService;
+    private final StudyBgImgService studyBgImgService;
 
     @Transactional // 스터디 조회 Service
     public void studyView(Long userCode, Long studyCode) {
         Study study = studyRepository.findById(studyCode)
             .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
 
-        User user = userService.findUserByCode(userCode);
+        User user = userService.findByUserCode(userCode);
 
         StudyView studyView = studyViewRepository.findByUserAndStudy(user, study).orElse(null);
 
@@ -63,7 +63,7 @@ public class StudyViewService {
                 .categories(ListUtil.parseStringList(study.getCategories()))
                 .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
                 .progress(0)
-                .bgImageUrl(studyBgImageService.findBgImageByCode(study.getCode()).getStudyBgImgUrl())
+                .bgImageUrl(studyBgImgService.findByStudyCode(study.getCode()).getStudyBgImgUrl())
                 .isAdmin(Objects.equals(userCode, study.getUser().getCode()))
                 .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, study.getCode()).isPresent())
                 .build())

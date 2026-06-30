@@ -1,4 +1,4 @@
-package com.example.seugoi_back.Study.entity;
+package com.example.seugoi_back.Study.entity.notice;
 
 import com.example.seugoi_back.Common.entity.BaseTime;
 import com.example.seugoi_back.Study.entity.Study;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudyBgImage extends BaseTime {
+public class Notice extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +24,13 @@ public class StudyBgImage extends BaseTime {
     @JoinColumn(name = "user_code")
     private User user;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_code")
-    private Study study; // 스터디
+    private Study study;
 
-    @Column(nullable = false)
-    private String studyBgImgUrl; // 스터디 배경 이미지 url
+    @Column(length = 30)
+    private String title; // 공지 제목
+
+    @Column(length = 200)
+    private String content; // 공지 내용
 }

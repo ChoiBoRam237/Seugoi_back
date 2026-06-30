@@ -43,7 +43,7 @@ public class StudySearchKeywordService {
     }
 
     @Transactional // 검색어 조회 Service
-    public List<StudySearchKeywordResponseDto> findKeywordByCode(Long userCode) {
+    public List<StudySearchKeywordResponseDto> findByUserCode(Long userCode) {
         List<StudySearchKeyword> searchKeyword =
                 studySearchKeywordRepository.findByUser_CodeOrderBySearchedAtDesc(userCode);
 
@@ -56,12 +56,12 @@ public class StudySearchKeywordService {
     }
 
     @Transactional // 검색어 전체 삭제 Service
-    public void deleteAllKeyword(Long userCode) {
+    public void deleteByUserCode(Long userCode) {
         studySearchKeywordRepository.deleteByUser_Code(userCode);
     }
 
     @Transactional // 검색어 삭제 Service
-    public void deleteKeyword(Long keywordCode) {
+    public void deleteByKeywordCode(Long keywordCode) {
         studySearchKeywordRepository.deleteById(keywordCode);
     }
 }

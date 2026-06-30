@@ -30,7 +30,7 @@ public class UserService {
     }
 
     @Transactional // 특정 유저 조회 Service
-    public User findUserByCode(Long userCode) {
+    public User findByUserCode(Long userCode) {
         return userRepository.findById(userCode)
             .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
     }

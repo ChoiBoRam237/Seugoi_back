@@ -1,4 +1,4 @@
-package com.example.seugoi_back.Study.dto.request;
+package com.example.seugoi_back.Study.dto.request.assignment;
 
 import com.example.seugoi_back.Util.TextUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class StudyAsgmtRequestDto {
+public class AsgmtRequestDto {
 
     @Schema(description = "과제 제목", example = "오늘의 과제입니다.")
     String title;

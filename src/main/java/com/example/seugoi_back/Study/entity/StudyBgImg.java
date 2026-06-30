@@ -1,5 +1,6 @@
 package com.example.seugoi_back.Study.entity;
 
+import com.example.seugoi_back.Common.entity.BaseTime;
 import com.example.seugoi_back.User.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudyAsgmtImage {
+public class StudyBgImg extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,14 +23,10 @@ public class StudyAsgmtImage {
     @JoinColumn(name = "user_code")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_code")
-    private Study study;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_asgmt_code")
-    private StudyAsgmt studyAsgmt;
+    private Study study; // 스터디
 
     @Column(nullable = false)
-    private String imageUrlList;
+    private String studyBgImgUrl; // 스터디 배경 이미지 url
 }

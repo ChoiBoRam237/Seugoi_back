@@ -11,10 +11,13 @@ import java.util.List;
 @Getter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class StudyListResponseDto {
+public class StudyBoardResponseDto {
 
     @Schema(name = "code", example = "1")
     private Long code;
+
+    @Schema(name = "target", example = "notice")
+    private String target; // notice or asgmt
 
     @Schema(name = "title", example = "제목")
     private String title;
@@ -28,8 +31,8 @@ public class StudyListResponseDto {
     @Schema(name = "linkUrl", example = "링크 url")
     private String linkUrl;
 
-    @Schema(description = "이미지 파일")
-    List<String> imageList;
+    @Schema(name = "imageList", example = "['이미지 url']")
+    private List<String> imageList;
 
     @Schema(name = "isAdmin", example = "true")
     private Boolean isAdmin;

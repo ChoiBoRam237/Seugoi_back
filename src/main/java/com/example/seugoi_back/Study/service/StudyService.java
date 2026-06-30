@@ -4,10 +4,11 @@ import com.example.seugoi_back.Study.dto.request.StudyRequestDto;
 import com.example.seugoi_back.Study.dto.response.StudyDetailResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
-import com.example.seugoi_back.Study.entity.StudyBgImage;
-import com.example.seugoi_back.Study.entity.StudyBookmark;
+import com.example.seugoi_back.Study.entity.StudyBgImg;
 import com.example.seugoi_back.Study.entity.StudyJoin;
 import com.example.seugoi_back.Study.repository.*;
+import com.example.seugoi_back.Study.service.assignment.AsgmtService;
+import com.example.seugoi_back.Study.service.notice.NoticeService;
 import com.example.seugoi_back.User.entity.User;
 import com.example.seugoi_back.User.repository.UserRepository;
 import com.example.seugoi_back.Util.DateUtil;
@@ -24,12 +25,12 @@ import java.util.*;
 public class StudyService {
     private final UserRepository userRepository;
     private final StudyRepository studyRepository;
-    private final StudyBgImageRepository studyBgImageRepository;
+    private final StudyBgImgRepository studyBgImageRepository;
     private final StudyJoinRepository studyJoinRepository;
     private final StudyBookmarkRepository studyBookmarkRepository;
-    private final StudyBgImageService studyBgImageService;
-    private final StudyAsgmtService studyAsgmtService;
-    private final StudyNoticeService studyNoticeService;
+    private final StudyBgImgService studyBgImgService;
+    private final AsgmtService asgmtService;
+    private final NoticeService noticeService;
     private final StudyViewService studyViewService;
     private final StudySearchKeywordService studySearchKeywordService;
 
@@ -59,8 +60,8 @@ public class StudyService {
         Study savedStudy = studyRepository.save(study);
 
         // 스터디 배경 이미지 저장
-        String studyBgImageUrl = studyBgImageService.saveBgImage(dto.getBgImageUrl());
-        StudyBgImage studyBgImage = StudyBgImage.builder()
+        String studyBgImageUrl = studyBgImgService.saveBgImage(dto.getBgImageUrl());
+        StudyBgImg studyBgImage = StudyBgImg.builder()
             .study(savedStudy)
             .user(user)
             .studyBgImgUrl(studyBgImageUrl)
@@ -130,7 +131,7 @@ public class StudyService {
                 .categories(ListUtil.parseStringList(item.getCategories()))
                 .dDay(DateUtil.calculateDDay(item.getEndPeriod()))
                 .progress(0)
-                .bgImageUrl(studyBgImageService.findBgImageByCode(item.getCode()).getStudyBgImgUrl())
+                .bgImageUrl(studyBgImgService.findByStudyCode(item.getCode()).getStudyBgImgUrl())
                 .isAdmin(Objects.equals(userCode, item.getUser().getCode()))
                 .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, item.getCode()).isPresent())
                 .build())
@@ -140,12 +141,12 @@ public class StudyService {
     }
 
     @Transactional // 특정 스터디 조회 Service
-    public Map<String, Object> findStudyByCode(Long userCode, Long studyCode) {
+    public Map<String, Object> findByStudyCode(Long userCode, Long studyCode) {
         Study study = studyRepository.findById(studyCode)
             .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
 
         // 배경 이미지
-        StudyBgImage bgImage = studyBgImageService.findBgImageByCode(studyCode);
+        StudyBgImg bgImage = studyBgImgService.findByStudyCode(studyCode);
 
         // 내가 이 스터디에 가입했는지 안했는지
         boolean isJoined = studyJoinRepository
@@ -192,7 +193,7 @@ public class StudyService {
     }
 
     @Transactional // 스터디 검색 Service
-    public List<StudyResponseDto> findStudyByKeyword(Long userCode, String keyword) {
+    public List<StudyResponseDto> findByKeyword(Long userCode, String keyword) {
         List<Study> studyList = studyRepository.findByStudyNameContainingIgnoreCaseOrCategoriesContainingIgnoreCase(keyword, keyword);
 
         List<StudyResponseDto> responseDto = studyList.stream()
@@ -202,7 +203,7 @@ public class StudyService {
                 .categories(ListUtil.parseStringList(item.getCategories()))
                 .dDay(DateUtil.calculateDDay(item.getEndPeriod()))
                 .progress(0)
-                .bgImageUrl(studyBgImageService.findBgImageByCode(item.getCode()).getStudyBgImgUrl())
+                .bgImageUrl(studyBgImgService.findByStudyCode(item.getCode()).getStudyBgImgUrl())
                 .isAdmin(Objects.equals(userCode, item.getUser().getCode()))
                 .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, item.getCode()).isPresent())
                 .build())
@@ -251,7 +252,7 @@ public class StudyService {
                 .categories(ListUtil.parseStringList(study.getCategories()))
                 .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
                 .progress(0)
-                .bgImageUrl(studyBgImageService.findBgImageByCode(study.getCode()).getStudyBgImgUrl())
+                .bgImageUrl(studyBgImgService.findByStudyCode(study.getCode()).getStudyBgImgUrl())
                 .isAdmin(Objects.equals(userCode, study.getUser().getCode()))
                 .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, study.getCode()).isPresent())
                 .build())
@@ -261,9 +262,9 @@ public class StudyService {
     }
 
     @Transactional // 스터디 삭제 Service
-    public void deleteStudy(Long studyCode) {
-        studyAsgmtService.deleteAsgmtByStudyCode(studyCode); // 과제 삭제
-        studyNoticeService.deleteNoticeByStudyCode(studyCode); // 공지 삭제
+    public void deleteByStudyCode(Long studyCode) {
+        asgmtService.deleteByStudyCode(studyCode); // 과제 삭제
+        noticeService.deleteByStudyCode(studyCode); // 공지 삭제
         studyRepository.deleteById(studyCode); // 스터디 삭제
     }
 }

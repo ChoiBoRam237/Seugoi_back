@@ -42,7 +42,7 @@ public class StudySearchKeywordController {
     @GetMapping("")
     public ResponseEntity<?> getSearchKeyword(@Parameter(hidden = true) @AuthenticationPrincipal User user) {
         List<StudySearchKeywordResponseDto> responseDto =
-            studySearchKeywordService.findKeywordByCode(user.getCode());
+            studySearchKeywordService.findByUserCode(user.getCode());
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()
@@ -62,7 +62,7 @@ public class StudySearchKeywordController {
     })
     @DeleteMapping("/all")
     public ResponseEntity<?> deleteAllSearchKeyword(@Parameter(hidden = true) @AuthenticationPrincipal User user) {
-        studySearchKeywordService.deleteAllKeyword(user.getCode());
+        studySearchKeywordService.deleteByUserCode(user.getCode());
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()
@@ -81,7 +81,7 @@ public class StudySearchKeywordController {
     })
     @DeleteMapping("/{keywordCode}")
     public ResponseEntity<?> deleteSearchKeyword(@PathVariable Long keywordCode) {
-        studySearchKeywordService.deleteKeyword(keywordCode);
+        studySearchKeywordService.deleteByKeywordCode(keywordCode);
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()

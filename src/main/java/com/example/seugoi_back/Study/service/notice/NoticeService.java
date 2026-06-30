@@ -1,10 +1,10 @@
-package com.example.seugoi_back.Study.service;
+package com.example.seugoi_back.Study.service.notice;
 
-import com.example.seugoi_back.Study.dto.request.StudyNoticeRequestDto;
-import com.example.seugoi_back.Study.dto.response.StudyListResponseDto;
+import com.example.seugoi_back.Study.dto.request.notice.NoticeRequestDto;
+import com.example.seugoi_back.Study.dto.response.StudyBoardResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
-import com.example.seugoi_back.Study.entity.StudyNotice;
-import com.example.seugoi_back.Study.repository.StudyNoticeRepository;
+import com.example.seugoi_back.Study.entity.notice.Notice;
+import com.example.seugoi_back.Study.repository.notice.NoticeRepository;
 import com.example.seugoi_back.Study.repository.StudyRepository;
 import com.example.seugoi_back.User.entity.User;
 import com.example.seugoi_back.User.repository.UserRepository;
@@ -17,33 +17,34 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class StudyNoticeService {
+public class NoticeService {
     private final UserRepository userRepository;
     private final StudyRepository studyRepository;
-    private final StudyNoticeRepository studyNoticeRepository;
+    private final NoticeRepository noticeRepository;
 
     @Transactional // 공지 생성 Service
-    public StudyNotice generateNotice(Long userCode, Long studyCode, StudyNoticeRequestDto dto) {
+    public Notice generateNotice(Long userCode, Long studyCode, NoticeRequestDto dto) {
         User user = userRepository.findById(userCode).orElseThrow();
         Study study = studyRepository.findById(studyCode).orElseThrow();
 
-        StudyNotice studyNotice = StudyNotice.builder()
+        Notice notice = Notice.builder()
             .user(user)
             .study(study)
             .title(dto.getTitle())
             .content(dto.getContent())
             .build();
 
-        return studyNoticeRepository.save(studyNotice);
+        return noticeRepository.save(notice);
     }
 
     @Transactional //  스터디 code에 맞는 모든 공지 조회 Service
-    public List<StudyListResponseDto> findNoticeAll(Long userCode, Long studyCode) {
-        List<StudyNotice> noticeList = studyNoticeRepository.findByStudy_Code(studyCode);
+    public List<StudyBoardResponseDto> findByStudyCode(Long userCode, Long studyCode) {
+        List<Notice> noticeList = noticeRepository.findByStudy_Code(studyCode);
 
-        List<StudyListResponseDto> responseDto = noticeList.stream()
-            .map(item -> StudyListResponseDto.builder()
+        List<StudyBoardResponseDto> responseDto = noticeList.stream()
+            .map(item -> StudyBoardResponseDto.builder()
                 .code(item.getCode())
+                .target("notice")
                 .title(item.getTitle())
                 .content(item.getContent())
                 .isAdmin(Objects.equals(item.getUser().getCode(), userCode))
@@ -55,12 +56,12 @@ public class StudyNoticeService {
     }
 
     @Transactional // 공지 삭제 Service
-    public void deleteNotice(Long studyNoticeCode) {
-        studyNoticeRepository.deleteById(studyNoticeCode);
+    public void deleteByNoticeCode(Long noticeCode) {
+        noticeRepository.deleteById(noticeCode);
     }
 
     @Transactional // 스터디 code에 맞는 공지 삭제
-    public void deleteNoticeByStudyCode(Long studyCode) {
-        studyNoticeRepository.deleteByStudy_Code(studyCode);
+    public void deleteByStudyCode(Long studyCode) {
+        noticeRepository.deleteByStudy_Code(studyCode);
     }
 }

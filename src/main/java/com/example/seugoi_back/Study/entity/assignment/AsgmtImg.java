@@ -1,6 +1,5 @@
-package com.example.seugoi_back.Study.entity;
+package com.example.seugoi_back.Study.entity.assignment;
 
-import com.example.seugoi_back.Common.entity.BaseTime;
 import com.example.seugoi_back.User.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudyNotice extends BaseTime {
+public class AsgmtImg {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,12 +23,9 @@ public class StudyNotice extends BaseTime {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_code")
-    private Study study;
+    @JoinColumn(name = "asgmt_code")
+    private Asgmt asgmt;
 
-    @Column(length = 30)
-    private String title; // 공지 제목
-
-    @Column(length = 200)
-    private String content; // 공지 내용
+    @Column(nullable = false)
+    private String imageUrlList;
 }

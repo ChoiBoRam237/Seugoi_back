@@ -1,7 +1,7 @@
 package com.example.seugoi_back.Study.service;
 
-import com.example.seugoi_back.Study.entity.StudyBgImage;
-import com.example.seugoi_back.Study.repository.StudyBgImageRepository;
+import com.example.seugoi_back.Study.entity.StudyBgImg;
+import com.example.seugoi_back.Study.repository.StudyBgImgRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,8 +15,8 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class StudyBgImageService {
-    private final StudyBgImageRepository studyBgImageRepository;
+public class StudyBgImgService {
+    private final StudyBgImgRepository studyBgImageRepository;
     private final String UPLOAD_DIR = "D:\\2026년\\Projects\\seugoi_back\\uploads\\study";
     private final String UPLOAD_FILE_DIR = "/uploads/study/";
 
@@ -48,8 +48,8 @@ public class StudyBgImageService {
     }
 
     @Transactional // 스터디 id에 맞는 이미지 조회 Service
-    public StudyBgImage findBgImageByCode(Long studyCode) {
-        StudyBgImage studyBgImage = studyBgImageRepository.findByStudy_Code(studyCode)
+    public StudyBgImg findByStudyCode(Long studyCode) {
+        StudyBgImg studyBgImage = studyBgImageRepository.findByStudy_Code(studyCode)
                 .orElseThrow(() -> new RuntimeException("이미지를 찾을 수 없습니다."));
 
         return studyBgImage;
