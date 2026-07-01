@@ -54,7 +54,7 @@ public class AsgmtService {
             AsgmtImg asgmtImg = AsgmtImg.builder()
                 .user(user)
                 .asgmt(asgmt)
-                .imageUrlList(mapper.writeValueAsString(asgmtImageUrl))
+                .imgUrlList(mapper.writeValueAsString(asgmtImageUrl))
                 .build();
             asgmtImgRepository.save(asgmtImg);
         }
@@ -76,7 +76,7 @@ public class AsgmtService {
                 .linkUrl(item.getLinkUrl())
                 .imageList(asgmtImgService.findByAsgmtCode(item.getCode())
                             .stream()
-                            .flatMap(image -> ListUtil.parseStringList(image.getImageUrlList()).stream())
+                            .flatMap(image -> ListUtil.parseStringList(image.getImgUrlList()).stream())
                             .toList()
                 )
                 .isAdmin(Objects.equals(item.getUser().getCode(), userCode))
@@ -101,7 +101,7 @@ public class AsgmtService {
                 .linkUrl(asgmt.getLinkUrl())
                 .imageList(
                     asgmtImage.stream()
-                    .flatMap(image -> ListUtil.parseStringList(image.getImageUrlList()).stream())
+                    .flatMap(image -> ListUtil.parseStringList(image.getImgUrlList()).stream())
                     .toList()
                 )
                 .isAdmin(Objects.equals(asgmt.getUser().getCode(), userCode))

@@ -21,8 +21,8 @@ public class UserService {
                 User user = User.builder()
                     .kakaoId(String.valueOf(userInfo.getId()))
                     .email(userInfo.getKakaoAccount().getEmail())
-                    .nickname(userInfo.getKakaoAccount().getProfile().getNickName())
-                    .profileImageUrl(userInfo.getKakaoAccount().getProfile().getProfileImageUrl())
+                    .name(userInfo.getKakaoAccount().getProfile().getNickName())
+                    .profileImgUrl(userInfo.getKakaoAccount().getProfile().getProfileImageUrl())
                     .build();
 
                 return userRepository.save(user);

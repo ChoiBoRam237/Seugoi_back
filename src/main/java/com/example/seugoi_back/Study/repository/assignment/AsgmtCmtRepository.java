@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface AsgmtCmtRepository extends JpaRepository<AsgmtCmt, Long> {
-    List<AsgmtCmt> findByStudy_Code(Long studyCode);
+    List<AsgmtCmt> findByUser_CodeAndAsgmt_Code(Long userCode, Long asgmtCode);
     List<AsgmtCmt> findByAsgmt_Code(Long asgmtCode);
     void deleteByStudy_Code(Long studyCode);
     void deleteByAsgmt_Code(Long asgmtCode);

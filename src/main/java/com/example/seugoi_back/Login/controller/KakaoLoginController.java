@@ -70,9 +70,9 @@ public class KakaoLoginController {
                 .accessToken(token.get("accessToken").toString())
                 .refreshToken(token.get("refreshToken").toString())
                 .userCode(user.getCode())
-                .nickName(user.getNickname())
+                .name(user.getName())
                 .email(user.getEmail())
-                .profileImageUrl(user.getProfileImageUrl())
+                .profileImgUrl(user.getProfileImgUrl())
                 .build();
 
         return ResponseEntity.ok(

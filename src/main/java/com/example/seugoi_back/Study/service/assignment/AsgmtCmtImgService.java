@@ -22,8 +22,8 @@ public class AsgmtCmtImgService {
     private final String UPLOAD_DIR = "D:\\2026년\\Projects\\seugoi_back\\uploads\\study\\asgmt\\cmt";
     private final String UPLOAD_FILE_DIR = "/uploads/study/asgmt/cmt/";
 
-    public List<String> savedAsgmtCmtImg(List<MultipartFile> fileList) {
-        if (fileList != null || fileList.isEmpty()) {
+    public List<String> savedAsgmtCmtImg(List<MultipartFile> fileList) { // 이미지 저장 Service
+        if (fileList == null || fileList.isEmpty()) {
             throw new IllegalArgumentException("이미지를 업로드해주세요.");
         }
 

@@ -64,7 +64,7 @@ public class StudyService {
         StudyBgImg studyBgImage = StudyBgImg.builder()
             .study(savedStudy)
             .user(user)
-            .studyBgImgUrl(studyBgImageUrl)
+            .imgUrl(studyBgImageUrl)
             .build();
         studyBgImageRepository.save(studyBgImage);
 
@@ -131,7 +131,7 @@ public class StudyService {
                 .categories(ListUtil.parseStringList(item.getCategories()))
                 .dDay(DateUtil.calculateDDay(item.getEndPeriod()))
                 .progress(0)
-                .bgImageUrl(studyBgImgService.findByStudyCode(item.getCode()).getStudyBgImgUrl())
+                .bgImageUrl(studyBgImgService.findByStudyCode(item.getCode()).getImgUrl())
                 .isAdmin(Objects.equals(userCode, item.getUser().getCode()))
                 .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, item.getCode()).isPresent())
                 .build())
@@ -160,8 +160,8 @@ public class StudyService {
 
         // 관리자 정보
         User adminResponseDto = User.builder()
-            .nickname(study.getUser().getNickname())
-            .profileImageUrl(study.getUser().getProfileImageUrl())
+            .name(study.getUser().getName())
+            .profileImgUrl(study.getUser().getProfileImgUrl())
             .build();
 
         StudyDetailResponseDto studyResponseDto =
@@ -177,7 +177,7 @@ public class StudyService {
                 .introduction(ListUtil.parseStringList(study.getIntroduction()))
                 .description(study.getDescription())
                 .recommend(ListUtil.parseStringList(study.getRecommend()))
-                .bgImageUrl(bgImage.getStudyBgImgUrl())
+                .bgImageUrl(bgImage.getImgUrl())
                 .isJoined(isJoined)
                 .isBookmark(isBookmark)
                 .build();
@@ -203,7 +203,7 @@ public class StudyService {
                 .categories(ListUtil.parseStringList(item.getCategories()))
                 .dDay(DateUtil.calculateDDay(item.getEndPeriod()))
                 .progress(0)
-                .bgImageUrl(studyBgImgService.findByStudyCode(item.getCode()).getStudyBgImgUrl())
+                .bgImageUrl(studyBgImgService.findByStudyCode(item.getCode()).getImgUrl())
                 .isAdmin(Objects.equals(userCode, item.getUser().getCode()))
                 .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, item.getCode()).isPresent())
                 .build())
@@ -252,7 +252,7 @@ public class StudyService {
                 .categories(ListUtil.parseStringList(study.getCategories()))
                 .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
                 .progress(0)
-                .bgImageUrl(studyBgImgService.findByStudyCode(study.getCode()).getStudyBgImgUrl())
+                .bgImageUrl(studyBgImgService.findByStudyCode(study.getCode()).getImgUrl())
                 .isAdmin(Objects.equals(userCode, study.getUser().getCode()))
                 .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, study.getCode()).isPresent())
                 .build())

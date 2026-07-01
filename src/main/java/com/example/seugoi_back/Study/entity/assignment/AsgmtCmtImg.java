@@ -27,5 +27,5 @@ public class AsgmtCmtImg extends BaseTime {
     private AsgmtCmt asgmtCmt;
 
     @Column(nullable = false)
-    private String imageUrlList;
+    private String imgUrlList;
 }

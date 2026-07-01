@@ -6,7 +6,7 @@ import com.example.seugoi_back.Study.dto.request.assignment.AsgmtRequestDto;
 import com.example.seugoi_back.Study.dto.response.CommonCreateResponseDto;
 import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyBoardResponseDto;
-import com.example.seugoi_back.Study.dto.response.assignment.AsgmtCmtResponseDto;
+import com.example.seugoi_back.Study.dto.response.assignment.AsgmtCmtListResponseDto;
 import com.example.seugoi_back.Study.entity.assignment.Asgmt;
 import com.example.seugoi_back.Study.entity.assignment.AsgmtCmt;
 import com.example.seugoi_back.Study.service.assignment.AsgmtCmtService;
@@ -26,8 +26,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @SecurityRequirement(name = "BearerAuth")
 @RestController
@@ -165,7 +163,7 @@ public class AsgmtController {
             description = "과제 댓글 조회 성공",
             content = @Content(
                 schema = @Schema(
-                    implementation = AsgmtCmtResponseDto.class
+                    implementation = AsgmtCmtListResponseDto.class
                 )
             )
         )
@@ -175,7 +173,7 @@ public class AsgmtController {
         @Parameter(hidden = true) @AuthenticationPrincipal User user,
         @RequestParam Long asgmtCode
     ) {
-        List<AsgmtCmtResponseDto> responseDto = asgmtCmtService.findByAsgmtCode(user.getCode(), asgmtCode);
+        AsgmtCmtListResponseDto responseDto = asgmtCmtService.findByAsgmtCode(user.getCode(), asgmtCode);
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()

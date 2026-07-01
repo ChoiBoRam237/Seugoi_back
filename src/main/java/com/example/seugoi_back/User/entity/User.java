@@ -27,8 +27,8 @@ public class User extends BaseTime {
     private String email; // 이메일
 
     @Column
-    private String nickname; // 사용자 이름
+    private String name; // 사용자 이름
 
     @Column
-    private String profileImageUrl; // 프로필 이미지 url
+    private String profileImgUrl; // 프로필 이미지 url
 }

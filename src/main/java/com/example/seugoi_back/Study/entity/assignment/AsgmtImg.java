@@ -27,5 +27,5 @@ public class AsgmtImg {
     private Asgmt asgmt;
 
     @Column(nullable = false)
-    private String imageUrlList;
+    private String imgUrlList;
 }

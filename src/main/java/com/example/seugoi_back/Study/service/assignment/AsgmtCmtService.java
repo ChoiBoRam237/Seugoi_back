@@ -1,6 +1,8 @@
 package com.example.seugoi_back.Study.service.assignment;
 
+import com.example.seugoi_back.Login.dto.UserResponseDto;
 import com.example.seugoi_back.Study.dto.request.assignment.AsgmtCmtRequestDto;
+import com.example.seugoi_back.Study.dto.response.assignment.AsgmtCmtListResponseDto;
 import com.example.seugoi_back.Study.dto.response.assignment.AsgmtCmtResponseDto;
 import com.example.seugoi_back.Study.entity.assignment.Asgmt;
 import com.example.seugoi_back.Study.entity.assignment.AsgmtCmt;
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,7 +53,7 @@ public class AsgmtCmtService {
             AsgmtCmtImg asgmtCmtImg = AsgmtCmtImg.builder()
                 .user(user)
                 .asgmtCmt(asgmtCmt)
-                .imageUrlList(mapper.writeValueAsString(cmtImageUrl))
+                .imgUrlList(mapper.writeValueAsString(cmtImageUrl))
                 .build();
             asgmtCmtImgRepository.save(asgmtCmtImg);
         }
@@ -59,24 +62,44 @@ public class AsgmtCmtService {
     }
 
     @Transactional // 과제 code에 맞는 모든 댓글 조회 Service
-    public List<AsgmtCmtResponseDto> findByAsgmtCode(Long userCode, Long asgmtCode) {
+    public AsgmtCmtListResponseDto findByAsgmtCode(Long userCode, Long asgmtCode) {
+        List<AsgmtCmt> myCmtList = asgmtCmtRepository.findByUser_CodeAndAsgmt_Code(userCode, asgmtCode);
+
+        // 내가 제출한 과제가 없으면
+        if (myCmtList.isEmpty()) {
+            return AsgmtCmtListResponseDto.builder()
+                    .submitted(false)
+                    .comments(Collections.emptyList())
+                    .build();
+        }
+
         List<AsgmtCmt> asgmtCmtList = asgmtCmtRepository.findByAsgmt_Code(asgmtCode);
 
         List<AsgmtCmtResponseDto> responseDto = asgmtCmtList.stream()
             .map(item -> AsgmtCmtResponseDto.builder()
                 .code(item.getCode())
                 .comment(item.getComment())
-                .imageList(asgmtCmtImgService.findByAsgmtCmtCode(item.getCode())
-                        .stream()
-                        .flatMap(image -> ListUtil.parseStringList(image.getImageUrlList()).stream())
-                        .toList()
+                .imgList(asgmtCmtImgService.findByAsgmtCmtCode(item.getCode())
+                    .stream()
+                    .flatMap(image -> ListUtil.parseStringList(image.getImgUrlList()).stream())
+                    .toList()
                 )
                 .isWriter(Objects.equals(item.getUser().getCode(), userCode))
                 .createdAt(item.getCreatedAt())
+                .user(
+                    UserResponseDto.builder()
+                        .userCode(item.getUser().getCode())
+                        .name(item.getUser().getName())
+                        .profileImgUrl(item.getUser().getProfileImgUrl())
+                        .build()
+                )
                 .build())
             .toList();
 
-        return responseDto;
+        return AsgmtCmtListResponseDto.builder()
+                .submitted(true)
+                .comments(responseDto)
+                .build();
     }
 
     @Transactional // 댓글 code에 맞는 댓글 삭제 Service

@@ -110,7 +110,7 @@ public class StudyBookmarkService {
                 .categories(ListUtil.parseStringList(study.getCategories()))
                 .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
                 .progress(0)
-                .bgImageUrl(studyBgImgService.findByStudyCode(study.getCode()).getStudyBgImgUrl())
+                .bgImageUrl(studyBgImgService.findByStudyCode(study.getCode()).getImgUrl())
                 .isAdmin(Objects.equals(userCode, study.getUser().getCode()))
                 .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, study.getCode()).isPresent())
                 .build())
