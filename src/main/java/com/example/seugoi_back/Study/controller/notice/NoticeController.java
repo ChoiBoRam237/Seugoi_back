@@ -23,16 +23,16 @@ import org.springframework.web.bind.annotation.*;
 @SecurityRequirement(name = "BearerAuth")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v3/api/study-notice")
-@Tag(name = "Study Notice", description = "스터디 공지 관련 API")
+@RequestMapping("/v3/api/notice")
+@Tag(name = "Notice", description = "공지 관련 API")
 public class NoticeController {
     private final NoticeService noticeService;
 
-    @Operation(summary = "스터디 공지 생성 API", description = "스터디 공지를 생성합니다.")
+    @Operation(summary = "공지 생성 API", description = "공지를 생성합니다.")
     @ApiResponses({
         @ApiResponse(
             responseCode = "true",
-            description = "스터디 공지 생성 성공",
+            description = "공지 생성 성공",
             content = @Content(
                 schema = @Schema(
                     implementation = CommonStudyResponseDto.class
@@ -58,27 +58,27 @@ public class NoticeController {
         return ResponseEntity.ok(
             CommonApiResponse.builder()
                 .success(true)
-                .message("스터디 공지 생성 성공")
+                .message("공지 생성 성공")
                 .data(responseDto)
                 .build()
         );
     }
 
-    @Operation(summary = "스터디 특정 공지 삭제 API", description = "스터디 특정 공지를 삭제합니다.")
+    @Operation(summary = "공지 삭제 API", description = "공지를 삭제합니다.")
     @ApiResponses({
         @ApiResponse(
             responseCode = "true",
-            description = "스터디 특정 공지 삭제 성공"
+            description = "공지 삭제 성공"
         )
     })
-    @DeleteMapping("")
-    public ResponseEntity<?> deleteByNoticeCode(@RequestParam Long noticeCode) {
+    @DeleteMapping("/{noticeCode}")
+    public ResponseEntity<?> deleteByNoticeCode(@PathVariable Long noticeCode) {
         noticeService.deleteByNoticeCode(noticeCode);
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()
                 .success(true)
-                .message("스터디 특정 공지 삭제 성공")
+                .message("공지 삭제 성공")
                 .build()
         );
     }

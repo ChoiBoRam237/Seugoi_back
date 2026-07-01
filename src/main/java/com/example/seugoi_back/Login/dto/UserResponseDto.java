@@ -1,11 +1,13 @@
 package com.example.seugoi_back.Login.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserResponseDto {
 
     @Schema(name = "accessToken", example = "accessToken")

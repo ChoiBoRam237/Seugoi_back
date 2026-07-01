@@ -2,6 +2,7 @@ package com.example.seugoi_back.Study.entity.assignment;
 
 import com.example.seugoi_back.Common.entity.BaseTime;
 import com.example.seugoi_back.User.entity.User;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AsgmtCmtImg extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
