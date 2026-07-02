@@ -1,6 +1,7 @@
 package com.example.seugoi_back.Study.service.assignment;
 
 import com.example.seugoi_back.Study.dto.request.assignment.AsgmtRequestDto;
+import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyBoardResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.Study.entity.assignment.AsgmtImg;
@@ -10,7 +11,6 @@ import com.example.seugoi_back.Study.repository.assignment.AsgmtRepository;
 import com.example.seugoi_back.Study.repository.StudyRepository;
 import com.example.seugoi_back.User.entity.User;
 import com.example.seugoi_back.User.repository.UserRepository;
-import com.example.seugoi_back.Util.ListUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,7 +39,7 @@ public class AsgmtService {
             .study(study)
             .title(dto.getTitle())
             .content(dto.getContent())
-            .linkName(dto.getLinkName())
+            .linkName(dto.getLinkName() != null ? dto.getLinkName() : dto.getLinkUrl())
             .linkUrl(dto.getLinkUrl())
             .build();
         Asgmt savedAsgmt = asgmtRepository.save(asgmt);
@@ -48,12 +48,14 @@ public class AsgmtService {
         if (dto.getImageList() != null && !dto.getImageList().isEmpty()) {
             // 스터디 과제 이미지 저장
             List<String> asgmtImageUrl = asgmtImgService.savedAsgmtImg(dto.getImageList());
-            AsgmtImg asgmtImg = AsgmtImg.builder()
-                .user(user)
-                .asgmt(asgmt)
-                .imgUrlList(ListUtil.parseListToString(asgmtImageUrl))
-                .build();
-            asgmtImgRepository.save(asgmtImg);
+            for (String img : asgmtImageUrl) {
+                AsgmtImg asgmtImg = AsgmtImg.builder()
+                    .user(user)
+                    .asgmt(asgmt)
+                    .imgUrl(img)
+                    .build();
+                asgmtImgRepository.save(asgmtImg);
+            }
         }
 
         return savedAsgmt;
@@ -71,11 +73,7 @@ public class AsgmtService {
                 .content(item.getContent())
                 .linkName(item.getLinkName())
                 .linkUrl(item.getLinkUrl())
-                .imageList(asgmtImgService.findByAsgmtCode(item.getCode())
-                            .stream()
-                            .flatMap(image -> ListUtil.parseStringToList(image.getImgUrlList()).stream())
-                            .toList()
-                )
+                .imgList(asgmtImgService.findByAsgmtCode(item.getCode()))
                 .isAdmin(Objects.equals(item.getUser().getCode(), userCode))
                 .createdAt(item.getCreatedAt())
                 .build())
@@ -87,20 +85,16 @@ public class AsgmtService {
     @Transactional // 특정 과제 조회 Service
     public StudyBoardResponseDto findByAsgmtCode(Long userCode, Long asgmtCode) {
         Asgmt asgmt = asgmtRepository.findById(asgmtCode).orElseThrow();
-        List<AsgmtImg> asgmtImage = asgmtImgService.findByAsgmtCode(asgmtCode);
 
         StudyBoardResponseDto responseDto =
             StudyBoardResponseDto.builder()
                 .code(asgmt.getCode())
+                .studyCode(asgmt.getStudy().getCode())
                 .title(asgmt.getTitle())
                 .content(asgmt.getContent())
                 .linkName(asgmt.getLinkName())
                 .linkUrl(asgmt.getLinkUrl())
-                .imageList(
-                    asgmtImage.stream()
-                    .flatMap(image -> ListUtil.parseStringToList(image.getImgUrlList()).stream())
-                    .toList()
-                )
+                .imgList(asgmtImgService.findByAsgmtCode(asgmt.getCode()))
                 .isAdmin(Objects.equals(asgmt.getUser().getCode(), userCode))
                 .createdAt(asgmt.getCreatedAt())
                 .build();
@@ -108,7 +102,26 @@ public class AsgmtService {
         return responseDto;
     }
 
-    // TODO : 스터디 과제 수정 service
+    @Transactional // 과제 수정 Service
+    public CommonStudyResponseDto updateAsgmt(Long asgmtCode, AsgmtRequestDto dto, List<Long> removeImgCodeList) {
+        Asgmt asgmt = asgmtRepository.findById(asgmtCode)
+            .orElseThrow(() -> new RuntimeException("과제를 찾을 수 없습니다"));
+
+        if (
+            (dto.getImageList() != null && !dto.getImageList().isEmpty()) ||
+            (removeImgCodeList != null && !removeImgCodeList.isEmpty())
+        ) {
+            asgmtImgService.updateImgUrl(asgmtCode, dto.getImageList(), removeImgCodeList);
+        }
+
+        asgmt.update(dto);
+
+        return CommonStudyResponseDto.builder()
+                .code(asgmt.getCode())
+                .userCode(asgmt.getUser().getCode())
+                .studyCode(asgmt.getStudy().getCode())
+                .build();
+    }
 
     @Transactional // 과제 삭제 Service
     public void deleteByAsgmtCode(Long asgmtCode) {

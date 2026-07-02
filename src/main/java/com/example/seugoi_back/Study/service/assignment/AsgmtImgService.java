@@ -1,7 +1,11 @@
 package com.example.seugoi_back.Study.service.assignment;
 
+import com.example.seugoi_back.Common.response.CommonImgResponseDto;
+import com.example.seugoi_back.Study.entity.assignment.Asgmt;
 import com.example.seugoi_back.Study.entity.assignment.AsgmtImg;
 import com.example.seugoi_back.Study.repository.assignment.AsgmtImgRepository;
+import com.example.seugoi_back.Study.repository.assignment.AsgmtRepository;
+import com.example.seugoi_back.Util.FileUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +22,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class AsgmtImgService {
+    private final AsgmtRepository asgmtRepository;
     private final AsgmtImgRepository asgmtImgRepository;
     private final String UPLOAD_DIR = "D:\\2026년\\Projects\\seugoi_back\\uploads\\study\\asgmt";
     private final String UPLOAD_FILE_DIR = "/uploads/study/asgmt/";
@@ -63,7 +68,47 @@ public class AsgmtImgService {
     }
 
     @Transactional // 과제 code에 맞는 이미지 조회 Service
-    public List<AsgmtImg> findByAsgmtCode(Long asgmtCode) {
+    public List<CommonImgResponseDto> findByAsgmtCode(Long asgmtCode) {
+        List<AsgmtImg> imgList = asgmtImgRepository.findByAsgmt_Code(asgmtCode);
+
+        return imgList.stream()
+                .map(item -> CommonImgResponseDto.builder()
+                    .code(item.getCode())
+                    .imgUrl(item.getImgUrl())
+                    .build()
+                ).toList();
+    }
+
+    @Transactional // 과제 code에 맞는 이미지 수정 Service
+    public List<AsgmtImg> updateImgUrl(Long asgmtCode, List<MultipartFile> imageList, List<Long> removeImgCodeList) {
+        Asgmt asgmt = asgmtRepository.findById(asgmtCode).orElseThrow();
+
+        // 지울 이미지가 있을 경우
+        if (removeImgCodeList != null && !removeImgCodeList.isEmpty()) {
+            for (Long imgCode : removeImgCodeList) {
+                AsgmtImg img = asgmtImgRepository.findById(imgCode)
+                    .orElseThrow(() -> new RuntimeException("이미지를 찾을 수 없습니다."));
+
+                FileUtil.deleteImg(img.getImgUrl()); // 파일 삭제
+                asgmtImgRepository.deleteById(imgCode);  // DB 삭제
+            }
+        }
+
+        if (imageList != null && !imageList.isEmpty()) {
+            // 새 이미지 저장
+            List<String> newImgUrlList = savedAsgmtImg(imageList);
+
+            // DB 저장
+            for (String imgUrl : newImgUrlList) {
+                AsgmtImg asgmtImg = AsgmtImg.builder()
+                        .user(asgmt.getUser())
+                        .asgmt(asgmt)
+                        .imgUrl(imgUrl)
+                        .build();
+                asgmtImgRepository.save(asgmtImg);
+            }
+        }
+
         return asgmtImgRepository.findByAsgmt_Code(asgmtCode);
     }
 

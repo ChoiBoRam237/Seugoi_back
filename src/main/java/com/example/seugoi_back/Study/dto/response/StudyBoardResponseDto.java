@@ -1,5 +1,6 @@
 package com.example.seugoi_back.Study.dto.response;
 
+import com.example.seugoi_back.Common.response.CommonImgResponseDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -35,7 +36,7 @@ public class StudyBoardResponseDto {
     private String linkUrl;
 
     @Schema(name = "imageList", example = "['이미지 url']")
-    private List<String> imageList;
+    private List<CommonImgResponseDto> imgList;
 
     @Schema(name = "isAdmin", example = "true")
     private Boolean isAdmin;

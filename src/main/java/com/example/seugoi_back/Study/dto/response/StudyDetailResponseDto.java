@@ -1,5 +1,6 @@
 package com.example.seugoi_back.Study.dto.response;
 
+import com.example.seugoi_back.Common.response.CommonImgResponseDto;
 import com.example.seugoi_back.User.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -48,7 +49,7 @@ public class StudyDetailResponseDto {
     private List<String> recommend; // 추천글
 
     @Schema(name = "bgImageUrl", example = "aaa.png")
-    private String bgImageUrl; // 스터디 배경 이미지
+    private CommonImgResponseDto bgImageUrl; // 스터디 배경 이미지
 
     @Schema(name = "isJoined", example = "true")
     private Boolean isJoined; // 스터디 가입 여부

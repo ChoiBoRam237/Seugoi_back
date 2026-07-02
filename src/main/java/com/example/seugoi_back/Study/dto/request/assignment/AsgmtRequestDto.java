@@ -32,14 +32,4 @@ public class AsgmtRequestDto {
 
     @Schema(description = "이미지 파일")
     List<MultipartFile> imageList;
-
-    @AssertTrue(message = "제목, 내용, 링크, 이미지 중 하나 이상은 존재해야 합니다.")
-    @JsonIgnore
-    public boolean isAsgmtValid() {
-        return TextUtil.hasText(title)
-            || TextUtil.hasText(content)
-            || TextUtil.hasText(linkName)
-            || TextUtil.hasText(linkUrl)
-            || (imageList != null && !imageList.isEmpty());
-    }
 }

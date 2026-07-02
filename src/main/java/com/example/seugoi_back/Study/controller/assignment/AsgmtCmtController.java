@@ -1,6 +1,7 @@
 package com.example.seugoi_back.Study.controller.assignment;
 
 import com.example.seugoi_back.Common.response.CommonApiResponse;
+import com.example.seugoi_back.Common.response.CommonImgResponseDto;
 import com.example.seugoi_back.Study.dto.request.assignment.AsgmtCmtRequestDto;
 import com.example.seugoi_back.Study.dto.response.CommonCreateResponseDto;
 import com.example.seugoi_back.Study.dto.response.assignment.AsgmtCmtListResponseDto;
@@ -123,14 +124,14 @@ public class AsgmtCmtController {
             description = "과제 댓글 이미지 조회 성공",
             content = @Content(
                 schema = @Schema(
-                    implementation = AsgmtCmtImg.class
+                    implementation = CommonImgResponseDto.class
                 )
             )
         )
     })
     @GetMapping("/imgList")
     public ResponseEntity<?> getAsgmtCmtImgList(@RequestParam Long asgmtCmtCode) {
-        List<AsgmtCmtImg> imgList = asgmtCmtImgService.findByAsgmtCmtCode(asgmtCmtCode);
+        List<CommonImgResponseDto> imgList = asgmtCmtImgService.findByAsgmtCmtCode(asgmtCmtCode);
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()

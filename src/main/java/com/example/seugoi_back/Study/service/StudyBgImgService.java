@@ -1,5 +1,6 @@
 package com.example.seugoi_back.Study.service;
 
+import com.example.seugoi_back.Common.response.CommonImgResponseDto;
 import com.example.seugoi_back.Study.entity.StudyBgImg;
 import com.example.seugoi_back.Study.repository.StudyBgImgRepository;
 import jakarta.transaction.Transactional;
@@ -48,14 +49,17 @@ public class StudyBgImgService {
     }
 
     @Transactional // 스터디 id에 맞는 이미지 조회 Service
-    public StudyBgImg findByStudyCode(Long studyCode) {
+    public CommonImgResponseDto findByStudyCode(Long studyCode) {
         StudyBgImg studyBgImage = studyBgImageRepository.findByStudy_Code(studyCode)
                 .orElseThrow(() -> new RuntimeException("이미지를 찾을 수 없습니다."));
 
-        return studyBgImage;
+        return CommonImgResponseDto.builder()
+                .code(studyBgImage.getCode())
+                .imgUrl(studyBgImage.getImgUrl())
+                .build();
     }
 
-    @Transactional // 스터디 code에 맞는 이미지 수정
+    @Transactional // 스터디 code에 맞는 이미지 수정 Service
     public StudyBgImg updateImgUrl(Long studyCode, MultipartFile imgUrl) {
         StudyBgImg studyBgImg = studyBgImageRepository.findByStudy_Code(studyCode)
             .orElseThrow(() -> new RuntimeException("이미지를 찾을 수 없습니다."));

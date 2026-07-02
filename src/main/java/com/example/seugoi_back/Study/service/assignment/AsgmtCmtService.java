@@ -47,12 +47,14 @@ public class AsgmtCmtService {
         if (dto.getImageList() != null && !dto.getImageList().isEmpty()) {
             // 과제 댓글 이미지 저장
             List<String> cmtImageUrl = asgmtCmtImgService.savedAsgmtCmtImg(dto.getImageList());
-            AsgmtCmtImg asgmtCmtImg = AsgmtCmtImg.builder()
-                .user(user)
-                .asgmtCmt(asgmtCmt)
-                .imgUrlList(ListUtil.parseListToString(cmtImageUrl))
-                .build();
-            asgmtCmtImgRepository.save(asgmtCmtImg);
+            for (String img : cmtImageUrl) {
+                AsgmtCmtImg asgmtCmtImg = AsgmtCmtImg.builder()
+                    .user(user)
+                    .asgmtCmt(asgmtCmt)
+                    .imgUrl(img)
+                    .build();
+                asgmtCmtImgRepository.save(asgmtCmtImg);
+            }
         }
 
         return savedCmt;
@@ -76,11 +78,7 @@ public class AsgmtCmtService {
             .map(item -> AsgmtCmtResponseDto.builder()
                 .code(item.getCode())
                 .comment(item.getComment())
-                .imgList(asgmtCmtImgService.findByAsgmtCmtCode(item.getCode())
-                    .stream()
-                    .flatMap(image -> ListUtil.parseStringToList(image.getImgUrlList()).stream())
-                    .toList()
-                )
+                .imgList(asgmtCmtImgService.findByAsgmtCmtCode(item.getCode()))
                 .isWriter(Objects.equals(item.getUser().getCode(), userCode))
                 .createdAt(item.getCreatedAt())
                 .user(

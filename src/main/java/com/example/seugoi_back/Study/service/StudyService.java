@@ -1,5 +1,6 @@
 package com.example.seugoi_back.Study.service;
 
+import com.example.seugoi_back.Common.response.CommonImgResponseDto;
 import com.example.seugoi_back.Study.dto.request.StudyRequestDto;
 import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyDetailResponseDto;
@@ -144,7 +145,7 @@ public class StudyService {
             .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
 
         // 배경 이미지
-        StudyBgImg bgImage = studyBgImgService.findByStudyCode(studyCode);
+        CommonImgResponseDto bgImage = studyBgImgService.findByStudyCode(studyCode);
 
         // 내가 이 스터디에 가입했는지 안했는지
         boolean isJoined = studyJoinRepository
@@ -177,7 +178,7 @@ public class StudyService {
                 .introduction(ListUtil.parseStringToList(study.getIntroduction()))
                 .description(study.getDescription())
                 .recommend(ListUtil.parseStringToList(study.getRecommend()))
-                .bgImageUrl(bgImage.getImgUrl())
+                .bgImageUrl(bgImage)
                 .isJoined(isJoined)
                 .isBookmark(isBookmark)
                 .build();

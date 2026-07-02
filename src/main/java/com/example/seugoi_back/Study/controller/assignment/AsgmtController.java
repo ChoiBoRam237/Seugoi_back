@@ -22,6 +22,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @SecurityRequirement(name = "BearerAuth")
 @RestController
 @RequiredArgsConstructor
@@ -94,7 +96,34 @@ public class AsgmtController {
         );
     }
 
-    // TODO : 스터디 과제 수정 api
+    @Operation(summary = "과제 수정 API", description = "과제를 수정합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "true",
+            description = "과제 수정 성공",
+            content = @Content(
+                schema = @Schema(
+                    implementation = CommonStudyResponseDto.class
+                )
+            )
+        )
+    })
+    @PatchMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateByAsgmtCode(
+        @RequestParam Long asgmtCode,
+        @ModelAttribute AsgmtRequestDto dto,
+        @RequestParam(required = false) List<Long> removeImgCodeList
+    ) {
+        CommonStudyResponseDto responseDto = asgmtService.updateAsgmt(asgmtCode, dto, removeImgCodeList);
+
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("과제 수정 성공")
+                .data(responseDto)
+                .build()
+        );
+    }
 
     @Operation(summary = "과제 삭제 API", description = "과제를 삭제합니다.")
     @ApiResponses({

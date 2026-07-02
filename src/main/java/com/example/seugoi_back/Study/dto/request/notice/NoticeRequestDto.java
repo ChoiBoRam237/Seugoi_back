@@ -20,10 +20,4 @@ public class NoticeRequestDto {
 
     @Schema(description = "공지 내용", example = "공지 내용")
     String content;
-
-    @AssertTrue(message = "제목, 내용 중 하나 이상은 존재해야 합니다.")
-    @JsonIgnore
-    public boolean isNoticeValue() {
-        return TextUtil.hasText(title) || TextUtil.hasText(content);
-    }
 }

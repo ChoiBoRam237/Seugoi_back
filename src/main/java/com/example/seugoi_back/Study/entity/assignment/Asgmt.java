@@ -1,8 +1,10 @@
 package com.example.seugoi_back.Study.entity.assignment;
 
 import com.example.seugoi_back.Common.entity.BaseTime;
+import com.example.seugoi_back.Study.dto.request.assignment.AsgmtRequestDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.User.entity.User;
+import com.example.seugoi_back.Util.ListUtil;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,4 +41,12 @@ public class Asgmt extends BaseTime {
 
     @Column
     private String linkUrl; // 링크 url
+
+    public void update(AsgmtRequestDto dto) {
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
+        if (dto.getLinkName() != null) this.linkName = dto.getLinkName();
+        else this.linkName = dto.getLinkUrl();
+        this.linkUrl = dto.getLinkUrl();
+    }
 }

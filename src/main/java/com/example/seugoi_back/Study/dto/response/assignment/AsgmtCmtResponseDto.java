@@ -1,6 +1,8 @@
 package com.example.seugoi_back.Study.dto.response.assignment;
 
+import com.example.seugoi_back.Common.response.CommonImgResponseDto;
 import com.example.seugoi_back.Login.dto.UserResponseDto;
+import com.example.seugoi_back.Study.entity.assignment.AsgmtCmtImg;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +21,7 @@ public class AsgmtCmtResponseDto {
     private String comment;
 
     @Schema(name = "imgList", example = "['이미지 url']")
-    private List<String> imgList;
+    private List<CommonImgResponseDto> imgList;
 
     @Schema(name = "isWriter", example = "true")
     private Boolean isWriter; // 작성자인지 아닌지

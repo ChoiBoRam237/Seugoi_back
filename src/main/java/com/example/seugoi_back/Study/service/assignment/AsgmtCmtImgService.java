@@ -1,5 +1,6 @@
 package com.example.seugoi_back.Study.service.assignment;
 
+import com.example.seugoi_back.Common.response.CommonImgResponseDto;
 import com.example.seugoi_back.Study.entity.assignment.AsgmtCmtImg;
 import com.example.seugoi_back.Study.repository.assignment.AsgmtCmtImgRepository;
 import jakarta.transaction.Transactional;
@@ -63,8 +64,15 @@ public class AsgmtCmtImgService {
     }
 
     @Transactional // 과제 댓글 code에 맞는 이미지 조회 Service
-    public List<AsgmtCmtImg> findByAsgmtCmtCode(Long asgmtCmtCode) {
-        return asgmtCmtImgRepository.findByAsgmtCmt_Code(asgmtCmtCode);
+    public List<CommonImgResponseDto> findByAsgmtCmtCode(Long asgmtCmtCode) {
+        List<AsgmtCmtImg> imgList = asgmtCmtImgRepository.findByAsgmtCmt_Code(asgmtCmtCode);
+
+        return imgList.stream()
+                .map(item -> CommonImgResponseDto.builder()
+                    .code(item.getCode())
+                    .imgUrl(item.getImgUrl())
+                    .build()
+                ).toList();
     }
 
     @Transactional // 과제 댓글 code에 맞는 이미지 모두 삭제 Service

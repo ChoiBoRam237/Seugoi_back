@@ -1,6 +1,7 @@
 package com.example.seugoi_back.Study.entity.assignment;
 
 import com.example.seugoi_back.User.entity.User;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class AsgmtImg {
 
     @Id
@@ -27,5 +29,9 @@ public class AsgmtImg {
     private Asgmt asgmt;
 
     @Column(nullable = false)
-    private String imgUrlList;
+    private String imgUrl;
+
+    public void update(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
 }
