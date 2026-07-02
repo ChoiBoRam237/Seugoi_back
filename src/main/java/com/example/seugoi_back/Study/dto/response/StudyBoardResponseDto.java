@@ -16,6 +16,9 @@ public class StudyBoardResponseDto {
     @Schema(name = "code", example = "1")
     private Long code;
 
+    @Schema(name = "studyCode", example = "1")
+    private Long studyCode;
+
     @Schema(name = "target", example = "notice")
     private String target; // notice or asgmt
 

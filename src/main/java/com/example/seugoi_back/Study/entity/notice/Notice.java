@@ -1,6 +1,7 @@
 package com.example.seugoi_back.Study.entity.notice;
 
 import com.example.seugoi_back.Common.entity.BaseTime;
+import com.example.seugoi_back.Study.dto.request.notice.NoticeRequestDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.User.entity.User;
 import jakarta.persistence.*;
@@ -33,4 +34,9 @@ public class Notice extends BaseTime {
 
     @Column(length = 200)
     private String content; // 공지 내용
+
+    public void update(NoticeRequestDto dto) {
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
+    }
 }

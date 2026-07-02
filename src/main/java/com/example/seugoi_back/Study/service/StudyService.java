@@ -264,7 +264,7 @@ public class StudyService {
     @Transactional // 스터디 수정 Service
     public CommonStudyResponseDto updateStudy(Long studyCode, StudyRequestDto dto) {
         Study study = studyRepository.findById(studyCode)
-                .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
+            .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
 
         if (dto.getImgUrl() != null) {
             studyBgImgService.updateImgUrl(studyCode, dto.getImgUrl());
@@ -273,9 +273,9 @@ public class StudyService {
         study.update(dto);
 
         return CommonStudyResponseDto.builder()
-            .code(study.getCode())
-            .userCode(study.getUser().getCode())
-            .build();
+                .code(study.getCode())
+                .userCode(study.getUser().getCode())
+                .build();
     }
 
     @Transactional // 스터디 삭제 Service

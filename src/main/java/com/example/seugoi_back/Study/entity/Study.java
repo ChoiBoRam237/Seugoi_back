@@ -81,18 +81,14 @@ public class Study extends BaseTime {
     }
 
     public void update(StudyRequestDto dto) {
-        if(dto.getStudyName() != null) this.studyName = dto.getStudyName();
-        if(dto.getPeopleCount() != null) this.peopleCount = dto.getPeopleCount();
-        if(dto.getEndPeriod() != null) this.endPeriod = dto.getEndPeriod();
-        if(dto.getStudyTitle() != null) this.studyTitle = dto.getStudyTitle();
-        if(dto.getSummary() != null) this.summary = dto.getSummary();
-        if(dto.getDescription() != null) this.description = dto.getDescription();
-
-        if(dto.getCategories() != null && !dto.getCategories().isEmpty())
-            this.categories = ListUtil.parseListToString(dto.getCategories());
-        if(dto.getIntroduction() != null && !dto.getIntroduction().isEmpty())
-            this.introduction = ListUtil.parseListToString(dto.getIntroduction());
-        if(dto.getRecommend() != null && !dto.getRecommend().isEmpty())
-            this.recommend = ListUtil.parseListToString(dto.getRecommend());
+        this.studyName = dto.getStudyName();
+        this.categories = ListUtil.parseListToString(dto.getCategories());
+        this.peopleCount = dto.getPeopleCount();
+        this.endPeriod = dto.getEndPeriod();
+        this.studyTitle = dto.getStudyTitle();
+        this.summary = dto.getSummary();
+        this.introduction = ListUtil.parseListToString(dto.getIntroduction());
+        this.description = dto.getDescription();
+        this.recommend = ListUtil.parseListToString(dto.getRecommend());
     }
 }

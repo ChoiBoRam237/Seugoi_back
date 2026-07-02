@@ -3,6 +3,7 @@ package com.example.seugoi_back.Study.controller.notice;
 import com.example.seugoi_back.Common.response.CommonApiResponse;
 import com.example.seugoi_back.Study.dto.request.notice.NoticeRequestDto;
 import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
+import com.example.seugoi_back.Study.dto.response.StudyBoardResponseDto;
 import com.example.seugoi_back.Study.entity.notice.Notice;
 import com.example.seugoi_back.Study.service.notice.NoticeService;
 import com.example.seugoi_back.User.entity.User;
@@ -59,6 +60,62 @@ public class NoticeController {
             CommonApiResponse.builder()
                 .success(true)
                 .message("공지 생성 성공")
+                .data(responseDto)
+                .build()
+        );
+    }
+
+    @Operation(summary = "특정 공지 조회 API", description = "특정 공지를 조회합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "true",
+            description = "특정 공지 조회 성공",
+            content = @Content(
+                schema = @Schema(
+                    implementation = StudyBoardResponseDto.class
+                )
+            )
+        )
+    })
+    @GetMapping("")
+    public ResponseEntity<?> getNotice(
+        @Parameter(hidden = true) @AuthenticationPrincipal User user,
+        @RequestParam Long noticeCode
+    ) {
+        StudyBoardResponseDto responseDto = noticeService.findByNoticeCode(user.getCode(), noticeCode);
+
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("특정 공지 조회 성공")
+                .data(responseDto)
+                .build()
+        );
+    }
+
+    @Operation(summary = "공지 수정 API", description = "공지를 수정합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "true",
+            description = "공지 수정 성공",
+            content = @Content(
+                schema = @Schema(
+                    implementation = CommonStudyResponseDto.class
+                )
+            )
+        )
+    })
+    @PatchMapping("/update")
+    public ResponseEntity<?> updateByNoticeCode(
+        @RequestParam Long noticeCode,
+        @RequestBody NoticeRequestDto dto
+    ) {
+        CommonStudyResponseDto responseDto = noticeService.updateNotice(noticeCode, dto);
+
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("공지 수정 성공")
                 .data(responseDto)
                 .build()
         );

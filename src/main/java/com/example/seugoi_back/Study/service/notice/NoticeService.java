@@ -1,6 +1,7 @@
 package com.example.seugoi_back.Study.service.notice;
 
 import com.example.seugoi_back.Study.dto.request.notice.NoticeRequestDto;
+import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyBoardResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.Study.entity.notice.Notice;
@@ -53,6 +54,33 @@ public class NoticeService {
             .toList();
 
         return responseDto;
+    }
+
+    @Transactional // 특정 공지 조회 Service
+    public StudyBoardResponseDto findByNoticeCode(Long userCode, Long noticeCode) {
+        Notice notice = noticeRepository.findByUser_CodeAndCode(userCode, noticeCode)
+            .orElseThrow(() -> new RuntimeException("공지를 찾을 수 없습니다"));
+
+        return StudyBoardResponseDto.builder()
+            .code(notice.getCode())
+            .studyCode(notice.getStudy().getCode())
+            .title(notice.getTitle())
+            .content(notice.getContent())
+            .build();
+    }
+
+    @Transactional // 공지 수정 Service
+    public CommonStudyResponseDto updateNotice(Long noticeCode, NoticeRequestDto dto) {
+        Notice notice = noticeRepository.findById(noticeCode)
+            .orElseThrow(() -> new RuntimeException("공지를 찾을 수 없습니다"));
+
+        notice.update(dto);
+
+        return CommonStudyResponseDto.builder()
+                .code(notice.getCode())
+                .userCode(notice.getUser().getCode())
+                .studyCode(notice.getStudy().getCode())
+                .build();
     }
 
     @Transactional // 공지 삭제 Service
