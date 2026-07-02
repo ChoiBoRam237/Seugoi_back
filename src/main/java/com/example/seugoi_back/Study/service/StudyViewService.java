@@ -60,7 +60,7 @@ public class StudyViewService {
             .map(study -> StudyResponseDto.builder()
                 .code(study.getCode())
                 .studyName(study.getStudyName())
-                .categories(ListUtil.parseStringList(study.getCategories()))
+                .categories(ListUtil.parseStringToList(study.getCategories()))
                 .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
                 .progress(0)
                 .bgImageUrl(studyBgImgService.findByStudyCode(study.getCode()).getImgUrl())

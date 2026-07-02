@@ -27,4 +27,9 @@ public class QuoteDaily {
 
     @Column
     private LocalDate date;
+
+    public void update(Quote quote, LocalDate date) {
+        this.quote = quote;
+        this.date = date;
+    }
 }

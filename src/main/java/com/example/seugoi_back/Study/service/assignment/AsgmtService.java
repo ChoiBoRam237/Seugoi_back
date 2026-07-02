@@ -14,7 +14,6 @@ import com.example.seugoi_back.Util.ListUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Objects;
@@ -28,8 +27,6 @@ public class AsgmtService {
     private final AsgmtImgRepository asgmtImgRepository;
     private final AsgmtImgService asgmtImgService;
     private final AsgmtCmtService asgmtCmtService;
-
-    ObjectMapper mapper = new ObjectMapper();
 
     @Transactional // 스터디 과제 생성 Service
     public Asgmt generateAsgmt(Long userCode, Long studyCode, AsgmtRequestDto dto) {
@@ -54,7 +51,7 @@ public class AsgmtService {
             AsgmtImg asgmtImg = AsgmtImg.builder()
                 .user(user)
                 .asgmt(asgmt)
-                .imgUrlList(mapper.writeValueAsString(asgmtImageUrl))
+                .imgUrlList(ListUtil.parseListToString(asgmtImageUrl))
                 .build();
             asgmtImgRepository.save(asgmtImg);
         }
@@ -76,7 +73,7 @@ public class AsgmtService {
                 .linkUrl(item.getLinkUrl())
                 .imageList(asgmtImgService.findByAsgmtCode(item.getCode())
                             .stream()
-                            .flatMap(image -> ListUtil.parseStringList(image.getImgUrlList()).stream())
+                            .flatMap(image -> ListUtil.parseStringToList(image.getImgUrlList()).stream())
                             .toList()
                 )
                 .isAdmin(Objects.equals(item.getUser().getCode(), userCode))
@@ -101,7 +98,7 @@ public class AsgmtService {
                 .linkUrl(asgmt.getLinkUrl())
                 .imageList(
                     asgmtImage.stream()
-                    .flatMap(image -> ListUtil.parseStringList(image.getImgUrlList()).stream())
+                    .flatMap(image -> ListUtil.parseStringToList(image.getImgUrlList()).stream())
                     .toList()
                 )
                 .isAdmin(Objects.equals(asgmt.getUser().getCode(), userCode))

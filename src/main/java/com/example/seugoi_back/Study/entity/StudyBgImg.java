@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Getter
@@ -29,4 +30,8 @@ public class StudyBgImg extends BaseTime {
 
     @Column(nullable = false)
     private String imgUrl; // 배경 이미지 url
+
+    public void update(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
 }

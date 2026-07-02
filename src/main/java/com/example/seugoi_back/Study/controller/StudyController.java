@@ -2,6 +2,7 @@ package com.example.seugoi_back.Study.controller;
 
 import com.example.seugoi_back.Common.response.CommonApiResponse;
 import com.example.seugoi_back.Study.dto.request.StudyRequestDto;
+import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyBoardResponseDto;
 import com.example.seugoi_back.Study.dto.response.CommonCreateResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyResponseDto;
@@ -222,7 +223,12 @@ public class StudyController {
     @ApiResponses({
         @ApiResponse(
             responseCode = "true",
-            description = "스터디 과제/공지 목록 조회 성공"
+            description = "스터디 과제/공지 목록 조회 성공",
+            content = @Content(
+                schema = @Schema(
+                    implementation = StudyBoardResponseDto.class
+                )
+            )
         )
     })
     @GetMapping("/board")
@@ -247,21 +253,49 @@ public class StudyController {
         );
     }
 
-    @Operation(summary = "특정 스터디 삭제 API", description = "특정 스터디를 삭제합니다.")
+    @Operation(summary = "스터디 수정 API", description = "스터디를 수정합니다.")
     @ApiResponses({
         @ApiResponse(
             responseCode = "true",
-            description = "특정 스터디 삭제 성공"
+            description = "스터디 수정 성공",
+            content = @Content(
+                schema = @Schema(
+                    implementation = CommonStudyResponseDto.class
+                )
+            )
         )
     })
-    @DeleteMapping("")
-    public ResponseEntity<?> deleteByStudyCode(@RequestParam Long studyCode) {
+    @PatchMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateByStudyCode(
+        @RequestParam Long studyCode,
+        @ModelAttribute StudyRequestDto dto
+    ) {
+        CommonStudyResponseDto responseDto = studyService.updateStudy(studyCode, dto);
+
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("스터디 수정 성공")
+                .data(responseDto)
+                .build()
+        );
+    }
+
+    @Operation(summary = "스터디 삭제 API", description = "스터디를 삭제합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "true",
+            description = "스터디 삭제 성공"
+        )
+    })
+    @DeleteMapping("/{studyCode}")
+    public ResponseEntity<?> deleteByStudyCode(@PathVariable Long studyCode) {
         studyService.deleteByStudyCode(studyCode);
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()
                 .success(true)
-                .message("특정 스터디 삭제 성공")
+                .message("스터디 삭제 성공")
                 .build()
         );
     }

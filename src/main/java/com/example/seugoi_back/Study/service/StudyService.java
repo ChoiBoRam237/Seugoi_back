@@ -1,6 +1,7 @@
 package com.example.seugoi_back.Study.service;
 
 import com.example.seugoi_back.Study.dto.request.StudyRequestDto;
+import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyDetailResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
@@ -16,7 +17,6 @@ import com.example.seugoi_back.Util.ListUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.ObjectMapper;
 
 import java.util.*;
 
@@ -34,15 +34,13 @@ public class StudyService {
     private final StudyViewService studyViewService;
     private final StudySearchKeywordService studySearchKeywordService;
 
-    ObjectMapper mapper = new ObjectMapper();
-
     @Transactional // 스터디 생성 Service
     public Study generateStudy(Long userCode, StudyRequestDto dto) {
         User user = userRepository.findById(userCode).orElseThrow();
         // 배열 -> String
-        String categoriesJson = mapper.writeValueAsString(dto.getCategories());
-        String introductionJson = mapper.writeValueAsString(dto.getIntroduction());
-        String recommendJson = mapper.writeValueAsString(dto.getRecommend());
+        String categoriesJson = ListUtil.parseListToString(dto.getCategories());
+        String introductionJson = ListUtil.parseListToString(dto.getIntroduction());
+        String recommendJson = ListUtil.parseListToString(dto.getRecommend());
 
         // 스터디 정보 저장
         Study study = Study.builder()
@@ -60,7 +58,7 @@ public class StudyService {
         Study savedStudy = studyRepository.save(study);
 
         // 스터디 배경 이미지 저장
-        String studyBgImageUrl = studyBgImgService.saveBgImage(dto.getBgImageUrl());
+        String studyBgImageUrl = studyBgImgService.saveBgImage(dto.getImgUrl());
         StudyBgImg studyBgImage = StudyBgImg.builder()
             .study(savedStudy)
             .user(user)
@@ -128,7 +126,7 @@ public class StudyService {
             .map(item -> StudyResponseDto.builder()
                 .code(item.getCode())
                 .studyName(item.getStudyName())
-                .categories(ListUtil.parseStringList(item.getCategories()))
+                .categories(ListUtil.parseStringToList(item.getCategories()))
                 .dDay(DateUtil.calculateDDay(item.getEndPeriod()))
                 .progress(0)
                 .bgImageUrl(studyBgImgService.findByStudyCode(item.getCode()).getImgUrl())
@@ -164,19 +162,21 @@ public class StudyService {
             .profileImgUrl(study.getUser().getProfileImgUrl())
             .build();
 
+        // 스터디 정보
         StudyDetailResponseDto studyResponseDto =
             StudyDetailResponseDto.builder()
                 .code(study.getCode())
                 .studyName(study.getStudyName())
-                .categories(ListUtil.parseStringList(study.getCategories()))
+                .categories(ListUtil.parseStringToList(study.getCategories()))
                 .peopleCount(study.getPeopleCount())
                 .joinCount(study.getJoinCount())
+                .endPeriod(study.getEndPeriod())
                 .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
                 .studyTitle(study.getStudyTitle())
                 .summary(study.getSummary())
-                .introduction(ListUtil.parseStringList(study.getIntroduction()))
+                .introduction(ListUtil.parseStringToList(study.getIntroduction()))
                 .description(study.getDescription())
-                .recommend(ListUtil.parseStringList(study.getRecommend()))
+                .recommend(ListUtil.parseStringToList(study.getRecommend()))
                 .bgImageUrl(bgImage.getImgUrl())
                 .isJoined(isJoined)
                 .isBookmark(isBookmark)
@@ -200,7 +200,7 @@ public class StudyService {
             .map(item -> StudyResponseDto.builder()
                 .code(item.getCode())
                 .studyName(item.getStudyName())
-                .categories(ListUtil.parseStringList(item.getCategories()))
+                .categories(ListUtil.parseStringToList(item.getCategories()))
                 .dDay(DateUtil.calculateDDay(item.getEndPeriod()))
                 .progress(0)
                 .bgImageUrl(studyBgImgService.findByStudyCode(item.getCode()).getImgUrl())
@@ -249,7 +249,7 @@ public class StudyService {
             .map(study -> StudyResponseDto.builder()
                 .code(study.getCode())
                 .studyName(study.getStudyName())
-                .categories(ListUtil.parseStringList(study.getCategories()))
+                .categories(ListUtil.parseStringToList(study.getCategories()))
                 .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
                 .progress(0)
                 .bgImageUrl(studyBgImgService.findByStudyCode(study.getCode()).getImgUrl())
@@ -261,10 +261,28 @@ public class StudyService {
         return responseDto;
     }
 
+    @Transactional // 스터디 수정 Service
+    public CommonStudyResponseDto updateStudy(Long studyCode, StudyRequestDto dto) {
+        Study study = studyRepository.findById(studyCode)
+                .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
+
+        if (dto.getImgUrl() != null) {
+            studyBgImgService.updateImgUrl(studyCode, dto.getImgUrl());
+        }
+
+        study.update(dto);
+
+        return CommonStudyResponseDto.builder()
+            .code(study.getCode())
+            .userCode(study.getUser().getCode())
+            .build();
+    }
+
     @Transactional // 스터디 삭제 Service
     public void deleteByStudyCode(Long studyCode) {
         asgmtService.deleteByStudyCode(studyCode); // 과제 삭제
         noticeService.deleteByStudyCode(studyCode); // 공지 삭제
+        studyBgImgService.deleteByStudyCode(studyCode); // 스터디 배경 이미지 삭제
         studyRepository.deleteById(studyCode); // 스터디 삭제
     }
 }

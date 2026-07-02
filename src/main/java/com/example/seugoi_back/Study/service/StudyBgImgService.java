@@ -54,4 +54,30 @@ public class StudyBgImgService {
 
         return studyBgImage;
     }
+
+    @Transactional // 스터디 code에 맞는 이미지 수정
+    public StudyBgImg updateImgUrl(Long studyCode, MultipartFile imgUrl) {
+        StudyBgImg studyBgImg = studyBgImageRepository.findByStudy_Code(studyCode)
+            .orElseThrow(() -> new RuntimeException("이미지를 찾을 수 없습니다."));
+
+        if (imgUrl == null || imgUrl.isEmpty()) {
+            return studyBgImg;
+        }
+
+        // 기존 이미지 삭제
+        deleteByStudyCode(studyCode);
+
+        // 새 이미지 저장
+        String newImgUrl = saveBgImage(imgUrl);
+
+        // DB 업데이트
+        studyBgImg.update(newImgUrl);
+
+        return studyBgImg;
+    }
+
+    @Transactional // 스터디 code에 맞는 이미지 삭제
+    public void deleteByStudyCode(Long studyCode) {
+        studyBgImageRepository.deleteByStudy_Code(studyCode);
+    }
 }

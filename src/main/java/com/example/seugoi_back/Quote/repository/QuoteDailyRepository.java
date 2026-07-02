@@ -9,5 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface QuoteDailyRepository extends JpaRepository<QuoteDaily, Long> {
+    Optional<QuoteDaily> findByUser_Code(Long userCode);
     Optional<QuoteDaily> findByUser_CodeAndDate(Long userCode, LocalDate today);
 }

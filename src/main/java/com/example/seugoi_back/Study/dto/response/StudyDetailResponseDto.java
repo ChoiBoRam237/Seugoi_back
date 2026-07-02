@@ -26,6 +26,9 @@ public class StudyDetailResponseDto {
     @Schema(name = "joinCount", example = "30")
     private Long joinCount; // 현재 가입한 인원수
 
+    @Schema(name = "endPeriod", example = "2026-01-01")
+    private String endPeriod;
+
     @Schema(name = "dDay", example = "30")
     private Long dDay; // 디데이
 

@@ -24,17 +24,23 @@ public class QuoteService {
     @Transactional // 오늘의 명언 조회 Service
     public Quote getTodayQuote(Long userCode) {
         LocalDate today = LocalDate.now();
+        List<Quote> quotes = quoteRepository.findAll();
+        Optional<QuoteDaily> myQuote = quoteDailyRepository.findByUser_Code(userCode);
         Optional<QuoteDaily> todayQuote = quoteDailyRepository.findByUser_CodeAndDate(userCode, today);
+        Quote randomQuote = quotes.get(ThreadLocalRandom.current().nextInt(quotes.size()));
 
+        // 오늘 조회한 적이 있는 경우
         if (todayQuote.isPresent()) {
             return todayQuote.get().getQuote();
         }
 
+        // 오늘 조회한 적은 없지만 예전에 조회한 적이 있는 경우
+        if (myQuote.isPresent()) {
+            myQuote.get().update(randomQuote, today);
+            return randomQuote;
+        }
+
         // 오늘 처음 조회한 경우
-        List<Quote> quotes = quoteRepository.findAll();
-
-        Quote randomQuote = quotes.get(ThreadLocalRandom.current().nextInt(quotes.size()));
-
         QuoteDaily userDailyQuote = QuoteDaily.builder()
             .user(userService.findByUserCode(userCode))
             .quote(randomQuote)

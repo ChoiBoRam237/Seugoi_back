@@ -1,7 +1,9 @@
 package com.example.seugoi_back.Study.entity;
 
 import com.example.seugoi_back.Common.entity.BaseTime;
+import com.example.seugoi_back.Study.dto.request.StudyRequestDto;
 import com.example.seugoi_back.User.entity.User;
+import com.example.seugoi_back.Util.ListUtil;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -76,5 +78,21 @@ public class Study extends BaseTime {
     }
     public void increaseViewCount() {
         this.viewCount++;
+    }
+
+    public void update(StudyRequestDto dto) {
+        if(dto.getStudyName() != null) this.studyName = dto.getStudyName();
+        if(dto.getPeopleCount() != null) this.peopleCount = dto.getPeopleCount();
+        if(dto.getEndPeriod() != null) this.endPeriod = dto.getEndPeriod();
+        if(dto.getStudyTitle() != null) this.studyTitle = dto.getStudyTitle();
+        if(dto.getSummary() != null) this.summary = dto.getSummary();
+        if(dto.getDescription() != null) this.description = dto.getDescription();
+
+        if(dto.getCategories() != null && !dto.getCategories().isEmpty())
+            this.categories = ListUtil.parseListToString(dto.getCategories());
+        if(dto.getIntroduction() != null && !dto.getIntroduction().isEmpty())
+            this.introduction = ListUtil.parseListToString(dto.getIntroduction());
+        if(dto.getRecommend() != null && !dto.getRecommend().isEmpty())
+            this.recommend = ListUtil.parseListToString(dto.getRecommend());
     }
 }

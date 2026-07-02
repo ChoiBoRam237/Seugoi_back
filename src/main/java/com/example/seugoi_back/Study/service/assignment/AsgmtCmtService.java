@@ -16,7 +16,6 @@ import com.example.seugoi_back.Util.ListUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.ObjectMapper;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,8 +29,6 @@ public class AsgmtCmtService {
     private final AsgmtCmtRepository asgmtCmtRepository;
     private final AsgmtCmtImgRepository asgmtCmtImgRepository;
     private final AsgmtCmtImgService asgmtCmtImgService;
-
-    ObjectMapper mapper = new ObjectMapper();
 
     @Transactional // 과제 댓글 생성 Service
     public AsgmtCmt generateAsgmtCmt(Long userCode, Long asgmtCode, AsgmtCmtRequestDto dto) {
@@ -53,7 +50,7 @@ public class AsgmtCmtService {
             AsgmtCmtImg asgmtCmtImg = AsgmtCmtImg.builder()
                 .user(user)
                 .asgmtCmt(asgmtCmt)
-                .imgUrlList(mapper.writeValueAsString(cmtImageUrl))
+                .imgUrlList(ListUtil.parseListToString(cmtImageUrl))
                 .build();
             asgmtCmtImgRepository.save(asgmtCmtImg);
         }
@@ -81,7 +78,7 @@ public class AsgmtCmtService {
                 .comment(item.getComment())
                 .imgList(asgmtCmtImgService.findByAsgmtCmtCode(item.getCode())
                     .stream()
-                    .flatMap(image -> ListUtil.parseStringList(image.getImgUrlList()).stream())
+                    .flatMap(image -> ListUtil.parseStringToList(image.getImgUrlList()).stream())
                     .toList()
                 )
                 .isWriter(Objects.equals(item.getUser().getCode(), userCode))

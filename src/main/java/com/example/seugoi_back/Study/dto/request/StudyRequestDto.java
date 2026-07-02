@@ -27,7 +27,7 @@ public class StudyRequestDto {
     @Schema(description = "인원수", example = "10")
     String peopleCount;
 
-    @Schema(description = "스터드 종료기간", example = "2026.01.01")
+    @Schema(description = "스터드 종료기간", example = "2026-01-01")
     String endPeriod;
 
     @Schema(description = "스터디 제목", example = "React를 공부하고 싶다고요?")
@@ -45,7 +45,6 @@ public class StudyRequestDto {
     @Schema(description = "추천 유형", example = "[\"추천\", \"유형\"]")
     List<String> recommend;
 
-    @NotNull(message = "배경 이미지는 필수입니다.")
     @Schema(description = "배경 이미지 파일")
-    MultipartFile bgImageUrl;
+    MultipartFile imgUrl;
 }
