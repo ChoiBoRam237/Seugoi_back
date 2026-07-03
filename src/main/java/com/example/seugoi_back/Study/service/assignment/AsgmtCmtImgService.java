@@ -117,7 +117,7 @@ public class AsgmtCmtImgService {
 
         for (AsgmtCmtImg img : asgmtCmtImg) {
             FileUtil.deleteImg(img.getFolderName(), img.getImgUrl());
-            asgmtCmtImgRepository.findById(img.getCode());
+            asgmtCmtImgRepository.deleteById(img.getCode());
         }
     }
 }

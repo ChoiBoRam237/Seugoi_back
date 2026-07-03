@@ -56,7 +56,7 @@ public class AsgmtCmtService {
             for (String img : cmtImageUrl) {
                 AsgmtCmtImg asgmtCmtImg = AsgmtCmtImg.builder()
                     .user(user)
-                    .asgmtCmt(asgmtCmt)
+                    .asgmtCmt(savedCmt)
                     .folderName("/uploads/study/asgmt/cmt/")
                     .imgUrl(img)
                     .build();
@@ -74,16 +74,9 @@ public class AsgmtCmtService {
 
     @Transactional // 과제 code에 맞는 모든 댓글 조회 Service
     public AsgmtCmtListResponseDto findByAsgmtCode(Long userCode, Long asgmtCode) {
+        Asgmt asgmt = asgmtRepository.findById(asgmtCode)
+            .orElseThrow(() -> new RuntimeException("과제를 찾을 수 없습니다."));
         List<AsgmtCmt> myCmtList = asgmtCmtRepository.findByUser_CodeAndAsgmt_Code(userCode, asgmtCode);
-
-        // 내가 제출한 과제가 없으면
-        if (myCmtList.isEmpty()) {
-            return AsgmtCmtListResponseDto.builder()
-                    .submitted(false)
-                    .comments(Collections.emptyList())
-                    .build();
-        }
-
         List<AsgmtCmt> asgmtCmtList = asgmtCmtRepository.findByAsgmt_Code(asgmtCode);
 
         List<AsgmtCmtResponseDto> responseDto = asgmtCmtList.stream()
@@ -103,6 +96,22 @@ public class AsgmtCmtService {
                 )
                 .build())
             .toList();
+
+        // 이 과제의 관리자일 경우
+        if (Objects.equals(asgmt.getUser().getCode(), userCode)) {
+            return AsgmtCmtListResponseDto.builder()
+                    .submitted(true)
+                    .comments(responseDto)
+                    .build();
+        }
+
+        // 내가 제출한 과제가 없으면
+        if (myCmtList.isEmpty()) {
+            return AsgmtCmtListResponseDto.builder()
+                    .submitted(false)
+                    .comments(Collections.emptyList())
+                    .build();
+        }
 
         return AsgmtCmtListResponseDto.builder()
                 .submitted(true)
@@ -163,15 +172,41 @@ public class AsgmtCmtService {
     @Transactional // 스터디 code에 맞는 댓글 삭제 Service
     public void deleteByStudyCode(Long studyCode) {
         // 1. 스터디 code에 맞는 과제 목록 조회
-        // 2. 과제 code에 맞는 과제 댓글 목록 조회
-        // 3. 과제 댓글 code로 이미지 삭제
         List<Asgmt> asgmtList = asgmtRepository.findByStudy_Code(studyCode);
-        List<AsgmtCmt> asgmtCmtList = asgmtList.stream()
-            .flatMap(asgmt -> asgmtCmtRepository.findByAsgmt_Code(asgmt.getCode()).stream())
-            .toList();
+
+        // 1. 스터디 code에 맞는 과제 댓글 목록 조회
+        List<AsgmtCmt> asgmtCmtList = asgmtCmtRepository.findByStudy_Code(studyCode);
+
+        // 2. 과제 code에 맞는 과제 댓글 목록 조회
+//        List<AsgmtCmt> asgmtCmtList = asgmtList.stream()
+//            .flatMap(asgmt -> asgmtCmtRepository.findByAsgmt_Code(asgmt.getCode()).stream())
+//            .toList();
+
+        // 3. 과제 댓글 code로 이미지 삭제
         asgmtCmtList.forEach(asgmtCmt -> asgmtCmtImgService.deleteByAsgmtCmtCode(asgmtCmt.getCode()));
         asgmtCmtRepository.deleteByStudy_Code(studyCode); // 과제 댓글 삭제
         asgmtList.forEach(asgmt -> asgmt.setSubmitCount(0L)); // 모든 과제의 제출 수 초기화
+    }
+
+    @Transactional // 사용자 code & 스터디 code에 맞는 댓글 삭제 Service
+    public void deleteByUserCodeAndStudyCode(Long userCode, Long studyCode) {
+        // 1. 사용자 code & 스터디 code에 맞는 댓글 목록 조회
+        List<AsgmtCmt> asgmtCmtList = asgmtCmtRepository.findByUser_CodeAndStudy_Code(userCode, studyCode);
+
+        // 2. 제출했던 과제 목록 조회 (중복 제거)
+        List<Asgmt> submittedAsgmtList = asgmtCmtList.stream()
+            .map(AsgmtCmt::getAsgmt)
+            .distinct()
+            .toList();
+
+        // 2. 과제 댓글 code로 이미지 삭제
+        asgmtCmtList.forEach(asgmtCmt -> asgmtCmtImgService.deleteByAsgmtCmtCode(asgmtCmt.getCode()));
+
+        // 3. 사용자 code & 스터디 code에 맞는 댓글 삭제
+        asgmtCmtRepository.deleteByUser_CodeAndStudy_Code(userCode, studyCode);
+
+        // 과제 댓글 제출 수 업데이트
+        submittedAsgmtList.forEach(Asgmt::decreaseSubmitCount);
     }
 
     @Transactional // 과제 댓글 확인 처리 (관리자용) Service

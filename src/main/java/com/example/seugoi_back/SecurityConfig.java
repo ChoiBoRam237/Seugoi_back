@@ -51,6 +51,12 @@ public class SecurityConfig {
                     response.setContentType("application/json;charset=UTF-8");
                 })
             )
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    response.setContentType("application/json;charset=UTF-8");
+                })
+            )
             .build();
     }
 

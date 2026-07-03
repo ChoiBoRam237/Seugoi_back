@@ -11,4 +11,5 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
     List<Study> findByUser_Code(Long userCode);
 
     List<Study> findByStudyNameContainingIgnoreCaseOrCategoriesContainingIgnoreCase(String studyName, String categories);
+    void deleteByUser_CodeAndCode(Long userCode, Long studyCode);
 }

@@ -55,7 +55,7 @@ public class AsgmtService {
             for (String img : asgmtImageUrl) {
                 AsgmtImg asgmtImg = AsgmtImg.builder()
                     .user(user)
-                    .asgmt(asgmt)
+                    .asgmt(savedAsgmt)
                     .folderName("/uploads/study/asgmt/")
                     .imgUrl(img)
                     .build();

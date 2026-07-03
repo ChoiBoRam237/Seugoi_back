@@ -8,7 +8,10 @@ import com.example.seugoi_back.Study.dto.response.StudyResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.Study.entity.StudyBgImg;
 import com.example.seugoi_back.Study.entity.StudyJoin;
+import com.example.seugoi_back.Study.entity.assignment.AsgmtCmt;
 import com.example.seugoi_back.Study.repository.*;
+import com.example.seugoi_back.Study.repository.assignment.AsgmtCmtRepository;
+import com.example.seugoi_back.Study.service.assignment.AsgmtCmtService;
 import com.example.seugoi_back.Study.service.assignment.AsgmtService;
 import com.example.seugoi_back.Study.service.notice.NoticeService;
 import com.example.seugoi_back.User.entity.User;
@@ -29,15 +32,18 @@ public class StudyService {
     private final StudyBgImgRepository studyBgImageRepository;
     private final StudyJoinRepository studyJoinRepository;
     private final StudyBookmarkRepository studyBookmarkRepository;
+    private final AsgmtCmtRepository asgmtCmtRepository;
     private final StudyBgImgService studyBgImgService;
     private final AsgmtService asgmtService;
+    private final AsgmtCmtService asgmtCmtService;
     private final NoticeService noticeService;
     private final StudyViewService studyViewService;
     private final StudySearchKeywordService studySearchKeywordService;
 
     @Transactional // 스터디 생성 Service
     public Study generateStudy(Long userCode, StudyRequestDto dto) {
-        User user = userRepository.findById(userCode).orElseThrow();
+        User user = userRepository.findById(userCode)
+            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
         // 배열 -> String
         String categoriesJson = ListUtil.parseListToString(dto.getCategories());
         String introductionJson = ListUtil.parseListToString(dto.getIntroduction());
@@ -263,6 +269,23 @@ public class StudyService {
         return responseDto;
     }
 
+    @Transactional // 현재 진행 중인 스터디 조회 Service
+    public List<StudyResponseDto> findStudying(Long userCode) {
+        List<AsgmtCmt> commentList = asgmtCmtRepository.findStudying(userCode);
+
+        return commentList.stream()
+            .map(cmt -> cmt.getAsgmt().getStudy())
+            .distinct() // 가장 먼저 나온(최신 댓글) 스터디만 유지
+            .map(study -> StudyResponseDto.builder()
+                .code(study.getCode())
+                .studyName(study.getStudyName())
+                .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
+                .progress(0)
+                .bgImg(studyBgImgService.findByStudyCode(study.getCode()))
+                .build())
+            .toList();
+    }
+
     @Transactional // 스터디 수정 Service
     public CommonStudyResponseDto updateStudy(Long studyCode, StudyRequestDto dto) {
         Study study = studyRepository.findById(studyCode)
@@ -278,6 +301,16 @@ public class StudyService {
                 .code(study.getCode())
                 .userCode(study.getUser().getCode())
                 .build();
+    }
+
+    @Transactional // 스터디 탈퇴 Service
+    public void exitStudy(Long userCode, Long studyCode) {
+        Study study = studyRepository.findById(studyCode)
+            .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
+
+        asgmtCmtService.deleteByUserCodeAndStudyCode(userCode, studyCode); // 내가 작성한 댓글 삭제
+        studyJoinRepository.deleteByUser_CodeAndStudy_Code(userCode, studyCode); // DB 삭제
+        study.decreaseJoinCount(); // 가입 인원수 감소
     }
 
     @Transactional // 스터디 삭제 Service

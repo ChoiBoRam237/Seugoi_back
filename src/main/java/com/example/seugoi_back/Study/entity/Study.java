@@ -70,11 +70,11 @@ public class Study extends BaseTime {
     }
 
     public void increaseJoinCount() {
-        this.bookmarkCount++;
+        this.joinCount++;
     }
 
     public void decreaseJoinCount() {
-        this.bookmarkCount--;
+        this.joinCount--;
     }
     public void increaseViewCount() {
         this.viewCount++;

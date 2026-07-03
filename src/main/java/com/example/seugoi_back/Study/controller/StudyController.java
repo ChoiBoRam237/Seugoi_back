@@ -253,6 +253,31 @@ public class StudyController {
         );
     }
 
+    @Operation(summary = "현재 진행 중인 스터디 조회 API", description = "현재 진행 중인 스터디를 조회합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "true",
+            description = "현재 진행 중인 스터디 조회 성공",
+            content = @Content(
+                schema = @Schema(
+                    implementation = StudyResponseDto.class
+                )
+            )
+        )
+    })
+    @GetMapping("/ing")
+    public ResponseEntity<?> getStudying(@Parameter(hidden = true) @AuthenticationPrincipal User user) {
+        List<StudyResponseDto> responseDto = studyService.findStudying(user.getCode());
+
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("현재 진행 중인 스터디 조회 성공")
+                .data(responseDto)
+                .build()
+        );
+    }
+
     @Operation(summary = "스터디 수정 API", description = "스터디를 수정합니다.")
     @ApiResponses({
         @ApiResponse(
@@ -296,6 +321,28 @@ public class StudyController {
             CommonApiResponse.builder()
                 .success(true)
                 .message("스터디 삭제 성공")
+                .build()
+        );
+    }
+
+    @Operation(summary = "스터디 탈퇴 API", description = "스터디를 탈퇴합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "true",
+            description = "스터디 탈퇴 성공"
+        )
+    })
+    @DeleteMapping("/exit")
+    public ResponseEntity<?> deleteByUserCode(
+        @Parameter(hidden = true) @AuthenticationPrincipal User user,
+        @RequestParam Long studyCode
+    ) {
+        studyService.exitStudy(user.getCode(), studyCode);
+
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("스터디 탈퇴 성공")
                 .build()
         );
     }

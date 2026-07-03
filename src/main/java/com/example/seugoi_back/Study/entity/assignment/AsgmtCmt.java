@@ -35,9 +35,9 @@ public class AsgmtCmt extends BaseTime {
     @Column(length = 255)
     private String comment; // 댓글 내용
 
-    @Column
-    @ColumnDefault("false")
-    private Boolean isAdminCheck; // 관리자 체크 여부
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean isAdminCheck = false; // 관리자 체크 여부
 
     public void update(AsgmtCmtRequestDto dto) {
         this.comment = dto.getComment();
