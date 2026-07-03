@@ -49,7 +49,7 @@ public class StudyDetailResponseDto {
     private List<String> recommend; // 추천글
 
     @Schema(name = "bgImageUrl", example = "aaa.png")
-    private CommonImgResponseDto bgImageUrl; // 스터디 배경 이미지
+    private CommonImgResponseDto bgImg; // 스터디 배경 이미지
 
     @Schema(name = "isJoined", example = "true")
     private Boolean isJoined; // 스터디 가입 여부

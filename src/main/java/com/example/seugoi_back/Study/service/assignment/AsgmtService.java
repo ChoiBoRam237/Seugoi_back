@@ -52,6 +52,7 @@ public class AsgmtService {
                 AsgmtImg asgmtImg = AsgmtImg.builder()
                     .user(user)
                     .asgmt(asgmt)
+                    .folderName("/uploads/study/asgmt/")
                     .imgUrl(img)
                     .build();
                 asgmtImgRepository.save(asgmtImg);
@@ -104,8 +105,7 @@ public class AsgmtService {
 
     @Transactional // 과제 수정 Service
     public CommonStudyResponseDto updateAsgmt(Long asgmtCode, AsgmtRequestDto dto, List<Long> removeImgCodeList) {
-        Asgmt asgmt = asgmtRepository.findById(asgmtCode)
-            .orElseThrow(() -> new RuntimeException("과제를 찾을 수 없습니다"));
+        Asgmt asgmt = asgmtRepository.findById(asgmtCode).orElseThrow();
 
         if (
             (dto.getImageList() != null && !dto.getImageList().isEmpty()) ||

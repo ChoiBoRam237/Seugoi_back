@@ -1,8 +1,11 @@
 package com.example.seugoi_back.Study.service.assignment;
 
 import com.example.seugoi_back.Common.response.CommonImgResponseDto;
+import com.example.seugoi_back.Study.entity.assignment.AsgmtCmt;
 import com.example.seugoi_back.Study.entity.assignment.AsgmtCmtImg;
 import com.example.seugoi_back.Study.repository.assignment.AsgmtCmtImgRepository;
+import com.example.seugoi_back.Study.repository.assignment.AsgmtCmtRepository;
+import com.example.seugoi_back.Util.FileUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,9 +22,9 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class AsgmtCmtImgService {
+    private final AsgmtCmtRepository asgmtCmtRepository;
     private final AsgmtCmtImgRepository asgmtCmtImgRepository;
     private final String UPLOAD_DIR = "D:\\2026년\\Projects\\seugoi_back\\uploads\\study\\asgmt\\cmt";
-    private final String UPLOAD_FILE_DIR = "/uploads/study/asgmt/cmt/";
 
     public List<String> savedAsgmtCmtImg(List<MultipartFile> fileList) { // 이미지 저장 Service
         if (fileList == null || fileList.isEmpty()) {
@@ -54,7 +57,7 @@ public class AsgmtCmtImgService {
 
                 file.transferTo(filePath.toFile());
 
-                imageUrls.add(UPLOAD_FILE_DIR + fileName);
+                imageUrls.add(fileName);
             }
 
             return imageUrls;
@@ -70,13 +73,49 @@ public class AsgmtCmtImgService {
         return imgList.stream()
                 .map(item -> CommonImgResponseDto.builder()
                     .code(item.getCode())
+                    .folderName(item.getFolderName())
                     .imgUrl(item.getImgUrl())
                     .build()
                 ).toList();
     }
 
+    @Transactional // 댓글 code에 맞는 이미지 수정 Service
+    public void updateImgUrl(Long asgmtCmtCode, List<MultipartFile> imgList, List<Long> removeImgCodeList) {
+        AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode).orElseThrow();
+
+        // 지울 이미지가 있을 경우
+        if (removeImgCodeList != null && !removeImgCodeList.isEmpty()) {
+            for (Long imgCode : removeImgCodeList) {
+                AsgmtCmtImg img = asgmtCmtImgRepository.findById(imgCode).orElseThrow();
+                FileUtil.deleteImg(img.getFolderName(), img.getImgUrl()); // 파일 삭제
+                asgmtCmtImgRepository.deleteById(imgCode); // DB 삭제
+            }
+        }
+
+        if (imgList != null && !imgList.isEmpty()) {
+            // 새 이미지 저장
+            List<String> newImgUrlList = savedAsgmtCmtImg(imgList);
+
+            // DB 저장
+            for (String imgUrl : newImgUrlList) {
+                AsgmtCmtImg asgmtCmtImg = AsgmtCmtImg.builder()
+                    .user(asgmtCmt.getUser())
+                    .asgmtCmt(asgmtCmt)
+                    .folderName("/uploads/study/asgmt/cmt/")
+                    .imgUrl(imgUrl)
+                    .build();
+                asgmtCmtImgRepository.save(asgmtCmtImg);
+            }
+        }
+    }
+
     @Transactional // 과제 댓글 code에 맞는 이미지 모두 삭제 Service
     public void deleteByAsgmtCmtCode(Long asgmtCmtCode) {
-        asgmtCmtImgRepository.deleteByAsgmtCmt_Code(asgmtCmtCode);
+        List<AsgmtCmtImg> asgmtCmtImg = asgmtCmtImgRepository.findByAsgmtCmt_Code(asgmtCmtCode);
+
+        for (AsgmtCmtImg img : asgmtCmtImg) {
+            FileUtil.deleteImg(img.getFolderName(), img.getImgUrl());
+            asgmtCmtImgRepository.findById(img.getCode());
+        }
     }
 }

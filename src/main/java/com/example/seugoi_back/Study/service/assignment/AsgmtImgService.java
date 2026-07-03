@@ -25,7 +25,6 @@ public class AsgmtImgService {
     private final AsgmtRepository asgmtRepository;
     private final AsgmtImgRepository asgmtImgRepository;
     private final String UPLOAD_DIR = "D:\\2026년\\Projects\\seugoi_back\\uploads\\study\\asgmt";
-    private final String UPLOAD_FILE_DIR = "/uploads/study/asgmt/";
 
     public List<String> savedAsgmtImg(List<MultipartFile> fileList) { // 이미지 저장 Service
         if (fileList == null || fileList.isEmpty()) {
@@ -58,7 +57,7 @@ public class AsgmtImgService {
 
                 file.transferTo(filePath.toFile());
 
-                imageUrls.add(UPLOAD_FILE_DIR + fileName);
+                imageUrls.add(fileName);
             }
 
             return imageUrls;
@@ -74,22 +73,21 @@ public class AsgmtImgService {
         return imgList.stream()
                 .map(item -> CommonImgResponseDto.builder()
                     .code(item.getCode())
+                    .folderName(item.getFolderName())
                     .imgUrl(item.getImgUrl())
                     .build()
                 ).toList();
     }
 
     @Transactional // 과제 code에 맞는 이미지 수정 Service
-    public List<AsgmtImg> updateImgUrl(Long asgmtCode, List<MultipartFile> imageList, List<Long> removeImgCodeList) {
+    public void updateImgUrl(Long asgmtCode, List<MultipartFile> imageList, List<Long> removeImgCodeList) {
         Asgmt asgmt = asgmtRepository.findById(asgmtCode).orElseThrow();
 
         // 지울 이미지가 있을 경우
         if (removeImgCodeList != null && !removeImgCodeList.isEmpty()) {
             for (Long imgCode : removeImgCodeList) {
-                AsgmtImg img = asgmtImgRepository.findById(imgCode)
-                    .orElseThrow(() -> new RuntimeException("이미지를 찾을 수 없습니다."));
-
-                FileUtil.deleteImg(img.getImgUrl()); // 파일 삭제
+                AsgmtImg img = asgmtImgRepository.findById(imgCode).orElseThrow();
+                FileUtil.deleteImg(img.getFolderName(), img.getImgUrl()); // 파일 삭제
                 asgmtImgRepository.deleteById(imgCode);  // DB 삭제
             }
         }
@@ -101,19 +99,23 @@ public class AsgmtImgService {
             // DB 저장
             for (String imgUrl : newImgUrlList) {
                 AsgmtImg asgmtImg = AsgmtImg.builder()
-                        .user(asgmt.getUser())
-                        .asgmt(asgmt)
-                        .imgUrl(imgUrl)
-                        .build();
+                    .user(asgmt.getUser())
+                    .asgmt(asgmt)
+                    .folderName("/uploads/study/asgmt/")
+                    .imgUrl(imgUrl)
+                    .build();
                 asgmtImgRepository.save(asgmtImg);
             }
         }
-
-        return asgmtImgRepository.findByAsgmt_Code(asgmtCode);
     }
 
     @Transactional // 과제 code에 맞는 이미지 모두 삭제 Service
     public void deleteByAsgmtCode(Long asgmtCode) {
-        asgmtImgRepository.deleteByAsgmt_Code(asgmtCode);
+        List<AsgmtImg> asgmtImg = asgmtImgRepository.findByAsgmt_Code(asgmtCode);
+
+        for (AsgmtImg img : asgmtImg) {
+            FileUtil.deleteImg(img.getFolderName(), img.getImgUrl());
+            asgmtImgRepository.deleteById(img.getCode());
+        }
     }
 }

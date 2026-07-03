@@ -11,6 +11,9 @@ public class CommonImgResponseDto {
     @Schema(name = "code", example = "1")
     private Long code;
 
+    @Schema(name = "folderName", example = "/uploads")
+    private String folderName;
+
     @Schema(name = "imgUrl", example = "aaa.png")
     private String imgUrl;
 }

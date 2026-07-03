@@ -29,9 +29,8 @@ public class AsgmtImg {
     private Asgmt asgmt;
 
     @Column(nullable = false)
-    private String imgUrl;
+    private String folderName;
 
-    public void update(String imgUrl) {
-        this.imgUrl = imgUrl;
-    }
+    @Column(nullable = false)
+    private String imgUrl;
 }

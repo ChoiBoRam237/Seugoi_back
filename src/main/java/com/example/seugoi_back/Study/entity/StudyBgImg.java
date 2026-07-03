@@ -29,6 +29,9 @@ public class StudyBgImg extends BaseTime {
     private Study study; // 스터디
 
     @Column(nullable = false)
+    private String folderName; // 폴더 이름
+
+    @Column(nullable = false)
     private String imgUrl; // 배경 이미지 url
 
     public void update(String imgUrl) {

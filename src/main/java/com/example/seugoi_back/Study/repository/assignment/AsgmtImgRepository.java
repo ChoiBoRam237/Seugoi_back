@@ -9,5 +9,4 @@ import java.util.List;
 @Repository
 public interface AsgmtImgRepository extends JpaRepository<AsgmtImg, Long> {
     List<AsgmtImg> findByAsgmt_Code(Long asgmtCode);
-    void deleteByAsgmt_Code(Long asgmtCode);
 }

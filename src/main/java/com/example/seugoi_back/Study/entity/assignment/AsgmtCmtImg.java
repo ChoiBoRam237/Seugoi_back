@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AsgmtCmtImg extends BaseTime {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long code;
@@ -27,6 +28,9 @@ public class AsgmtCmtImg extends BaseTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "asgmt_cmt_code")
     private AsgmtCmt asgmtCmt;
+
+    @Column(nullable = false)
+    private String folderName;
 
     @Column(nullable = false)
     private String imgUrl;

@@ -1,5 +1,6 @@
 package com.example.seugoi_back.Study.dto.response;
 
+import com.example.seugoi_back.Common.response.CommonImgResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,8 +26,8 @@ public class StudyResponseDto {
     @Schema(name = "progress", example = "50")
     private Integer progress; // 현재 과제 진행상황
 
-    @Schema(name = "bgImageUrl", example = "aaa.png")
-    private String bgImageUrl; // 스터디 배경 이미지
+    @Schema(name = "bgImg", example = "{}")
+    private CommonImgResponseDto bgImg; // 스터디 배경 이미지
 
     @Schema(name = "isAdmin", example = "true")
     private Boolean isAdmin; // 관리자인지 아닌지

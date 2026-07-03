@@ -4,9 +4,9 @@ import com.example.seugoi_back.Common.response.CommonApiResponse;
 import com.example.seugoi_back.Common.response.CommonImgResponseDto;
 import com.example.seugoi_back.Study.dto.request.assignment.AsgmtCmtRequestDto;
 import com.example.seugoi_back.Study.dto.response.CommonCreateResponseDto;
+import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
 import com.example.seugoi_back.Study.dto.response.assignment.AsgmtCmtListResponseDto;
 import com.example.seugoi_back.Study.entity.assignment.AsgmtCmt;
-import com.example.seugoi_back.Study.entity.assignment.AsgmtCmtImg;
 import com.example.seugoi_back.Study.service.assignment.AsgmtCmtImgService;
 import com.example.seugoi_back.Study.service.assignment.AsgmtCmtService;
 import com.example.seugoi_back.User.entity.User;
@@ -29,7 +29,7 @@ import java.util.List;
 @SecurityRequirement(name = "BearerAuth")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v3/api/asgmt/comment")
+@RequestMapping("/v3/api/asgmt-cmt")
 @Tag(name = "Assignment Comment", description = "과제 댓글 관련 API")
 public class AsgmtCmtController {
     private final AsgmtCmtService asgmtCmtService;
@@ -93,6 +93,35 @@ public class AsgmtCmtController {
             CommonApiResponse.builder()
                 .success(true)
                 .message("과제 댓글 조회 성공")
+                .data(responseDto)
+                .build()
+        );
+    }
+
+    @Operation(summary = "과제 댓글 수정 API", description = "과제 댓글을 수정합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "true",
+            description = "과제 댓글 수정 성공",
+            content = @Content(
+                schema = @Schema(
+                    implementation = CommonStudyResponseDto.class
+                )
+            )
+        )
+    })
+    @PatchMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateByAsgmtCmtCode(
+        @RequestParam Long asgmtCmtCode,
+        @ModelAttribute AsgmtCmtRequestDto dto,
+        @RequestParam(required = false) List<Long> removeImgCodeList
+    ) {
+        CommonStudyResponseDto responseDto = asgmtCmtService.updateAsgmtCmt(asgmtCmtCode, dto, removeImgCodeList);
+
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("과제 댓글 수정 성공")
                 .data(responseDto)
                 .build()
         );

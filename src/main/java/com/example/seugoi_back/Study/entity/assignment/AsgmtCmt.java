@@ -1,6 +1,7 @@
 package com.example.seugoi_back.Study.entity.assignment;
 
 import com.example.seugoi_back.Common.entity.BaseTime;
+import com.example.seugoi_back.Study.dto.request.assignment.AsgmtCmtRequestDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.User.entity.User;
 import jakarta.persistence.*;
@@ -34,4 +35,8 @@ public class AsgmtCmt extends BaseTime {
 
     @Column(length = 255)
     private String comment; // 댓글 내용
+
+    public void update(AsgmtCmtRequestDto dto) {
+        this.comment = dto.getComment();
+    }
 }

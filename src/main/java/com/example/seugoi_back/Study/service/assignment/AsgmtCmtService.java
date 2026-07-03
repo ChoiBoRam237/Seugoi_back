@@ -2,6 +2,7 @@ package com.example.seugoi_back.Study.service.assignment;
 
 import com.example.seugoi_back.Login.dto.UserResponseDto;
 import com.example.seugoi_back.Study.dto.request.assignment.AsgmtCmtRequestDto;
+import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
 import com.example.seugoi_back.Study.dto.response.assignment.AsgmtCmtListResponseDto;
 import com.example.seugoi_back.Study.dto.response.assignment.AsgmtCmtResponseDto;
 import com.example.seugoi_back.Study.entity.assignment.Asgmt;
@@ -16,6 +17,7 @@ import com.example.seugoi_back.Util.ListUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +40,7 @@ public class AsgmtCmtService {
         // 과제 댓글 저장
         AsgmtCmt asgmtCmt = AsgmtCmt.builder()
             .user(user)
+            .study(asgmt.getStudy())
             .asgmt(asgmt)
             .comment(dto.getComment())
             .build();
@@ -51,6 +54,7 @@ public class AsgmtCmtService {
                 AsgmtCmtImg asgmtCmtImg = AsgmtCmtImg.builder()
                     .user(user)
                     .asgmtCmt(asgmtCmt)
+                    .folderName("/uploads/study/asgmt/")
                     .imgUrl(img)
                     .build();
                 asgmtCmtImgRepository.save(asgmtCmtImg);
@@ -94,6 +98,26 @@ public class AsgmtCmtService {
         return AsgmtCmtListResponseDto.builder()
                 .submitted(true)
                 .comments(responseDto)
+                .build();
+    }
+
+    @Transactional // 댓글 수정 Service
+    public CommonStudyResponseDto updateAsgmtCmt(Long asgmtCmtCode, AsgmtCmtRequestDto dto, List<Long> removeImgCodeList) {
+        AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode).orElseThrow();
+
+        if (
+            (dto.getImageList() != null && !dto.getImageList().isEmpty()) ||
+            (removeImgCodeList != null && !removeImgCodeList.isEmpty())
+        ) {
+            asgmtCmtImgService.updateImgUrl(asgmtCmtCode, dto.getImageList(), removeImgCodeList);
+        }
+
+        asgmtCmt.update(dto);
+
+        return CommonStudyResponseDto.builder()
+                .code(asgmtCmt.getCode())
+                .userCode(asgmtCmt.getUser().getCode())
+                .studyCode(asgmtCmt.getStudy().getCode())
                 .build();
     }
 
