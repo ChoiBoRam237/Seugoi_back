@@ -52,7 +52,7 @@ public class StudyBgImgService {
     @Transactional // 스터디 id에 맞는 이미지 조회 Service
     public CommonImgResponseDto findByStudyCode(Long studyCode) {
         StudyBgImg studyBgImage = studyBgImageRepository.findByStudy_Code(studyCode)
-                .orElseThrow(() -> new RuntimeException("이미지를 찾을 수 없습니다."));
+            .orElseThrow(() -> new RuntimeException("이미지를 찾을 수 없습니다."));
 
         return CommonImgResponseDto.builder()
                 .code(studyBgImage.getCode())

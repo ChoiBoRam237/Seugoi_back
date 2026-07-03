@@ -48,8 +48,10 @@ public class JwtService {
         }
 
         Long userCode = jwtTokenProvider.getUserCode(refreshToken);
-        User user = userRepository.findById(userCode).orElseThrow(() -> new RuntimeException("존재하지 않는 사용자입니다."));
-        RefreshToken refresh = refreshTokenRepository.findById(userCode).orElseThrow();
+        User user = userRepository.findById(userCode)
+            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        RefreshToken refresh = refreshTokenRepository.findById(userCode)
+            .orElseThrow(() -> new RuntimeException("리프레시 토큰을 찾을 수 없습니다."));
 
         if (refresh.getRefreshToken() == null || !refresh.getRefreshToken().equals(refreshToken)) {
             throw new RuntimeException("유효하지 않은 토큰입니다.");

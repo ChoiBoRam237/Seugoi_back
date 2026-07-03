@@ -25,8 +25,10 @@ public class StudyBookmarkService {
 
     @Transactional // 스터디 북마크 Service
     public Map<String, Object> bookmarkStudy(Long userCode, Long studyCode) {
-        User user = userRepository.findById(userCode).orElseThrow();
-        Study study = studyRepository.findById(studyCode).orElseThrow();
+        User user = userRepository.findById(userCode)
+            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        Study study = studyRepository.findById(studyCode)
+            .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
 
         Optional<StudyBookmark> bookmark =
             studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, studyCode);

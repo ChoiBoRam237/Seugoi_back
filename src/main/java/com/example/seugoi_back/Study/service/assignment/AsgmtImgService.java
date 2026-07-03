@@ -81,12 +81,14 @@ public class AsgmtImgService {
 
     @Transactional // 과제 code에 맞는 이미지 수정 Service
     public void updateImgUrl(Long asgmtCode, List<MultipartFile> imageList, List<Long> removeImgCodeList) {
-        Asgmt asgmt = asgmtRepository.findById(asgmtCode).orElseThrow();
+        Asgmt asgmt = asgmtRepository.findById(asgmtCode)
+            .orElseThrow(() -> new RuntimeException("과제를 찾을 수 없습니다."));
 
         // 지울 이미지가 있을 경우
         if (removeImgCodeList != null && !removeImgCodeList.isEmpty()) {
             for (Long imgCode : removeImgCodeList) {
-                AsgmtImg img = asgmtImgRepository.findById(imgCode).orElseThrow();
+                AsgmtImg img = asgmtImgRepository.findById(imgCode)
+                    .orElseThrow(() -> new RuntimeException("과제 이미지를 찾을 수 없습니다."));
                 FileUtil.deleteImg(img.getFolderName(), img.getImgUrl()); // 파일 삭제
                 asgmtImgRepository.deleteById(imgCode);  // DB 삭제
             }

@@ -25,8 +25,10 @@ public class NoticeService {
 
     @Transactional // 공지 생성 Service
     public Notice generateNotice(Long userCode, Long studyCode, NoticeRequestDto dto) {
-        User user = userRepository.findById(userCode).orElseThrow();
-        Study study = studyRepository.findById(studyCode).orElseThrow();
+        User user = userRepository.findById(userCode)
+            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        Study study = studyRepository.findById(studyCode)
+            .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
 
         Notice notice = Notice.builder()
             .user(user)

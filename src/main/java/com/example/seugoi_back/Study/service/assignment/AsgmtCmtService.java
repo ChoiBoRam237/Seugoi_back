@@ -34,8 +34,10 @@ public class AsgmtCmtService {
 
     @Transactional // 과제 댓글 생성 Service
     public AsgmtCmt generateAsgmtCmt(Long userCode, Long asgmtCode, AsgmtCmtRequestDto dto) {
-        User user = userRepository.findById(userCode).orElseThrow();
-        Asgmt asgmt = asgmtRepository.findById(asgmtCode).orElseThrow();
+        User user = userRepository.findById(userCode)
+            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        Asgmt asgmt = asgmtRepository.findById(asgmtCode)
+            .orElseThrow(() -> new RuntimeException("과제를 찾을 수 없습니다."));
         List<AsgmtCmt> asgmtCmtList = asgmtCmtRepository.findByUser_CodeAndAsgmt_Code(userCode, asgmtCode);
 
         // 과제 댓글 저장
@@ -110,7 +112,8 @@ public class AsgmtCmtService {
 
     @Transactional // 댓글 수정 Service
     public CommonStudyResponseDto updateAsgmtCmt(Long asgmtCmtCode, AsgmtCmtRequestDto dto, List<Long> removeImgCodeList) {
-        AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode).orElseThrow();
+        AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode)
+            .orElseThrow(() -> new RuntimeException("댓글을 찾을 수 없습니다."));
 
         if (
             (dto.getImageList() != null && !dto.getImageList().isEmpty()) ||
@@ -130,7 +133,8 @@ public class AsgmtCmtService {
 
     @Transactional // 댓글 code에 맞는 댓글 삭제 Service
     public void deleteByAsgmtCmtCode(Long asgmtCmtCode) {
-        AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode).orElseThrow();
+        AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode)
+            .orElseThrow(() -> new RuntimeException("댓글을 찾을 수 없습니다."));
 
         Long asgmtCode = asgmtCmt.getAsgmt().getCode();
         Long userCode = asgmtCmt.getUser().getCode();
@@ -146,7 +150,8 @@ public class AsgmtCmtService {
 
     @Transactional // 과제 code에 맞는 댓글 삭제 Service
     public void deleteByAsgmtCode(Long asgmtCode) {
-        Asgmt asgmt = asgmtRepository.findById(asgmtCode).orElseThrow();
+        Asgmt asgmt = asgmtRepository.findById(asgmtCode)
+            .orElseThrow(() -> new RuntimeException("과제를 찾을 수 없습니다."));
         // 1. 스터디 code에 맞는 과제 댓글 목록 조회 후
         // 2. 과제 댓글 code로 이미지 삭제
         List<AsgmtCmt> asgmtCmtList = asgmtCmtRepository.findByAsgmt_Code(asgmtCode);
@@ -171,7 +176,8 @@ public class AsgmtCmtService {
 
     @Transactional // 과제 댓글 확인 처리 (관리자용) Service
     public void submitAsgmtCmt(Long asgmtCmtCode) {
-        AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode).orElseThrow();
+        AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode)
+            .orElseThrow(() -> new RuntimeException("과제를 찾을 수 없습니다."));
         asgmtCmt.setIsAdminCheck(true); // 확인 처리
     }
 }

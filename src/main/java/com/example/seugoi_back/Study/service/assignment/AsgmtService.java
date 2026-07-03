@@ -32,8 +32,10 @@ public class AsgmtService {
 
     @Transactional // 스터디 과제 생성 Service
     public Asgmt generateAsgmt(Long userCode, Long studyCode, AsgmtRequestDto dto) {
-        User user = userRepository.findById(userCode).orElseThrow();
-        Study study = studyRepository.findById(studyCode).orElseThrow();
+        User user = userRepository.findById(userCode)
+            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        Study study = studyRepository.findById(studyCode)
+            .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
 
         // 스터디 과제 정보 저장
         Asgmt asgmt = Asgmt.builder()
@@ -95,8 +97,10 @@ public class AsgmtService {
 
     @Transactional // 특정 과제 조회 Service
     public StudyBoardResponseDto findByAsgmtCode(Long userCode, Long asgmtCode) {
-        Asgmt asgmt = asgmtRepository.findById(asgmtCode).orElseThrow();
-        Study study = studyRepository.findById(asgmt.getStudy().getCode()).orElseThrow();
+        Asgmt asgmt = asgmtRepository.findById(asgmtCode)
+            .orElseThrow(() -> new RuntimeException("과제를 찾을 수 없습니다."));
+        Study study = studyRepository.findById(asgmt.getStudy().getCode())
+            .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
 
         StudyBoardResponseDto responseDto =
             StudyBoardResponseDto.builder()
@@ -118,7 +122,8 @@ public class AsgmtService {
 
     @Transactional // 과제 수정 Service
     public CommonStudyResponseDto updateAsgmt(Long asgmtCode, AsgmtRequestDto dto, List<Long> removeImgCodeList) {
-        Asgmt asgmt = asgmtRepository.findById(asgmtCode).orElseThrow();
+        Asgmt asgmt = asgmtRepository.findById(asgmtCode)
+            .orElseThrow(() -> new RuntimeException("과제를 찾을 수 없습니다."));
 
         if (
             (dto.getImageList() != null && !dto.getImageList().isEmpty()) ||

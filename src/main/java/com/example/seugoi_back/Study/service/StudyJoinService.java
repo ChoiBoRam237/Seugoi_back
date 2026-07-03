@@ -20,8 +20,10 @@ public class StudyJoinService {
 
     @Transactional // 스터디 가입 Service
     public StudyJoin joinStudy(Long userCode, Long studyCode) {
-        User user = userRepository.findById(userCode).orElseThrow();
-        Study study = studyRepository.findById(studyCode).orElseThrow();
+        User user = userRepository.findById(userCode)
+            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        Study study = studyRepository.findById(studyCode)
+            .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
 
         if (studyJoinRepository
             .findByUser_CodeAndStudy_Code(userCode, studyCode)

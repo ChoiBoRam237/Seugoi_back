@@ -58,7 +58,8 @@ public class KakaoLoginController {
 
         // 유저 정보가 DB에 저장되어 있으면 새로 저장하지 않고 바로 유저 정보 전달
         if (userRepository.findByKakaoId(userInfo.getId()).isPresent()) {
-            user = userRepository.findByKakaoId(userInfo.getId()).orElseThrow();
+            user = userRepository.findByKakaoId(userInfo.getId())
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
         } else {
             user = userService.loginOrRegister(userInfo);
         }

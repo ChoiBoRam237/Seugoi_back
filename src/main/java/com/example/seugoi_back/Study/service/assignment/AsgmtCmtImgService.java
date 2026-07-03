@@ -81,12 +81,14 @@ public class AsgmtCmtImgService {
 
     @Transactional // 댓글 code에 맞는 이미지 수정 Service
     public void updateImgUrl(Long asgmtCmtCode, List<MultipartFile> imgList, List<Long> removeImgCodeList) {
-        AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode).orElseThrow();
+        AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode)
+            .orElseThrow(() -> new RuntimeException("댓글을 찾을 수 없습니다."));
 
         // 지울 이미지가 있을 경우
         if (removeImgCodeList != null && !removeImgCodeList.isEmpty()) {
             for (Long imgCode : removeImgCodeList) {
-                AsgmtCmtImg img = asgmtCmtImgRepository.findById(imgCode).orElseThrow();
+                AsgmtCmtImg img = asgmtCmtImgRepository.findById(imgCode)
+                    .orElseThrow(() -> new RuntimeException("댓글 이미지를 찾을 수 없습니다."));
                 FileUtil.deleteImg(img.getFolderName(), img.getImgUrl()); // 파일 삭제
                 asgmtCmtImgRepository.deleteById(imgCode); // DB 삭제
             }
