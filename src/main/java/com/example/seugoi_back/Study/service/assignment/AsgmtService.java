@@ -6,6 +6,7 @@ import com.example.seugoi_back.Study.dto.response.StudyBoardResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.Study.entity.assignment.AsgmtImg;
 import com.example.seugoi_back.Study.entity.assignment.Asgmt;
+import com.example.seugoi_back.Study.repository.assignment.AsgmtCmtRepository;
 import com.example.seugoi_back.Study.repository.assignment.AsgmtImgRepository;
 import com.example.seugoi_back.Study.repository.assignment.AsgmtRepository;
 import com.example.seugoi_back.Study.repository.StudyRepository;
@@ -25,6 +26,7 @@ public class AsgmtService {
     private final StudyRepository studyRepository;
     private final AsgmtRepository asgmtRepository;
     private final AsgmtImgRepository asgmtImgRepository;
+    private final AsgmtCmtRepository asgmtCmtRepository;
     private final AsgmtImgService asgmtImgService;
     private final AsgmtCmtService asgmtCmtService;
 
@@ -76,6 +78,14 @@ public class AsgmtService {
                 .linkUrl(item.getLinkUrl())
                 .imgList(asgmtImgService.findByAsgmtCode(item.getCode()))
                 .isAdmin(Objects.equals(item.getUser().getCode(), userCode))
+                .submitted(asgmtCmtRepository.existsByAsgmt_CodeAndUser_Code(item.getCode(), userCode))
+                .notSubmitCount(
+                    studyRepository.findById(item.getStudy().getCode()).orElseThrow().getJoinCount() == 0
+                        ? -1
+                        : (studyRepository.findById(item.getStudy().getCode())
+                            .orElseThrow()
+                            .getJoinCount()) - item.getSubmitCount()
+                )
                 .createdAt(item.getCreatedAt())
                 .build())
             .toList();
@@ -86,6 +96,7 @@ public class AsgmtService {
     @Transactional // 특정 과제 조회 Service
     public StudyBoardResponseDto findByAsgmtCode(Long userCode, Long asgmtCode) {
         Asgmt asgmt = asgmtRepository.findById(asgmtCode).orElseThrow();
+        Study study = studyRepository.findById(asgmt.getStudy().getCode()).orElseThrow();
 
         StudyBoardResponseDto responseDto =
             StudyBoardResponseDto.builder()
@@ -97,6 +108,8 @@ public class AsgmtService {
                 .linkUrl(asgmt.getLinkUrl())
                 .imgList(asgmtImgService.findByAsgmtCode(asgmt.getCode()))
                 .isAdmin(Objects.equals(asgmt.getUser().getCode(), userCode))
+                .submitted(asgmtCmtRepository.existsByAsgmt_CodeAndUser_Code(asgmt.getCode(), userCode))
+                .notSubmitCount(study.getJoinCount() == 0 ? -1 : study.getJoinCount() - asgmt.getSubmitCount())
                 .createdAt(asgmt.getCreatedAt())
                 .build();
 

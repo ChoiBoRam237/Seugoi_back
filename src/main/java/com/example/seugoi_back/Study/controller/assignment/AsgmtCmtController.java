@@ -170,4 +170,23 @@ public class AsgmtCmtController {
                 .build()
         );
     }
+
+    @Operation(summary = "과제 댓글 확인 처리 API (관리자용)", description = "댓글을 확인 처리합니다.")
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "true",
+            description = "과제 댓글 확인 처리 성공"
+        )
+    })
+    @PostMapping("/submit")
+    public ResponseEntity<?> postAsgmtCmtSubmit(@RequestParam Long asgmtCmtCode) {
+        asgmtCmtService.submitAsgmtCmt(asgmtCmtCode);
+
+        return ResponseEntity.ok(
+            CommonApiResponse.builder()
+                .success(true)
+                .message("과제 댓글 확인 처리 성공")
+                .build()
+        );
+    }
 }

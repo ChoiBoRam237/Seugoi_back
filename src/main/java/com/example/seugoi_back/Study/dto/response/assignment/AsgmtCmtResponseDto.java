@@ -26,6 +26,9 @@ public class AsgmtCmtResponseDto {
     @Schema(name = "isWriter", example = "true")
     private Boolean isWriter; // 작성자인지 아닌지
 
+    @Schema(name = "isAdminCheck", example = "true")
+    private Boolean isAdminCheck; // 관리자 체크 여부
+
     @Schema(name = "createdAt", example = "2026-06-25 14:43:39.905718")
     private LocalDateTime createdAt;
 

@@ -6,13 +6,11 @@ import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.User.entity.User;
 import com.example.seugoi_back.Util.ListUtil;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,6 +39,17 @@ public class Asgmt extends BaseTime {
 
     @Column
     private String linkUrl; // 링크 url
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Long submitCount = 0L; // 과제 제출한 인원수
+
+    public void increaseSubmitCount() {
+        this.submitCount++;
+    }
+    public void decreaseSubmitCount() {
+        this.submitCount--;
+    }
 
     public void update(AsgmtRequestDto dto) {
         this.title = dto.getTitle();

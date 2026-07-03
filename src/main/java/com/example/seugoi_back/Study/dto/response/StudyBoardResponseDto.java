@@ -41,6 +41,12 @@ public class StudyBoardResponseDto {
     @Schema(name = "isAdmin", example = "true")
     private Boolean isAdmin;
 
+    @Schema(name = "submitted", example = "true")
+    private Boolean submitted; // 과제 제출 여부
+
+    @Schema(name = "notSubmitCount", example = "10")
+    private Long notSubmitCount; // 과제 미제출 인원수
+
     @Schema(name = "createdAt", example = "2026-06-25 14:43:39.905718")
     private LocalDateTime createdAt;
 }

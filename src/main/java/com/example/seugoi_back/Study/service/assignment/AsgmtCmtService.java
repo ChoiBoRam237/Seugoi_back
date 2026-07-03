@@ -36,6 +36,7 @@ public class AsgmtCmtService {
     public AsgmtCmt generateAsgmtCmt(Long userCode, Long asgmtCode, AsgmtCmtRequestDto dto) {
         User user = userRepository.findById(userCode).orElseThrow();
         Asgmt asgmt = asgmtRepository.findById(asgmtCode).orElseThrow();
+        List<AsgmtCmt> asgmtCmtList = asgmtCmtRepository.findByUser_CodeAndAsgmt_Code(userCode, asgmtCode);
 
         // 과제 댓글 저장
         AsgmtCmt asgmtCmt = AsgmtCmt.builder()
@@ -54,11 +55,16 @@ public class AsgmtCmtService {
                 AsgmtCmtImg asgmtCmtImg = AsgmtCmtImg.builder()
                     .user(user)
                     .asgmtCmt(asgmtCmt)
-                    .folderName("/uploads/study/asgmt/")
+                    .folderName("/uploads/study/asgmt/cmt/")
                     .imgUrl(img)
                     .build();
                 asgmtCmtImgRepository.save(asgmtCmtImg);
             }
+        }
+
+        // 과제 처음 제출하는 사용자일 경우
+        if (asgmtCmtList == null || asgmtCmtList.isEmpty()) {
+            asgmt.increaseSubmitCount(); // 과제 제출한 인원수 증가
         }
 
         return savedCmt;
@@ -84,6 +90,7 @@ public class AsgmtCmtService {
                 .comment(item.getComment())
                 .imgList(asgmtCmtImgService.findByAsgmtCmtCode(item.getCode()))
                 .isWriter(Objects.equals(item.getUser().getCode(), userCode))
+                .isAdminCheck(item.getIsAdminCheck())
                 .createdAt(item.getCreatedAt())
                 .user(
                     UserResponseDto.builder()
@@ -123,17 +130,29 @@ public class AsgmtCmtService {
 
     @Transactional // 댓글 code에 맞는 댓글 삭제 Service
     public void deleteByAsgmtCmtCode(Long asgmtCmtCode) {
-        asgmtCmtImgService.deleteByAsgmtCmtCode(asgmtCmtCode);
-        asgmtCmtRepository.deleteById(asgmtCmtCode);
+        AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode).orElseThrow();
+
+        Long asgmtCode = asgmtCmt.getAsgmt().getCode();
+        Long userCode = asgmtCmt.getUser().getCode();
+
+        asgmtCmtImgService.deleteByAsgmtCmtCode(asgmtCmtCode); // 이미지 삭제
+        asgmtCmtRepository.delete(asgmtCmt); // 댓글 삭제
+
+        // 같은 과제에 댓글이 더 없는 경우 -> 과제 제출한 인원수 감소
+        if (!asgmtCmtRepository.existsByAsgmt_CodeAndUser_Code(asgmtCode, userCode)) {
+            asgmtCmt.getAsgmt().decreaseSubmitCount();
+        }
     }
 
     @Transactional // 과제 code에 맞는 댓글 삭제 Service
     public void deleteByAsgmtCode(Long asgmtCode) {
+        Asgmt asgmt = asgmtRepository.findById(asgmtCode).orElseThrow();
         // 1. 스터디 code에 맞는 과제 댓글 목록 조회 후
         // 2. 과제 댓글 code로 이미지 삭제
         List<AsgmtCmt> asgmtCmtList = asgmtCmtRepository.findByAsgmt_Code(asgmtCode);
         asgmtCmtList.forEach(item -> asgmtCmtImgService.deleteByAsgmtCmtCode(item.getCode()));
         asgmtCmtRepository.deleteByAsgmt_Code(asgmtCode);
+        asgmt.setSubmitCount(0L); // 댓글 모두 삭제했으므로 과제 제출 인원수 0으로 초기화
     }
 
     @Transactional // 스터디 code에 맞는 댓글 삭제 Service
@@ -146,7 +165,13 @@ public class AsgmtCmtService {
             .flatMap(asgmt -> asgmtCmtRepository.findByAsgmt_Code(asgmt.getCode()).stream())
             .toList();
         asgmtCmtList.forEach(asgmtCmt -> asgmtCmtImgService.deleteByAsgmtCmtCode(asgmtCmt.getCode()));
-        // 과제 댓글 삭제
-        asgmtCmtRepository.deleteByStudy_Code(studyCode);
+        asgmtCmtRepository.deleteByStudy_Code(studyCode); // 과제 댓글 삭제
+        asgmtList.forEach(asgmt -> asgmt.setSubmitCount(0L)); // 모든 과제의 제출 수 초기화
+    }
+
+    @Transactional // 과제 댓글 확인 처리 (관리자용) Service
+    public void submitAsgmtCmt(Long asgmtCmtCode) {
+        AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode).orElseThrow();
+        asgmtCmt.setIsAdminCheck(true); // 확인 처리
     }
 }
