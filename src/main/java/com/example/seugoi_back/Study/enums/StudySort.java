@@ -1,17 +1,17 @@
 package com.example.seugoi_back.Study.enums;
 
-public enum StudySortType {
+import lombok.Getter;
+
+@Getter
+public enum StudySort {
     LATEST("최신순"),
     POPULAR("인기순"),
     NAME("이름순");
 
     private final String description;
 
-    StudySortType(String description) {
+    StudySort(String description) {
         this.description = description;
     }
 
-    public String getDescription() {
-        return description;
-    }
 }

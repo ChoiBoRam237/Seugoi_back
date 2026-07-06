@@ -66,6 +66,7 @@ public class StudyViewService {
                 .bgImg(studyBgImgService.findByStudyCode(study.getCode()))
                 .isAdmin(Objects.equals(userCode, study.getUser().getCode()))
                 .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, study.getCode()).isPresent())
+                .status(study.getStatus())
                 .build())
             .toList();
     }

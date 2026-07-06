@@ -1,11 +1,13 @@
 package com.example.seugoi_back.Study.dto.response;
 
 import com.example.seugoi_back.Common.response.CommonImgResponseDto;
+import com.example.seugoi_back.Study.enums.StudyStatus;
 import com.example.seugoi_back.User.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -28,7 +30,7 @@ public class StudyDetailResponseDto {
     private Long joinCount; // 현재 가입한 인원수
 
     @Schema(name = "endPeriod", example = "2026-01-01")
-    private String endPeriod;
+    private LocalDate endPeriod;
 
     @Schema(name = "dDay", example = "30")
     private Long dDay; // 디데이
@@ -56,4 +58,7 @@ public class StudyDetailResponseDto {
 
     @Schema(name = "isBookmark", example = "true")
     private Boolean isBookmark; // 북마크 여부
+
+    @Schema(name = "status", example = "STUDYING")
+    private StudyStatus status;
 }

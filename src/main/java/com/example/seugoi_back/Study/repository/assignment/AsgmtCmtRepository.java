@@ -24,6 +24,7 @@ public interface AsgmtCmtRepository extends JpaRepository<AsgmtCmt, Long> {
         JOIN FETCH a.study s
         WHERE c.user.code = :userCode
           AND s.user.code <> :userCode
+          AND s.status = "STUDYING"
         ORDER BY c.createdAt DESC
     """)
     List<AsgmtCmt> findStudying(Long userCode);

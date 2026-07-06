@@ -2,10 +2,13 @@ package com.example.seugoi_back.Study.entity;
 
 import com.example.seugoi_back.Common.entity.BaseTime;
 import com.example.seugoi_back.Study.dto.request.StudyRequestDto;
+import com.example.seugoi_back.Study.enums.StudyStatus;
 import com.example.seugoi_back.User.entity.User;
 import com.example.seugoi_back.Util.ListUtil;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -32,7 +35,7 @@ public class Study extends BaseTime {
     private String peopleCount; // 모집 인원 (제한 없음: -)
 
     @Column(length = 10)
-    private String endPeriod; // 스터디 종료 기간
+    private LocalDate endPeriod; // 스터디 종료 기간
 
     @Column(length = 100)
     private String studyTitle; // 스터디 제목
@@ -61,6 +64,11 @@ public class Study extends BaseTime {
     @Column(nullable = false)
     private Long viewCount = 0L; // 조회수
 
+    @Builder.Default
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private StudyStatus status = StudyStatus.STUDYING; // 스터디 상태
+
     public void increaseBookmarkCount() {
         this.bookmarkCount++;
     }
@@ -78,6 +86,9 @@ public class Study extends BaseTime {
     }
     public void increaseViewCount() {
         this.viewCount++;
+    }
+    public void updateStatus(StudyStatus status) {
+        this.status = status;
     }
 
     public void update(StudyRequestDto dto) {

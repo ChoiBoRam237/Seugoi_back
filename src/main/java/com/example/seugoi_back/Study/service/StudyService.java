@@ -140,6 +140,7 @@ public class StudyService {
                 .bgImg(studyBgImgService.findByStudyCode(item.getCode()))
                 .isAdmin(Objects.equals(userCode, item.getUser().getCode()))
                 .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, item.getCode()).isPresent())
+                .status(item.getStatus())
                 .build())
             .toList();
 
@@ -188,6 +189,7 @@ public class StudyService {
                 .bgImg(bgImage)
                 .isJoined(isJoined)
                 .isBookmark(isBookmark)
+                .status(study.getStatus())
                 .build();
 
         // 조회수 증가
@@ -214,6 +216,7 @@ public class StudyService {
                 .bgImg(studyBgImgService.findByStudyCode(item.getCode()))
                 .isAdmin(Objects.equals(userCode, item.getUser().getCode()))
                 .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, item.getCode()).isPresent())
+                .status(item.getStatus())
                 .build())
             .toList();
 
@@ -263,6 +266,7 @@ public class StudyService {
                 .bgImg(studyBgImgService.findByStudyCode(study.getCode()))
                 .isAdmin(Objects.equals(userCode, study.getUser().getCode()))
                 .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, study.getCode()).isPresent())
+                .status(study.getStatus())
                 .build())
             .toList();
 
@@ -282,6 +286,7 @@ public class StudyService {
                 .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
                 .progress(0)
                 .bgImg(studyBgImgService.findByStudyCode(study.getCode()))
+                .status(study.getStatus())
                 .build())
             .toList();
     }

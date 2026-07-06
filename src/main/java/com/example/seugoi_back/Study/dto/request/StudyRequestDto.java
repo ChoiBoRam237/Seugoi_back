@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Builder
@@ -28,7 +29,7 @@ public class StudyRequestDto {
     String peopleCount;
 
     @Schema(description = "스터드 종료기간", example = "2026-01-01")
-    String endPeriod;
+    LocalDate endPeriod;
 
     @Schema(description = "스터디 제목", example = "React를 공부하고 싶다고요?")
     String studyTitle;

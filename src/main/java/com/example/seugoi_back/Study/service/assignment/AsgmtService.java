@@ -114,6 +114,7 @@ public class AsgmtService {
                 .isAdmin(Objects.equals(asgmt.getUser().getCode(), userCode))
                 .submitted(asgmtCmtRepository.existsByAsgmt_CodeAndUser_Code(asgmt.getCode(), userCode))
                 .notSubmitCount(study.getJoinCount() == 0 ? -1 : study.getJoinCount() - asgmt.getSubmitCount())
+                .studyStatus(study.getStatus())
                 .createdAt(asgmt.getCreatedAt())
                 .build();
 

@@ -5,12 +5,11 @@ import java.time.temporal.ChronoUnit;
 
 public class DateUtil {
     // 디데이 계산 util
-    public static Long calculateDDay(String targetDate) {
-        if (targetDate == null || targetDate.isBlank()) {
+    public static Long calculateDDay(LocalDate targetDate) {
+        if (targetDate == null) {
             return null;
         }
 
-        LocalDate date = LocalDate.parse(targetDate);
-        return ChronoUnit.DAYS.between(LocalDate.now(), date);
+        return ChronoUnit.DAYS.between(LocalDate.now(), targetDate);
     }
 }

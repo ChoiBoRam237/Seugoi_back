@@ -1,6 +1,7 @@
 package com.example.seugoi_back.Study.dto.response;
 
 import com.example.seugoi_back.Common.response.CommonImgResponseDto;
+import com.example.seugoi_back.Study.enums.StudyStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,4 +35,7 @@ public class StudyResponseDto {
 
     @Schema(name = "isBookmark", example = "true")
     private Boolean isBookmark; // 북마크 여부
+
+    @Schema(name = "status", example = "STUDYING")
+    private StudyStatus status; // 스터디 상태
 }

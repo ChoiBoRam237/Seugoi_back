@@ -1,6 +1,7 @@
 package com.example.seugoi_back.Study.dto.response;
 
 import com.example.seugoi_back.Common.response.CommonImgResponseDto;
+import com.example.seugoi_back.Study.enums.StudyStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -46,6 +47,9 @@ public class StudyBoardResponseDto {
 
     @Schema(name = "notSubmitCount", example = "10")
     private Long notSubmitCount; // 과제 미제출 인원수
+
+    @Schema(name = "studyStatus", example = "STUDYING")
+    private StudyStatus studyStatus;
 
     @Schema(name = "createdAt", example = "2026-06-25 14:43:39.905718")
     private LocalDateTime createdAt;
