@@ -1,5 +1,7 @@
 package com.example.seugoi_back.Jwt.service;
 
+import com.example.seugoi_back.Common.exception.CustomException;
+import com.example.seugoi_back.Common.exception.ErrorCode;
 import com.example.seugoi_back.Jwt.JwtTokenProvider;
 import com.example.seugoi_back.Jwt.entity.RefreshToken;
 import com.example.seugoi_back.Jwt.repository.RefreshTokenRepository;
@@ -44,17 +46,17 @@ public class JwtService {
     @Transactional // 엑세스 토큰 재발급 Service
     public String refreshAccessToken(String refreshToken) {
         if (!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new RuntimeException("유효하지 않는 토큰입니다.");
+            throw new CustomException(ErrorCode.TOKEN_ERROR);
         }
 
         Long userCode = jwtTokenProvider.getUserCode(refreshToken);
         User user = userRepository.findById(userCode)
-            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         RefreshToken refresh = refreshTokenRepository.findById(userCode)
-            .orElseThrow(() -> new RuntimeException("리프레시 토큰을 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.REFRESHTOKEN_ERROR));
 
         if (refresh.getRefreshToken() == null || !refresh.getRefreshToken().equals(refreshToken)) {
-            throw new RuntimeException("유효하지 않은 토큰입니다.");
+            throw new CustomException(ErrorCode.TOKEN_ERROR);
         }
 
         String newAccessToken =

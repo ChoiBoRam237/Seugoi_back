@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface StudyBookmarkRepository extends JpaRepository<StudyBookmark, Long> {
     Optional<StudyBookmark> findByUser_CodeAndStudy_Code(Long userCode, Long studyCode);
     List<StudyBookmark> findByUser_Code(Long userCode);
+    void deleteByStudy_Code(Long studyCode);
 }

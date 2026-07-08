@@ -1,5 +1,7 @@
 package com.example.seugoi_back.Study.service.assignment;
 
+import com.example.seugoi_back.Common.exception.CustomException;
+import com.example.seugoi_back.Common.exception.ErrorCode;
 import com.example.seugoi_back.Common.response.CommonImgResponseDto;
 import com.example.seugoi_back.Study.entity.assignment.AsgmtCmt;
 import com.example.seugoi_back.Study.entity.assignment.AsgmtCmtImg;
@@ -24,7 +26,7 @@ import java.util.UUID;
 public class AsgmtCmtImgService {
     private final AsgmtCmtRepository asgmtCmtRepository;
     private final AsgmtCmtImgRepository asgmtCmtImgRepository;
-    private final String UPLOAD_DIR = "D:\\2026년\\Projects\\seugoi_back\\uploads\\study\\asgmt\\cmt";
+    private final String UPLOAD_DIR = "D:\\Y2026\\Projects\\seugoi_back\\uploads\\study\\asgmt\\cmt";
 
     public List<String> savedAsgmtCmtImg(List<MultipartFile> fileList) { // 이미지 저장 Service
         if (fileList == null || fileList.isEmpty()) {
@@ -82,13 +84,13 @@ public class AsgmtCmtImgService {
     @Transactional // 댓글 code에 맞는 이미지 수정 Service
     public void updateImgUrl(Long asgmtCmtCode, List<MultipartFile> imgList, List<Long> removeImgCodeList) {
         AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode)
-            .orElseThrow(() -> new RuntimeException("댓글을 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
         // 지울 이미지가 있을 경우
         if (removeImgCodeList != null && !removeImgCodeList.isEmpty()) {
             for (Long imgCode : removeImgCodeList) {
                 AsgmtCmtImg img = asgmtCmtImgRepository.findById(imgCode)
-                    .orElseThrow(() -> new RuntimeException("댓글 이미지를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new CustomException(ErrorCode.IMAGE_NOT_FOUND));
                 FileUtil.deleteImg(img.getFolderName(), img.getImgUrl()); // 파일 삭제
                 asgmtCmtImgRepository.deleteById(imgCode); // DB 삭제
             }

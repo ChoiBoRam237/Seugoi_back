@@ -1,5 +1,7 @@
 package com.example.seugoi_back.Study.service.assignment;
 
+import com.example.seugoi_back.Common.exception.CustomException;
+import com.example.seugoi_back.Common.exception.ErrorCode;
 import com.example.seugoi_back.Login.dto.UserResponseDto;
 import com.example.seugoi_back.Study.dto.request.assignment.AsgmtCmtRequestDto;
 import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
@@ -35,9 +37,9 @@ public class AsgmtCmtService {
     @Transactional // 과제 댓글 생성 Service
     public AsgmtCmt generateAsgmtCmt(Long userCode, Long asgmtCode, AsgmtCmtRequestDto dto) {
         User user = userRepository.findById(userCode)
-            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Asgmt asgmt = asgmtRepository.findById(asgmtCode)
-            .orElseThrow(() -> new RuntimeException("과제를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.ASGMT_NOT_FOUND));
         List<AsgmtCmt> asgmtCmtList = asgmtCmtRepository.findByUser_CodeAndAsgmt_Code(userCode, asgmtCode);
 
         // 과제 댓글 저장
@@ -75,7 +77,7 @@ public class AsgmtCmtService {
     @Transactional // 과제 code에 맞는 모든 댓글 조회 Service
     public AsgmtCmtListResponseDto findByAsgmtCode(Long userCode, Long asgmtCode) {
         Asgmt asgmt = asgmtRepository.findById(asgmtCode)
-            .orElseThrow(() -> new RuntimeException("과제를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.ASGMT_NOT_FOUND));
         List<AsgmtCmt> myCmtList = asgmtCmtRepository.findByUser_CodeAndAsgmt_Code(userCode, asgmtCode);
         List<AsgmtCmt> asgmtCmtList = asgmtCmtRepository.findByAsgmt_Code(asgmtCode);
 
@@ -122,7 +124,7 @@ public class AsgmtCmtService {
     @Transactional // 댓글 수정 Service
     public CommonStudyResponseDto updateAsgmtCmt(Long asgmtCmtCode, AsgmtCmtRequestDto dto, List<Long> removeImgCodeList) {
         AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode)
-            .orElseThrow(() -> new RuntimeException("댓글을 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (
             (dto.getImageList() != null && !dto.getImageList().isEmpty()) ||
@@ -143,7 +145,7 @@ public class AsgmtCmtService {
     @Transactional // 댓글 code에 맞는 댓글 삭제 Service
     public void deleteByAsgmtCmtCode(Long asgmtCmtCode) {
         AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode)
-            .orElseThrow(() -> new RuntimeException("댓글을 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
         Long asgmtCode = asgmtCmt.getAsgmt().getCode();
         Long userCode = asgmtCmt.getUser().getCode();
@@ -160,7 +162,7 @@ public class AsgmtCmtService {
     @Transactional // 과제 code에 맞는 댓글 삭제 Service
     public void deleteByAsgmtCode(Long asgmtCode) {
         Asgmt asgmt = asgmtRepository.findById(asgmtCode)
-            .orElseThrow(() -> new RuntimeException("과제를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.ASGMT_NOT_FOUND));
         // 1. 스터디 code에 맞는 과제 댓글 목록 조회 후
         // 2. 과제 댓글 code로 이미지 삭제
         List<AsgmtCmt> asgmtCmtList = asgmtCmtRepository.findByAsgmt_Code(asgmtCode);
@@ -174,13 +176,8 @@ public class AsgmtCmtService {
         // 1. 스터디 code에 맞는 과제 목록 조회
         List<Asgmt> asgmtList = asgmtRepository.findByStudy_Code(studyCode);
 
-        // 1. 스터디 code에 맞는 과제 댓글 목록 조회
+        // 2. 스터디 code에 맞는 과제 댓글 목록 조회
         List<AsgmtCmt> asgmtCmtList = asgmtCmtRepository.findByStudy_Code(studyCode);
-
-        // 2. 과제 code에 맞는 과제 댓글 목록 조회
-//        List<AsgmtCmt> asgmtCmtList = asgmtList.stream()
-//            .flatMap(asgmt -> asgmtCmtRepository.findByAsgmt_Code(asgmt.getCode()).stream())
-//            .toList();
 
         // 3. 과제 댓글 code로 이미지 삭제
         asgmtCmtList.forEach(asgmtCmt -> asgmtCmtImgService.deleteByAsgmtCmtCode(asgmtCmt.getCode()));
@@ -212,7 +209,7 @@ public class AsgmtCmtService {
     @Transactional // 과제 댓글 확인 처리 (관리자용) Service
     public void submitAsgmtCmt(Long asgmtCmtCode) {
         AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode)
-            .orElseThrow(() -> new RuntimeException("과제를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.ASGMT_NOT_FOUND));
         asgmtCmt.setIsAdminCheck(true); // 확인 처리
     }
 }

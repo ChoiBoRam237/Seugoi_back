@@ -1,5 +1,8 @@
 package com.example.seugoi_back.Study.service;
 
+import com.example.seugoi_back.Chat.service.ChatRoomService;
+import com.example.seugoi_back.Common.exception.CustomException;
+import com.example.seugoi_back.Common.exception.ErrorCode;
 import com.example.seugoi_back.Common.response.CommonImgResponseDto;
 import com.example.seugoi_back.Study.dto.request.StudyRequestDto;
 import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
@@ -38,12 +41,15 @@ public class StudyService {
     private final AsgmtCmtService asgmtCmtService;
     private final NoticeService noticeService;
     private final StudyViewService studyViewService;
+    private final StudyJoinService studyJoinService;
+    private final StudyBookmarkService studyBookmarkService;
     private final StudySearchKeywordService studySearchKeywordService;
+    private final ChatRoomService chatRoomService;
 
     @Transactional // 스터디 생성 Service
     public Study generateStudy(Long userCode, StudyRequestDto dto) {
         User user = userRepository.findById(userCode)
-            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         // 배열 -> String
         String categoriesJson = ListUtil.parseListToString(dto.getCategories());
         String introductionJson = ListUtil.parseListToString(dto.getIntroduction());
@@ -73,6 +79,9 @@ public class StudyService {
             .imgUrl(studyBgImageUrl)
             .build();
         studyBgImageRepository.save(studyBgImage);
+
+        // 채팅방 자동 생성
+        chatRoomService.generateChatRoom(userCode, savedStudy.getCode(), savedStudy.getStudyName());
 
         return savedStudy;
     }
@@ -150,7 +159,7 @@ public class StudyService {
     @Transactional // 특정 스터디 조회 Service
     public Map<String, Object> findByStudyCode(Long userCode, Long studyCode) {
         Study study = studyRepository.findById(studyCode)
-            .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
 
         // 배경 이미지
         CommonImgResponseDto bgImage = studyBgImgService.findByStudyCode(studyCode);
@@ -294,7 +303,7 @@ public class StudyService {
     @Transactional // 스터디 수정 Service
     public CommonStudyResponseDto updateStudy(Long studyCode, StudyRequestDto dto) {
         Study study = studyRepository.findById(studyCode)
-            .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
 
         if (dto.getImgUrl() != null) {
             studyBgImgService.updateImgUrl(studyCode, dto.getImgUrl());
@@ -311,7 +320,7 @@ public class StudyService {
     @Transactional // 스터디 탈퇴 Service
     public void exitStudy(Long userCode, Long studyCode) {
         Study study = studyRepository.findById(studyCode)
-            .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
 
         asgmtCmtService.deleteByUserCodeAndStudyCode(userCode, studyCode); // 내가 작성한 댓글 삭제
         studyJoinRepository.deleteByUser_CodeAndStudy_Code(userCode, studyCode); // DB 삭제
@@ -323,6 +332,10 @@ public class StudyService {
         asgmtService.deleteByStudyCode(studyCode); // 과제 삭제
         noticeService.deleteByStudyCode(studyCode); // 공지 삭제
         studyBgImgService.deleteByStudyCode(studyCode); // 스터디 배경 이미지 삭제
+        studyViewService.deleteByStudyCode(studyCode); // 조회수 데이터 삭제
+        studyJoinService.deleteByStudyCode(studyCode); // 가입 데이터 삭제
+        studyBookmarkService.deleteByStudyCode(studyCode); // 북마크 데이터 삭제
+        chatRoomService.deleteByStudyCode(studyCode); // 채팅방 삭제
         studyRepository.deleteById(studyCode); // 스터디 삭제
     }
 }

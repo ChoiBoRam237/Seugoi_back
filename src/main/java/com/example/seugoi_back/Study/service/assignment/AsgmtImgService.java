@@ -1,5 +1,7 @@
 package com.example.seugoi_back.Study.service.assignment;
 
+import com.example.seugoi_back.Common.exception.CustomException;
+import com.example.seugoi_back.Common.exception.ErrorCode;
 import com.example.seugoi_back.Common.response.CommonImgResponseDto;
 import com.example.seugoi_back.Study.entity.assignment.Asgmt;
 import com.example.seugoi_back.Study.entity.assignment.AsgmtImg;
@@ -24,7 +26,7 @@ import java.util.UUID;
 public class AsgmtImgService {
     private final AsgmtRepository asgmtRepository;
     private final AsgmtImgRepository asgmtImgRepository;
-    private final String UPLOAD_DIR = "D:\\2026년\\Projects\\seugoi_back\\uploads\\study\\asgmt";
+    private final String UPLOAD_DIR = "D:\\Y2026\\Projects\\seugoi_back\\uploads\\study\\asgmt";
 
     public List<String> savedAsgmtImg(List<MultipartFile> fileList) { // 이미지 저장 Service
         if (fileList == null || fileList.isEmpty()) {
@@ -82,13 +84,13 @@ public class AsgmtImgService {
     @Transactional // 과제 code에 맞는 이미지 수정 Service
     public void updateImgUrl(Long asgmtCode, List<MultipartFile> imageList, List<Long> removeImgCodeList) {
         Asgmt asgmt = asgmtRepository.findById(asgmtCode)
-            .orElseThrow(() -> new RuntimeException("과제를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.ASGMT_NOT_FOUND));
 
         // 지울 이미지가 있을 경우
         if (removeImgCodeList != null && !removeImgCodeList.isEmpty()) {
             for (Long imgCode : removeImgCodeList) {
                 AsgmtImg img = asgmtImgRepository.findById(imgCode)
-                    .orElseThrow(() -> new RuntimeException("과제 이미지를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new CustomException(ErrorCode.IMAGE_NOT_FOUND));
                 FileUtil.deleteImg(img.getFolderName(), img.getImgUrl()); // 파일 삭제
                 asgmtImgRepository.deleteById(imgCode);  // DB 삭제
             }

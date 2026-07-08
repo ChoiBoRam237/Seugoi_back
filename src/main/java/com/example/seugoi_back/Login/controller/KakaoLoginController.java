@@ -1,5 +1,7 @@
 package com.example.seugoi_back.Login.controller;
 
+import com.example.seugoi_back.Common.exception.CustomException;
+import com.example.seugoi_back.Common.exception.ErrorCode;
 import com.example.seugoi_back.Common.response.CommonApiResponse;
 import com.example.seugoi_back.Jwt.JwtTokenProvider;
 import com.example.seugoi_back.Jwt.entity.RefreshToken;
@@ -59,7 +61,7 @@ public class KakaoLoginController {
         // 유저 정보가 DB에 저장되어 있으면 새로 저장하지 않고 바로 유저 정보 전달
         if (userRepository.findByKakaoId(userInfo.getId()).isPresent()) {
             user = userRepository.findByKakaoId(userInfo.getId())
-                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         } else {
             user = userService.loginOrRegister(userInfo);
         }

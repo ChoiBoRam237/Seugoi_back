@@ -1,11 +1,14 @@
 package com.example.seugoi_back.Study.service;
 
+import com.example.seugoi_back.Common.exception.CustomException;
+import com.example.seugoi_back.Common.exception.ErrorCode;
 import com.example.seugoi_back.Common.response.CommonImgResponseDto;
 import com.example.seugoi_back.Study.entity.StudyBgImg;
 import com.example.seugoi_back.Study.repository.StudyBgImgRepository;
 import com.example.seugoi_back.Util.FileUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,9 +21,10 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StudyBgImgService {
     private final StudyBgImgRepository studyBgImageRepository;
-    private final String UPLOAD_DIR = "D:\\2026년\\Projects\\seugoi_back\\uploads\\study";
+    private final String UPLOAD_DIR = "D:\\Y2026\\Projects\\seugoi_back\\uploads\\study";
 
     public String saveBgImage(MultipartFile file) { // 이미지 저장 Service
         if (file == null || file.isEmpty()) {
@@ -52,7 +56,7 @@ public class StudyBgImgService {
     @Transactional // 스터디 id에 맞는 이미지 조회 Service
     public CommonImgResponseDto findByStudyCode(Long studyCode) {
         StudyBgImg studyBgImage = studyBgImageRepository.findByStudy_Code(studyCode)
-            .orElseThrow(() -> new RuntimeException("이미지를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.IMAGE_NOT_FOUND));
 
         return CommonImgResponseDto.builder()
                 .code(studyBgImage.getCode())
@@ -64,7 +68,7 @@ public class StudyBgImgService {
     @Transactional // 스터디 code에 맞는 이미지 수정 Service
     public StudyBgImg updateImgUrl(Long studyCode, MultipartFile imgUrl) {
         StudyBgImg studyBgImg = studyBgImageRepository.findByStudy_Code(studyCode)
-            .orElseThrow(() -> new RuntimeException("이미지를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.IMAGE_NOT_FOUND));
 
         if (imgUrl == null || imgUrl.isEmpty()) {
             return studyBgImg;

@@ -1,5 +1,7 @@
 package com.example.seugoi_back.Study.service;
 
+import com.example.seugoi_back.Common.exception.CustomException;
+import com.example.seugoi_back.Common.exception.ErrorCode;
 import com.example.seugoi_back.Study.dto.response.StudySearchKeywordResponseDto;
 import com.example.seugoi_back.Study.entity.StudySearchKeyword;
 import com.example.seugoi_back.Study.repository.StudySearchKeywordRepository;
@@ -23,7 +25,7 @@ public class StudySearchKeywordService {
     @Transactional // 검색어 저장 Service
     public void saveSearchKeyword(Long userCode, String keyword) {
         User user = userRepository.findById(userCode)
-            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         StudySearchKeyword searchKeyword =
                 studySearchKeywordRepository.findByUser_CodeAndKeyword(userCode, keyword)

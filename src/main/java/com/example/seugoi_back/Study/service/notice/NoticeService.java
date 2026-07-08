@@ -1,5 +1,7 @@
 package com.example.seugoi_back.Study.service.notice;
 
+import com.example.seugoi_back.Common.exception.CustomException;
+import com.example.seugoi_back.Common.exception.ErrorCode;
 import com.example.seugoi_back.Study.dto.request.notice.NoticeRequestDto;
 import com.example.seugoi_back.Study.dto.response.CommonStudyResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyBoardResponseDto;
@@ -26,9 +28,9 @@ public class NoticeService {
     @Transactional // 공지 생성 Service
     public Notice generateNotice(Long userCode, Long studyCode, NoticeRequestDto dto) {
         User user = userRepository.findById(userCode)
-            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Study study = studyRepository.findById(studyCode)
-            .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
 
         Notice notice = Notice.builder()
             .user(user)
@@ -61,7 +63,7 @@ public class NoticeService {
     @Transactional // 특정 공지 조회 Service
     public StudyBoardResponseDto findByNoticeCode(Long userCode, Long noticeCode) {
         Notice notice = noticeRepository.findByUser_CodeAndCode(userCode, noticeCode)
-            .orElseThrow(() -> new RuntimeException("공지를 찾을 수 없습니다"));
+            .orElseThrow(() -> new CustomException(ErrorCode.NOTICE_NOT_FOUND));
 
         return StudyBoardResponseDto.builder()
             .code(notice.getCode())
@@ -74,7 +76,7 @@ public class NoticeService {
     @Transactional // 공지 수정 Service
     public CommonStudyResponseDto updateNotice(Long noticeCode, NoticeRequestDto dto) {
         Notice notice = noticeRepository.findById(noticeCode)
-            .orElseThrow(() -> new RuntimeException("공지를 찾을 수 없습니다"));
+            .orElseThrow(() -> new CustomException(ErrorCode.NOTICE_NOT_FOUND));
 
         notice.update(dto);
 

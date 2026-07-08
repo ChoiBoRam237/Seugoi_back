@@ -13,4 +13,5 @@ import java.util.Optional;
 public interface StudyViewRepository extends JpaRepository<StudyView, Long> {
     Optional<StudyView> findByUserAndStudy(User user, Study study);
     List<StudyView> findTop4ByUser_CodeOrderByViewedAtDesc(Long userCode);
+    void deleteByStudy_Code(Long studyCode);
 }

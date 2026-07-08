@@ -1,5 +1,7 @@
 package com.example.seugoi_back.User.service;
 
+import com.example.seugoi_back.Common.exception.CustomException;
+import com.example.seugoi_back.Common.exception.ErrorCode;
 import com.example.seugoi_back.Login.dto.KakaoUserInfoResponseDto;
 import com.example.seugoi_back.Login.dto.UserResponseDto;
 import com.example.seugoi_back.User.entity.User;
@@ -32,6 +34,6 @@ public class UserService {
     @Transactional // 특정 유저 조회 Service
     public User findByUserCode(Long userCode) {
         return userRepository.findById(userCode)
-            .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 }

@@ -1,5 +1,7 @@
 package com.example.seugoi_back.Study.service;
 
+import com.example.seugoi_back.Common.exception.CustomException;
+import com.example.seugoi_back.Common.exception.ErrorCode;
 import com.example.seugoi_back.Study.dto.response.StudyResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.Study.entity.StudyView;
@@ -30,7 +32,7 @@ public class StudyViewService {
     @Transactional // 스터디 조회 Service
     public void studyView(Long userCode, Long studyCode) {
         Study study = studyRepository.findById(studyCode)
-            .orElseThrow(() -> new RuntimeException("스터디를 찾을 수 없습니다."));
+            .orElseThrow(() -> new CustomException(ErrorCode.STUDY_NOT_FOUND));
 
         User user = userService.findByUserCode(userCode);
 
@@ -69,5 +71,10 @@ public class StudyViewService {
                 .status(study.getStatus())
                 .build())
             .toList();
+    }
+
+    @Transactional // 스터디 code에 맞는 조회수 삭제
+    public void deleteByStudyCode(Long studyCode) {
+        studyViewRepository.deleteByStudy_Code(studyCode);
     }
 }
