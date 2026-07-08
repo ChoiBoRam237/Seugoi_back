@@ -2,6 +2,7 @@ package com.example.seugoi_back.Chat.dto.response;
 
 import com.example.seugoi_back.Common.response.CommonImgResponseDto;
 import com.example.seugoi_back.Login.dto.UserResponseDto;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Getter
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChatMessageResponseDto {
 
     @Schema(name = "code", example = "1")

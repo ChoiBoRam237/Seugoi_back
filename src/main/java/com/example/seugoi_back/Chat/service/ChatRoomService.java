@@ -5,7 +5,6 @@ import com.example.seugoi_back.Chat.entity.ChatRoom;
 import com.example.seugoi_back.Chat.repository.ChatRoomRepository;
 import com.example.seugoi_back.Common.exception.CustomException;
 import com.example.seugoi_back.Common.exception.ErrorCode;
-import com.example.seugoi_back.Login.dto.UserResponseDto;
 import com.example.seugoi_back.Study.dto.response.StudyResponseDto;
 import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.Study.repository.StudyRepository;
@@ -57,17 +56,11 @@ public class ChatRoomService {
             .map(item -> ChatRoomResponseDto.builder()
                 .code(item.getCode())
                 .roomName(item.getRoomName())
-                .user(
-                    UserResponseDto.builder()
-                        .userCode(item.getUser().getCode())
-                        .name(item.getUser().getName())
-                        .profileImgUrl(item.getUser().getProfileImgUrl())
-                        .build()
-                )
+                .lastMessage(chatMessageService.findLastMessage(item.getCode()).getMessage())
+                .lastMessageDate(chatMessageService.findLastMessage(item.getCode()).getCreatedAt())
                 .study(
                     StudyResponseDto.builder()
                         .code(item.getStudy().getCode())
-                        .studyName(item.getStudy().getStudyName())
                         .bgImg(studyBgImgService.findByStudyCode(item.getStudy().getCode()))
                         .build()
                 )

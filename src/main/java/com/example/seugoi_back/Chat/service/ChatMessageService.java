@@ -109,6 +109,22 @@ public class ChatMessageService {
         return responseDto;
     }
 
+    @Transactional // 마지막 메시지 조회 Service
+    public ChatMessageResponseDto findLastMessage(Long chatRoomCode) {
+        return chatMessageRepository
+            .findFirstByChatRoom_CodeOrderByCreatedAtDesc(chatRoomCode)
+            .map(chatMessage -> ChatMessageResponseDto.builder()
+                .message(chatMessage.getMessage())
+                .createdAt(chatMessage.getCreatedAt())
+                .build())
+                .orElse(
+                    ChatMessageResponseDto.builder()
+                        .message("")
+                        .createdAt(null)
+                        .build()
+                );
+    }
+
     @Transactional // 채팅방 code에 맞는 모든 메시지 삭제
     public void deleteByChatRoomCode(Long chatRoomCode) {
         List<ChatMessage> chatMessage = chatMessageRepository.findByChatRoom_Code(chatRoomCode);
