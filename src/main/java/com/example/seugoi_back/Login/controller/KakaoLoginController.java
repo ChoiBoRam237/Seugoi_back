@@ -3,9 +3,6 @@ package com.example.seugoi_back.Login.controller;
 import com.example.seugoi_back.Common.exception.CustomException;
 import com.example.seugoi_back.Common.exception.ErrorCode;
 import com.example.seugoi_back.Common.response.CommonApiResponse;
-import com.example.seugoi_back.Jwt.JwtTokenProvider;
-import com.example.seugoi_back.Jwt.entity.RefreshToken;
-import com.example.seugoi_back.Jwt.repository.RefreshTokenRepository;
 import com.example.seugoi_back.Jwt.service.JwtService;
 import com.example.seugoi_back.Login.dto.KakaoTokenResponseDto;
 import com.example.seugoi_back.Login.dto.KakaoUserInfoResponseDto;
@@ -19,14 +16,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @RestController

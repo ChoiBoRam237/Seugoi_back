@@ -5,6 +5,7 @@ import com.example.seugoi_back.Chat.dto.response.ChatMessageResponseDto;
 import com.example.seugoi_back.Chat.entity.ChatImg;
 import com.example.seugoi_back.Chat.entity.ChatMessage;
 import com.example.seugoi_back.Chat.entity.ChatRoom;
+import com.example.seugoi_back.Chat.enums.ChatMessageType;
 import com.example.seugoi_back.Chat.repository.ChatImgRepository;
 import com.example.seugoi_back.Chat.repository.ChatMessageRepository;
 import com.example.seugoi_back.Chat.repository.ChatRoomRepository;
@@ -34,8 +35,8 @@ public class ChatMessageService {
     private final ChatImgService chatImgService;
 
     @Transactional // 메시지 전송 Service
-    public void sendMessage(Long userCode, Long chatRoomCode, ChatRequestDto dto) {
-        User user = userRepository.findById(userCode)
+    public void sendMessage(Long chatRoomCode, ChatRequestDto dto) {
+        User user = userRepository.findById(dto.getUserCode())
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomCode)
             .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
@@ -44,18 +45,19 @@ public class ChatMessageService {
         ChatMessage chatMessage = ChatMessage.builder()
             .user(user)
             .chatRoom(chatRoom)
+            .senderName(user.getName())
+            .senderProfileImgUrl(user.getProfileImgUrl())
+            .type(ChatMessageType.CHAT)
             .message(dto.getMessage())
             .build();
-        ChatMessage savedMessage = chatMessageRepository.save(chatMessage);
+        chatMessageRepository.save(chatMessage);
 
-        // 채팅 이미지가 있을 때만 실행
+        // 이미지 DB 저장
         if (dto.getImgList() != null && !dto.getImgList().isEmpty()) {
-            // 채팅 이미지 저장
-            List<String> chatImgList = chatImgService.savedChatImg(dto.getImgList());
-            for (String img : chatImgList) {
+            for (String img : dto.getImgList()) {
                 ChatImg chatImg = ChatImg.builder()
                     .user(user)
-                    .chatMessage(savedMessage)
+                    .chatMessage(chatMessage)
                     .folderName("/uploads/chat/")
                     .imgUrl(img)
                     .build();
@@ -74,18 +76,25 @@ public class ChatMessageService {
                         .profileImgUrl(user.getProfileImgUrl())
                         .build()
                 )
-                .isMine(Objects.equals(chatMessage.getUser().getCode(), userCode))
+                .owner(Objects.equals(chatRoom.getStudy().getUser().getCode(), chatMessage.getUser().getCode()))
+                .senderName(user.getName())
+                .senderProfileImgUrl(user.getProfileImgUrl())
+                .type(chatMessage.getType())
                 .message(chatMessage.getMessage())
-                .imgList(chatImgService.findByChatMessageCode(chatMessage.getCode()))
+                .imgList(
+                    dto.getImgList().stream()
+                        .map(img -> "/uploads/chat/" + img)
+                        .toList()
+                )
                 .createdAt(chatMessage.getCreatedAt())
                 .build();
-        simpMessagingTemplate.convertAndSend("/chat/room" + chatRoomCode, responseDto);
+        simpMessagingTemplate.convertAndSend("/sub/room/" + chatRoomCode, responseDto);
     }
 
-    @Transactional // 메시지 조회 Service
-    public List<ChatMessageResponseDto> findByChatRoomCode(Long userCode, Long chatRoomCode) {
-        User user = userRepository.findById(userCode)
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    @Transactional // 이전 채팅 내용 조회 Service
+    public List<ChatMessageResponseDto> findByChatRoomCode(Long chatRoomCode) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomCode)
+            .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
         List<ChatMessage> chatMessage = chatMessageRepository.findByChatRoom_Code(chatRoomCode);
 
         List<ChatMessageResponseDto> responseDto = chatMessage.stream()
@@ -93,12 +102,15 @@ public class ChatMessageService {
                 .code(item.getCode())
                 .user(
                     UserResponseDto.builder()
-                        .userCode(user.getCode())
-                        .name(user.getName())
-                        .profileImgUrl(user.getProfileImgUrl())
+                        .userCode(item.getUser().getCode())
+                        .name(item.getUser().getName())
+                        .profileImgUrl(item.getUser().getProfileImgUrl())
                         .build()
                 )
-                .isMine(Objects.equals(item.getUser().getCode(), userCode))
+                .senderName(item.getSenderName())
+                .senderProfileImgUrl(item.getSenderProfileImgUrl())
+                .owner(Objects.equals(item.getUser().getCode(), chatRoom.getUser().getCode()))
+                .type(item.getType())
                 .message(item.getMessage())
                 .imgList(chatImgService.findByChatMessageCode(item.getCode()))
                 .createdAt(item.getCreatedAt())
@@ -112,7 +124,7 @@ public class ChatMessageService {
     @Transactional // 마지막 메시지 조회 Service
     public ChatMessageResponseDto findLastMessage(Long chatRoomCode) {
         return chatMessageRepository
-            .findFirstByChatRoom_CodeOrderByCreatedAtDesc(chatRoomCode)
+            .findFirstByChatRoom_CodeAndTypeOrderByCreatedAtDesc(chatRoomCode, ChatMessageType.CHAT)
             .map(chatMessage -> ChatMessageResponseDto.builder()
                 .message(chatMessage.getMessage())
                 .createdAt(chatMessage.getCreatedAt())

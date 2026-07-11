@@ -34,6 +34,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
+                    "/ws/**",
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
                     "/v3/api/**",
@@ -45,12 +46,6 @@ public class SecurityConfig {
                 jwtAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter.class
             )
-//            .exceptionHandling(exception -> exception
-//                .authenticationEntryPoint((request, response, authException) -> {
-//                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//                    response.setContentType("application/json;charset=UTF-8");
-//                })
-//            )
             .build();
     }
 

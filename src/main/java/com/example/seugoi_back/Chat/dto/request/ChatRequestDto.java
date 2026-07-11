@@ -16,10 +16,14 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChatRequestDto {
 
+    @NotNull(message = "유저 코드는 필수입니다.")
+    @Schema(description = "유저 코드", example = "1")
+    private Long userCode;
+
     @NotNull(message = "채팅 내용은 필수입니다.")
     @Schema(description = "채팅 내용", example = "채팅 내용입니다.")
     String message;
 
     @Schema(description = "이미지 파일 리스트", example = "[]")
-    List<MultipartFile> imgList;
+    List<String> imgList;
 }

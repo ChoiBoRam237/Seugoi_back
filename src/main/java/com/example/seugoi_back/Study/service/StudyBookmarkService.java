@@ -43,7 +43,7 @@ public class StudyBookmarkService {
             return Map.of(
                 "userCode", user.getCode(),
                 "studyCode", study.getCode(),
-                "bookmarked", false
+                "bookmarking", false
             );
         }
 
@@ -61,7 +61,7 @@ public class StudyBookmarkService {
             "code", savedBookmark.getCode(),
             "userCode", savedBookmark.getUser().getCode(),
             "studyCode", savedBookmark.getStudy().getCode(),
-            "bookmarked", true
+            "bookmarking", true
         );
     }
 
@@ -115,8 +115,8 @@ public class StudyBookmarkService {
                 .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
                 .progress(0)
                 .bgImg(studyBgImgService.findByStudyCode(study.getCode()))
-                .isAdmin(Objects.equals(userCode, study.getUser().getCode()))
-                .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, study.getCode()).isPresent())
+                .owner(Objects.equals(userCode, study.getUser().getCode()))
+                .bookmarking(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, study.getCode()).isPresent())
                 .build())
             .toList();
     }

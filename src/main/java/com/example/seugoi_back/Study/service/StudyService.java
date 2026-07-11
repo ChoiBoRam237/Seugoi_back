@@ -147,8 +147,8 @@ public class StudyService {
                 .dDay(DateUtil.calculateDDay(item.getEndPeriod()))
                 .progress(0)
                 .bgImg(studyBgImgService.findByStudyCode(item.getCode()))
-                .isAdmin(Objects.equals(userCode, item.getUser().getCode()))
-                .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, item.getCode()).isPresent())
+                .owner(Objects.equals(userCode, item.getUser().getCode()))
+                .bookmarking(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, item.getCode()).isPresent())
                 .status(item.getStatus())
                 .build())
             .toList();
@@ -196,8 +196,8 @@ public class StudyService {
                 .description(study.getDescription())
                 .recommend(ListUtil.parseStringToList(study.getRecommend()))
                 .bgImg(bgImage)
-                .isJoined(isJoined)
-                .isBookmark(isBookmark)
+                .joined(isJoined)
+                .bookmarking(isBookmark)
                 .status(study.getStatus())
                 .build();
 
@@ -207,7 +207,7 @@ public class StudyService {
         return Map.of(
             "admin", adminResponseDto,
             "study", studyResponseDto,
-            "isAdmin", Objects.equals(userCode, study.getUser().getCode())
+            "owner", Objects.equals(userCode, study.getUser().getCode())
         );
     }
 
@@ -223,8 +223,8 @@ public class StudyService {
                 .dDay(DateUtil.calculateDDay(item.getEndPeriod()))
                 .progress(0)
                 .bgImg(studyBgImgService.findByStudyCode(item.getCode()))
-                .isAdmin(Objects.equals(userCode, item.getUser().getCode()))
-                .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, item.getCode()).isPresent())
+                .owner(Objects.equals(userCode, item.getUser().getCode()))
+                .bookmarking(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, item.getCode()).isPresent())
                 .status(item.getStatus())
                 .build())
             .toList();
@@ -273,8 +273,8 @@ public class StudyService {
                 .dDay(DateUtil.calculateDDay(study.getEndPeriod()))
                 .progress(0)
                 .bgImg(studyBgImgService.findByStudyCode(study.getCode()))
-                .isAdmin(Objects.equals(userCode, study.getUser().getCode()))
-                .isBookmark(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, study.getCode()).isPresent())
+                .owner(Objects.equals(userCode, study.getUser().getCode()))
+                .bookmarking(studyBookmarkRepository.findByUser_CodeAndStudy_Code(userCode, study.getCode()).isPresent())
                 .status(study.getStatus())
                 .build())
             .toList();

@@ -1,7 +1,11 @@
 package com.example.seugoi_back.Chat.service;
 
+import com.example.seugoi_back.Chat.dto.response.ChatMessageResponseDto;
+import com.example.seugoi_back.Chat.entity.ChatMessage;
 import com.example.seugoi_back.Chat.entity.ChatRoom;
 import com.example.seugoi_back.Chat.entity.ChatRoomMember;
+import com.example.seugoi_back.Chat.enums.ChatMessageType;
+import com.example.seugoi_back.Chat.repository.ChatMessageRepository;
 import com.example.seugoi_back.Chat.repository.ChatRoomMemberRepository;
 import com.example.seugoi_back.Chat.repository.ChatRoomRepository;
 import com.example.seugoi_back.Common.exception.CustomException;
@@ -10,6 +14,7 @@ import com.example.seugoi_back.User.entity.User;
 import com.example.seugoi_back.User.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +22,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ChatRoomMemberService {
+    private final SimpMessagingTemplate simpMessagingTemplate;
+
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
 
     @Transactional // 채팅방 가입 Service
@@ -31,7 +39,20 @@ public class ChatRoomMemberService {
         ChatRoomMember chatRoomMember = ChatRoomMember.builder()
             .user(user)
             .chatRoom(chatRoom)
+            .joined(true)
             .build();
+
+        // 입장 메시지 저장
+        ChatMessage chatMessage = ChatMessage.builder()
+            .user(user)
+            .senderName(user.getName())
+            .senderProfileImgUrl(user.getProfileImgUrl())
+            .chatRoom(chatRoom)
+            .type(ChatMessageType.JOIN)
+            .message(user.getName() + "님이 입장하셨습니다.")
+            .build();
+        ChatMessage saved = chatMessageRepository.save(chatMessage);
+        simpMessagingTemplate.convertAndSend("/sub/room/" + chatRoomCode, ChatMessageResponseDto.from(saved));
 
         return chatRoomMemberRepository.save(chatRoomMember);
     }

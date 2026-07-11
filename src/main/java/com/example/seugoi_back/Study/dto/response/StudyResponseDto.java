@@ -30,11 +30,11 @@ public class StudyResponseDto {
     @Schema(name = "bgImg", example = "{}")
     private CommonImgResponseDto bgImg; // 스터디 배경 이미지
 
-    @Schema(name = "isAdmin", example = "true")
-    private Boolean isAdmin; // 관리자인지 아닌지
+    @Schema(name = "owner", example = "true")
+    private boolean owner; // 관리자인지 아닌지
 
-    @Schema(name = "isBookmark", example = "true")
-    private Boolean isBookmark; // 북마크 여부
+    @Schema(name = "bookmarking", example = "true")
+    private boolean bookmarking; // 북마크 여부
 
     @Schema(name = "status", example = "STUDYING")
     private StudyStatus status; // 스터디 상태

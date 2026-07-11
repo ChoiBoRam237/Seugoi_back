@@ -6,7 +6,6 @@ import com.example.seugoi_back.Study.entity.Study;
 import com.example.seugoi_back.User.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -37,7 +36,7 @@ public class AsgmtCmt extends BaseTime {
 
     @Column(nullable = false)
     @Builder.Default
-    private Boolean isAdminCheck = false; // 관리자 체크 여부
+    private boolean ownerCheck = false; // 관리자 체크 여부
 
     public void update(AsgmtCmtRequestDto dto) {
         this.comment = dto.getComment();

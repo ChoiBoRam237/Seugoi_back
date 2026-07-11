@@ -2,7 +2,6 @@ package com.example.seugoi_back.Study.dto.response;
 
 import com.example.seugoi_back.Common.response.CommonImgResponseDto;
 import com.example.seugoi_back.Study.enums.StudyStatus;
-import com.example.seugoi_back.User.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,11 +52,11 @@ public class StudyDetailResponseDto {
     @Schema(name = "bgImageUrl", example = "aaa.png")
     private CommonImgResponseDto bgImg; // 스터디 배경 이미지
 
-    @Schema(name = "isJoined", example = "true")
-    private Boolean isJoined; // 스터디 가입 여부
+    @Schema(name = "joined", example = "true")
+    private boolean joined; // 스터디 가입 여부
 
-    @Schema(name = "isBookmark", example = "true")
-    private Boolean isBookmark; // 북마크 여부
+    @Schema(name = "bookmarking", example = "true")
+    private boolean bookmarking; // 북마크 여부
 
     @Schema(name = "status", example = "STUDYING")
     private StudyStatus status;

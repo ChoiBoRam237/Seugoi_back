@@ -86,8 +86,8 @@ public class AsgmtCmtService {
                 .code(item.getCode())
                 .comment(item.getComment())
                 .imgList(asgmtCmtImgService.findByAsgmtCmtCode(item.getCode()))
-                .isWriter(Objects.equals(item.getUser().getCode(), userCode))
-                .isAdminCheck(item.getIsAdminCheck())
+                .writerOwner(Objects.equals(item.getUser().getCode(), userCode))
+                .ownerCheck(item.isOwnerCheck())
                 .createdAt(item.getCreatedAt())
                 .user(
                     UserResponseDto.builder()
@@ -210,6 +210,6 @@ public class AsgmtCmtService {
     public void submitAsgmtCmt(Long asgmtCmtCode) {
         AsgmtCmt asgmtCmt = asgmtCmtRepository.findById(asgmtCmtCode)
             .orElseThrow(() -> new CustomException(ErrorCode.ASGMT_NOT_FOUND));
-        asgmtCmt.setIsAdminCheck(true); // 확인 처리
+        asgmtCmt.setOwnerCheck(true); // 확인 처리
     }
 }

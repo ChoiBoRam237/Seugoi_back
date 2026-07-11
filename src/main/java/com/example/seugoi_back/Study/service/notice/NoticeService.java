@@ -52,7 +52,7 @@ public class NoticeService {
                 .target("notice")
                 .title(item.getTitle())
                 .content(item.getContent())
-                .isAdmin(Objects.equals(item.getUser().getCode(), userCode))
+                .owner(Objects.equals(item.getUser().getCode(), userCode))
                 .createdAt(item.getCreatedAt())
                 .build())
             .toList();

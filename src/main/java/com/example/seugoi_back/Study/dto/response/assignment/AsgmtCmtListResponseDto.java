@@ -11,7 +11,7 @@ import java.util.List;
 public class AsgmtCmtListResponseDto {
 
     @Schema(name = "submitted", example = "true")
-    private Boolean submitted; // 내가 과제 제출을 했는지 안했는지
+    private boolean submitted; // 내가 과제 제출을 했는지 안했는지
 
     @Schema(name = "comments", example = "[]")
     private List<AsgmtCmtResponseDto> comments;

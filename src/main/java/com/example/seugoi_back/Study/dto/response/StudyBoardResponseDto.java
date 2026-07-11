@@ -39,11 +39,11 @@ public class StudyBoardResponseDto {
     @Schema(name = "imageList", example = "['이미지 url']")
     private List<CommonImgResponseDto> imgList;
 
-    @Schema(name = "isAdmin", example = "true")
-    private Boolean isAdmin;
+    @Schema(name = "owner", example = "true")
+    private boolean owner;
 
     @Schema(name = "submitted", example = "true")
-    private Boolean submitted; // 과제 제출 여부
+    private boolean submitted; // 과제 제출 여부
 
     @Schema(name = "notSubmitCount", example = "10")
     private Long notSubmitCount; // 과제 미제출 인원수

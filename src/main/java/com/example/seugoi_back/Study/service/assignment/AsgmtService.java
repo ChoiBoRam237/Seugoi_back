@@ -81,7 +81,7 @@ public class AsgmtService {
                 .linkName(item.getLinkName())
                 .linkUrl(item.getLinkUrl())
                 .imgList(asgmtImgService.findByAsgmtCode(item.getCode()))
-                .isAdmin(Objects.equals(item.getUser().getCode(), userCode))
+                .owner(Objects.equals(item.getUser().getCode(), userCode))
                 .submitted(asgmtCmtRepository.existsByAsgmt_CodeAndUser_Code(item.getCode(), userCode))
                 .notSubmitCount(
                     studyRepository.findById(item.getStudy().getCode()).orElseThrow().getJoinCount() == 0
@@ -113,8 +113,12 @@ public class AsgmtService {
                 .linkName(asgmt.getLinkName())
                 .linkUrl(asgmt.getLinkUrl())
                 .imgList(asgmtImgService.findByAsgmtCode(asgmt.getCode()))
-                .isAdmin(Objects.equals(asgmt.getUser().getCode(), userCode))
-                .submitted(asgmtCmtRepository.existsByAsgmt_CodeAndUser_Code(asgmt.getCode(), userCode))
+                .owner(Objects.equals(asgmt.getUser().getCode(), userCode))
+                .submitted(
+                    Objects.equals(asgmt.getUser().getCode(), userCode)
+                        ? true
+                        : asgmtCmtRepository.existsByAsgmt_CodeAndUser_Code(asgmt.getCode(), userCode)
+                )
                 .notSubmitCount(study.getJoinCount() == 0 ? -1 : study.getJoinCount() - asgmt.getSubmitCount())
                 .studyStatus(study.getStatus())
                 .createdAt(asgmt.getCreatedAt())

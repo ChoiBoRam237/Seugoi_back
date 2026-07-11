@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -64,8 +65,17 @@ public class ChatImgService {
         }
     }
 
+    @Transactional // 이미지 파일만 저장 Service
+    public List<String> saveImgList(List<MultipartFile> imgList) {
+        if (imgList == null || imgList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return savedChatImg(imgList);
+    }
+
     @Transactional // 채팅 메시지 code에 맞는 이미지 조회 Service
-    public List<CommonImgResponseDto> findByChatMessageCode(Long chatMessageCode) {
+    public List<String> findByChatMessageCode(Long chatMessageCode) {
         List<ChatImg> imgList = chatImgRepository.findByChatMessage_Code(chatMessageCode);
 
         List<CommonImgResponseDto> responseDto = imgList.stream()
@@ -76,7 +86,11 @@ public class ChatImgService {
                 .build()
             ).toList();
 
-        return responseDto;
+        if (responseDto.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return responseDto.stream().map(item -> item.getFolderName() + item.getImgUrl()).toList();
     }
 
     @Transactional // 채팅 메시지 code에 맞는 이미지 모두 삭제 Service
