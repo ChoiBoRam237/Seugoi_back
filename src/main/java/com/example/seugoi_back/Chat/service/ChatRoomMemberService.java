@@ -12,6 +12,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ChatRoomMemberService {
@@ -32,6 +34,11 @@ public class ChatRoomMemberService {
             .build();
 
         return chatRoomMemberRepository.save(chatRoomMember);
+    }
+
+    @Transactional // 내가 가입되어 있는 채팅방 목록 조회 Service
+    public List<ChatRoomMember> findByUserCode(Long userCode) {
+        return chatRoomMemberRepository.findByUser_Code(userCode);
     }
 
     @Transactional // 채팅방 가입자 삭제 Service

@@ -35,11 +35,11 @@ public class ChatController {
     private final ChatRoomService chatRoomService;
     private final ChatMessageService chatMessageService;
 
-    @Operation(summary = "모든 채팅방 조회 API", description = "모든 채팅방을 조회합니다.")
+    @Operation(summary = "내가 가입된 채팅방 목록 조회 (검색 가능) API", description = "내가 가입된 채팅방 목록을 조회합니다. (검색 가능)")
     @ApiResponses({
         @ApiResponse(
             responseCode = "true",
-            description = "모든 채팅방 조회 성공",
+            description = "내가 가입된 채팅방 목록 조회 성공",
             content = @Content(
                 schema = @Schema(
                     implementation = ChatRoomResponseDto.class
@@ -48,13 +48,16 @@ public class ChatController {
         )
     })
     @GetMapping("/room")
-    public ResponseEntity<?> getChatRoomAll() {
-        List<ChatRoomResponseDto> responseDto = chatRoomService.findChatRoomAll();
+    public ResponseEntity<?> getChatRoomAll(
+        @Parameter(hidden = true) @AuthenticationPrincipal User user,
+        @RequestParam(defaultValue = "") String keyword
+    ) {
+        List<ChatRoomResponseDto> responseDto = chatRoomService.findByJoinAndKeyword(user.getCode(), keyword);
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()
                 .success(true)
-                .message("모든 채팅방 조회 성공")
+                .message("내가 가입된 채팅방 목록 조회 성공")
                 .data(responseDto)
                 .build()
         );

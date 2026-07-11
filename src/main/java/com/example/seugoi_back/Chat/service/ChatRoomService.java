@@ -1,7 +1,9 @@
 package com.example.seugoi_back.Chat.service;
 
+import com.example.seugoi_back.Chat.dto.response.ChatMessageResponseDto;
 import com.example.seugoi_back.Chat.dto.response.ChatRoomResponseDto;
 import com.example.seugoi_back.Chat.entity.ChatRoom;
+import com.example.seugoi_back.Chat.entity.ChatRoomMember;
 import com.example.seugoi_back.Chat.repository.ChatRoomRepository;
 import com.example.seugoi_back.Common.exception.CustomException;
 import com.example.seugoi_back.Common.exception.ErrorCode;
@@ -48,24 +50,32 @@ public class ChatRoomService {
         return savedChatRoom;
     }
 
-    @Transactional // 채팅방 목록 조회 Service
-    public List<ChatRoomResponseDto> findChatRoomAll() {
-        List<ChatRoom> chatRoomList = chatRoomRepository.findAll();
+    @Transactional // 내가 참여되어 있는 채팅방 목록 조회 (검색 가능) Service
+    public List<ChatRoomResponseDto> findByJoinAndKeyword(Long userCode, String keyword) {
+        List<ChatRoomMember> chatRoomMemberList = chatRoomMemberService.findByUserCode(userCode);
 
-        List<ChatRoomResponseDto> responseDto = chatRoomList.stream()
-            .map(item -> ChatRoomResponseDto.builder()
-                .code(item.getCode())
-                .roomName(item.getRoomName())
-                .lastMessage(chatMessageService.findLastMessage(item.getCode()).getMessage())
-                .lastMessageDate(chatMessageService.findLastMessage(item.getCode()).getCreatedAt())
-                .study(
-                    StudyResponseDto.builder()
-                        .code(item.getStudy().getCode())
-                        .bgImg(studyBgImgService.findByStudyCode(item.getStudy().getCode()))
-                        .build()
-                )
-                .build())
-            .toList();
+        List<ChatRoomResponseDto> responseDto = chatRoomMemberList.stream()
+                .map(ChatRoomMember::getChatRoom)
+                .filter(chatRoom -> keyword == null
+                    || keyword.isBlank()
+                    || chatRoom.getRoomName().toLowerCase().contains(keyword.toLowerCase()))
+                .map(chatRoom -> {
+                    ChatMessageResponseDto lastMessage = chatMessageService.findLastMessage(chatRoom.getCode());
+
+                    return ChatRoomResponseDto.builder()
+                            .code(chatRoom.getCode())
+                            .roomName(chatRoom.getRoomName())
+                            .lastMessage(lastMessage != null ? lastMessage.getMessage() : null)
+                            .lastMessageDate(lastMessage != null ? lastMessage.getCreatedAt() : null)
+                            .study(
+                                StudyResponseDto.builder()
+                                    .code(chatRoom.getStudy().getCode())
+                                    .bgImg(studyBgImgService.findByStudyCode(chatRoom.getStudy().getCode()))
+                                    .build()
+                            )
+                            .build();
+                })
+                .toList();
 
         return responseDto;
     }
