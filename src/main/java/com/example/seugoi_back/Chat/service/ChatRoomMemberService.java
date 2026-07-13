@@ -57,6 +57,14 @@ public class ChatRoomMemberService {
         return chatRoomMemberRepository.save(chatRoomMember);
     }
 
+    @Transactional
+    public void updateLastReadMessage(Long userCode, Long chatRoomCode, Long lastReadMessageCode) {
+        ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByUser_CodeAndChatRoom_Code(userCode, chatRoomCode)
+            .orElseThrow(() -> new CustomException(ErrorCode.CHAT_MEMBER_NOT_FOUND));
+
+        chatRoomMember.setLastReadMessageCode(lastReadMessageCode);
+    }
+
     @Transactional // 내가 가입되어 있는 채팅방 목록 조회 Service
     public List<ChatRoomMember> findByUserCode(Long userCode) {
         return chatRoomMemberRepository.findByUser_Code(userCode);

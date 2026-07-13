@@ -38,7 +38,7 @@ public class ChatRoomService {
     private final ChatRoomMemberService chatRoomMemberService;
     private final StudyBgImgService studyBgImgService;
 
-    @Transactional // 채팅 방 생성 Service
+    @Transactional // 채팅방 생성 Service
     public ChatRoom generateChatRoom(Long userCode, Long studyCode, String roomName) {
         User user = userRepository.findById(userCode)
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -77,6 +77,7 @@ public class ChatRoomService {
                             .roomName(chatRoom.getRoomName())
                             .lastMessage(lastMessage != null ? lastMessage.getMessage() : null)
                             .lastMessageDate(lastMessage != null ? lastMessage.getCreatedAt() : null)
+                            .unreadMessageCount(chatMessageService.unreadMessageCount(userCode, chatRoom.getCode()))
                             .study(
                                 StudyResponseDto.builder()
                                     .code(chatRoom.getStudy().getCode())

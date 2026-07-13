@@ -5,9 +5,11 @@ import com.example.seugoi_back.Chat.dto.response.ChatMessageResponseDto;
 import com.example.seugoi_back.Chat.entity.ChatImg;
 import com.example.seugoi_back.Chat.entity.ChatMessage;
 import com.example.seugoi_back.Chat.entity.ChatRoom;
+import com.example.seugoi_back.Chat.entity.ChatRoomMember;
 import com.example.seugoi_back.Chat.enums.ChatMessageType;
 import com.example.seugoi_back.Chat.repository.ChatImgRepository;
 import com.example.seugoi_back.Chat.repository.ChatMessageRepository;
+import com.example.seugoi_back.Chat.repository.ChatRoomMemberRepository;
 import com.example.seugoi_back.Chat.repository.ChatRoomRepository;
 import com.example.seugoi_back.Common.exception.CustomException;
 import com.example.seugoi_back.Common.exception.ErrorCode;
@@ -30,9 +32,11 @@ public class ChatMessageService {
 
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatImgRepository chatImgRepository;
     private final ChatImgService chatImgService;
+    private final ChatRoomMemberService chatRoomMemberService;
 
     @Transactional // 메시지 전송 Service
     public void sendMessage(Long chatRoomCode, ChatRequestDto dto) {
@@ -92,10 +96,17 @@ public class ChatMessageService {
     }
 
     @Transactional // 이전 채팅 내용 조회 Service
-    public List<ChatMessageResponseDto> findByChatRoomCode(Long chatRoomCode) {
+    public List<ChatMessageResponseDto> findByChatRoomCode(Long userCode, Long chatRoomCode) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomCode)
             .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
         List<ChatMessage> chatMessage = chatMessageRepository.findByChatRoom_Code(chatRoomCode);
+
+        // 마지막으로 읽은 메시지 업데이트
+        if (!chatMessage.isEmpty()) {
+            Long lastMessageCode = chatMessage.get(chatMessage.size() - 1).getCode();
+
+            chatRoomMemberService.updateLastReadMessage(userCode, chatRoomCode, lastMessageCode);
+        }
 
         List<ChatMessageResponseDto> responseDto = chatMessage.stream()
             .map(item -> ChatMessageResponseDto.builder()
@@ -135,6 +146,25 @@ public class ChatMessageService {
                         .createdAt(null)
                         .build()
                 );
+    }
+
+    @Transactional // 안 읽은 메시지 개수 조회 Service
+    public Long unreadMessageCount(Long userCode, Long chatRoomCode) {
+        List<ChatMessage> chatMessageList = chatMessageRepository.findByChatRoom_Code(chatRoomCode);
+        ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByUser_CodeAndChatRoom_Code(userCode, chatRoomCode)
+            .orElseThrow(() -> new CustomException(ErrorCode.CHAT_MEMBER_NOT_FOUND));
+
+        Long lastReadMessageCode = chatRoomMember.getLastReadMessageCode();
+
+        // 한 번도 읽지 않은 경우
+        if (lastReadMessageCode == null) {
+            return (long) chatMessageList.size();
+        }
+
+        return chatRoomMemberRepository.countByChatRoom_CodeAndLastReadMessage_CodeGreaterThan(
+            chatRoomCode,
+            lastReadMessageCode
+        );
     }
 
     @Transactional // 채팅방 code에 맞는 모든 메시지 삭제

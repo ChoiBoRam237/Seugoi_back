@@ -11,5 +11,6 @@ import java.util.Optional;
 public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMember, Long> {
     List<ChatRoomMember> findByUser_Code(Long userCode);
     Optional<ChatRoomMember> findByUser_CodeAndChatRoom_Code(Long userCode, Long chatRoomCode);
+    Long countByChatRoom_CodeAndLastReadMessage_CodeGreaterThan(Long chatRoomCode, Long lastReadMessageCode)
     void deleteByChatRoom_Code(Long chatRoomCode);
 }

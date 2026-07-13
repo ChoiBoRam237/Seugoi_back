@@ -25,4 +25,7 @@ public class ChatRoomResponseDto {
 
     @Schema(name = "lastMessageDate", example = "2026-01-01")
     private LocalDateTime lastMessageDate;
+
+    @Schema(name = "unreadMessageCount", example = "10")
+    private Long unreadMessageCount; // 안 읽은 메시지 개수
 }
