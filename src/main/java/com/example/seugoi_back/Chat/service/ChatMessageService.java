@@ -158,12 +158,16 @@ public class ChatMessageService {
 
         // 한 번도 읽지 않은 경우
         if (lastReadMessageCode == null) {
-            return (long) chatMessageList.size();
+            return (long) chatMessageList.stream()
+                            .filter(item -> item.getType() == ChatMessageType.CHAT)
+                            .toList()
+                            .size();
         }
 
-        return chatRoomMemberRepository.countByChatRoom_CodeAndLastReadMessage_CodeGreaterThan(
+        return chatRoomMemberRepository.countByChatRoom_CodeAndCodeGreaterThanAndType(
             chatRoomCode,
-            lastReadMessageCode
+            lastReadMessageCode,
+            ChatMessageType.CHAT
         );
     }
 

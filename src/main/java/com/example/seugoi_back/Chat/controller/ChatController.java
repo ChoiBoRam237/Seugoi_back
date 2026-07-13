@@ -115,8 +115,11 @@ public class ChatController {
         )
     })
     @GetMapping("/messages/{chatRoomCode}")
-    public ResponseEntity<?> findByChatRoomCode(@PathVariable Long chatRoomCode) {
-        List<ChatMessageResponseDto> responseDto = chatMessageService.findByChatRoomCode(chatRoomCode);
+    public ResponseEntity<?> findByChatRoomCode(
+        @Parameter(hidden = true) @AuthenticationPrincipal User user,
+        @PathVariable Long chatRoomCode
+    ) {
+        List<ChatMessageResponseDto> responseDto = chatMessageService.findByChatRoomCode(user.getCode(), chatRoomCode);
 
         return ResponseEntity.ok(
             CommonApiResponse.builder()
