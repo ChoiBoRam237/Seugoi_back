@@ -60,4 +60,7 @@ public class StudyDetailResponseDto {
 
     @Schema(name = "status", example = "STUDYING")
     private StudyStatus status;
+
+    @Schema(name = "studyFull", example = "true")
+    private boolean studyFull; // 스터디 모집인원 꽉참 여부
 }

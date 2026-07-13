@@ -199,6 +199,7 @@ public class StudyService {
                 .joined(isJoined)
                 .bookmarking(isBookmark)
                 .status(study.getStatus())
+                .studyFull(Objects.equals(study.getPeopleCount(), study.getJoinCount()))
                 .build();
 
         // 조회수 증가
