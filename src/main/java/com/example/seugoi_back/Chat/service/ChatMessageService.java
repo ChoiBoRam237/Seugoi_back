@@ -69,6 +69,9 @@ public class ChatMessageService {
             }
         }
 
+        // 마지막으로 읽은 메시지 업데이트
+        chatRoomMemberService.updateLastReadMessage(dto.getUserCode(), chatRoomCode, chatMessage.getCode());
+
         // 메시지 전송
         ChatMessageResponseDto responseDto =
             ChatMessageResponseDto.builder()
@@ -164,7 +167,7 @@ public class ChatMessageService {
                             .size();
         }
 
-        return chatRoomMemberRepository.countByChatRoom_CodeAndCodeGreaterThanAndType(
+        return chatMessageRepository.countByChatRoom_CodeAndCodeGreaterThanAndType(
             chatRoomCode,
             lastReadMessageCode,
             ChatMessageType.CHAT

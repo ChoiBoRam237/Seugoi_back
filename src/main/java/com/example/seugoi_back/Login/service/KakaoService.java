@@ -60,31 +60,7 @@ public class KakaoService {
         return kakaoTokenResponseDto;
     }
 
-    public KakaoTokenResponseDto getRefreshToke(String refreshToken) {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "refresh_token");
-        params.add("client_id", clientId);
-        params.add("refresh_token", refreshToken);
-        params.add("redirect_uri", redirectUri);
-
-        if (clientSecret != null && !clientSecret.isBlank()) {
-            params.add("client_secret", clientSecret);
-        }
-
-        KakaoTokenResponseDto kakaoTokenResponseDto = WebClient.create(KAUTH_TOKEN_URL_HOST)
-            .post()
-            .uri("/oauth/token")
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .bodyValue(params)
-            .retrieve()
-            .bodyToMono(KakaoTokenResponseDto.class)
-            .block();
-
-        return kakaoTokenResponseDto;
-    }
-
     public KakaoUserInfoResponseDto getUserInfo(String accessToken) {
-
         KakaoUserInfoResponseDto userInfo = WebClient.create(KAUTH_USER_URL_HOST)
             .get()
             .uri(uriBuilder -> uriBuilder
@@ -93,9 +69,13 @@ public class KakaoService {
                 .build(true))
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // access token 인가
             .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
-            .retrieve()
-            .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Invalid Parameter")))
-            .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, response ->
+                    response.bodyToMono(String.class)
+                        .flatMap(body -> {
+                            System.out.println(body);
+                            return Mono.error(new RuntimeException(body));
+                        }))
             .bodyToMono(KakaoUserInfoResponseDto.class)
             .block();
 
