@@ -11,7 +11,3 @@
 ### Tools
 - IntelliJ
 - MySQL
-
-### 참고자료
-- kakao login : https://ddonghyeo.tistory.com/16
-- 실시간 채팅 : https://velog.io/@o_seongblll_/스프링부트로-실시간-채팅-구현하기1
